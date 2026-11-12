@@ -1,0 +1,70 @@
+{
+  "format_version": 1,
+  "id": "m1_sol_inconnu",
+  "act": 1,
+  "order": 1,
+  "title_key": "M1_TITLE",
+  "type": "reconnaissance",
+  "rule_introduced": "movement_terrain_fog",
+  "map": {
+    "width": 8,
+    "height": 8,
+    "rows": [
+      "R R . . . M M M",
+      ". . . R . r M M",
+      ". R . . . . R .",
+      ". . . C C . . .",
+      ". . . C . . R .",
+      ". R . . . . . .",
+      ". . . . R . . B",
+      ". . . . . . B B"
+    ],
+    "features": [
+      { "id": "summit", "kind": "point_of_interest", "cell": "H1", "label_key": "M1_SUMMIT" },
+      { "id": "fragments", "kind": "fragment_cache", "cell": "D2", "label_key": "M1_FRAGMENTS" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "sc1", "type": "scout", "cell": "A7" },
+      { "id": "sc2", "type": "scout", "cell": "A8" }
+    ],
+    "extraction": ["A7", "A8"]
+  },
+  "guardians": [],
+  "alert": { "initial": "watch", "enabled": false },
+  "objectives": {
+    "main": {
+      "text_key": "M1_OBJ_MAIN",
+      "condition": { "sequence": [
+        { "type": "unit_in", "unit": "any", "cells": ["H1"] },
+        { "type": "all_units_extracted" }
+      ] }
+    },
+    "records": [
+      { "id": "r_map", "text_key": "M1_REC_MAP", "condition": { "type": "reveal_ratio_at_least", "value": 0.9 } },
+      { "id": "r_fast", "text_key": "M1_REC_FAST", "condition": { "type": "max_turns", "value": 8 } }
+    ],
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_intro", "when": { "type": "turn_start", "turn": 1 },
+      "do": [ { "type": "show_tip", "key": "TIP_SELECT_MOVE" } ] },
+    { "id": "t_rocks", "when": { "type": "terrain_entered", "terrain": "R" },
+      "do": [ { "type": "show_tip", "key": "TIP_ROCKS" } ] },
+    { "id": "t_summit", "when": { "type": "unit_in", "unit": "any", "cells": ["H1"] },
+      "do": [
+        { "type": "highlight", "feature": "fragments" },
+        { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M1_DLG_FRAGMENTS" } ] },
+        { "type": "show_tip", "key": "TIP_EXTRACT" }
+      ] },
+    { "id": "t_outro", "when": { "type": "all_units_extracted" },
+      "do": [ { "type": "cinematic", "key": "M1_OUTRO_SILHOUETTE" } ] }
+  ],
+  "rewards": { "materials": 2, "per_record": { "data": 1 } },
+  "campaign_effects": [
+    { "type": "open_sector", "sector": "plateau_arrivee" },
+    { "type": "codex", "entry": "manufactured_fragments" }
+  ]
+}

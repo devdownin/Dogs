@@ -1,0 +1,72 @@
+{
+  "format_version": 1,
+  "id": "m2_echos_poussiere",
+  "act": 1,
+  "order": 2,
+  "title_key": "M2_TITLE",
+  "type": "study",
+  "rule_introduced": "interact_technician",
+  "map": {
+    "width": 8,
+    "height": 8,
+    "rows": [
+      ". . R . . X X .",
+      ". . . . R X . .",
+      "R . . . . . . R",
+      ". . R R . . . .",
+      ". . . . . R . .",
+      "C C G C . . . .",
+      ". . . . . R . .",
+      ". . . . . . . B"
+    ],
+    "features": [
+      { "id": "anom_1", "kind": "anomaly", "cell": "B2", "label_key": "M2_ANOMALY" },
+      { "id": "anom_2", "kind": "anomaly", "cell": "G4", "label_key": "M2_ANOMALY" },
+      { "id": "source", "kind": "signal_source", "cell": "G2", "label_key": "M2_SOURCE" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "sc1", "type": "scout", "cell": "B8" },
+      { "id": "sc2", "type": "scout", "cell": "C8" },
+      { "id": "tec", "type": "technician", "cell": "D8" }
+    ],
+    "extraction": ["B8:D8"]
+  },
+  "guardians": [],
+  "alert": { "initial": "watch", "enabled": false },
+  "objectives": {
+    "main": {
+      "text_key": "M2_OBJ_MAIN",
+      "deadline_turn": 12,
+      "condition": { "sequence": [
+        { "all": [
+          { "type": "interacted", "feature": "anom_1" },
+          { "type": "interacted", "feature": "anom_2" },
+          { "type": "interacted", "feature": "source" }
+        ] },
+        { "type": "unit_extracted", "unit": "tec" }
+      ] }
+    },
+    "records": [
+      { "id": "r_fast", "text_key": "M2_REC_FAST", "condition": { "type": "max_turns", "value": 8 } },
+      { "id": "r_ruins", "text_key": "M2_REC_RUINS", "condition": { "type": "cells_revealed", "cells": ["F1", "G1", "F2"] } }
+    ],
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_intro", "when": { "type": "turn_start", "turn": 1 },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "operator", "key": "M2_DLG_TECH" } ] } ] },
+    { "id": "t_interact", "when": { "type": "turn_start", "turn": 2 },
+      "do": [ { "type": "show_tip", "key": "TIP_INTERACT" } ] },
+    { "id": "t_signal", "when": { "type": "interacted", "feature": "source" },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M2_DLG_SIGNAL" } ] } ] },
+    { "id": "t_window", "when": { "type": "turn_start", "turn": 10 },
+      "do": [ { "type": "show_tip", "key": "TIP_WINDOW_CLOSING" } ] }
+  ],
+  "rewards": { "data": 3, "materials": 1, "ship_stage": "observation" },
+  "campaign_effects": [
+    { "type": "chronicle", "entry": "premieres_structures", "status": "hypothesis" }
+  ]
+}

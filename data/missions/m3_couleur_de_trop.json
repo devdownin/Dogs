@@ -1,0 +1,91 @@
+{
+  "format_version": 1,
+  "id": "m3_couleur_de_trop",
+  "act": 1,
+  "order": 3,
+  "title_key": "M3_TITLE",
+  "type": "study",
+  "rule_introduced": "recolored_territory_retreat",
+  "map": {
+    "width": 10,
+    "height": 10,
+    "rows": [
+      ". . . . . . . . . .",
+      ". . . X . . . . R .",
+      ". . . . . . . . . .",
+      ". . . R . . . . . .",
+      ". R . . . . . R . .",
+      ". . . C C . . . . .",
+      ". . . . C C . R . .",
+      "R . . . . . . . . .",
+      ". . R . . . . . B B",
+      ". . . . . . . . B B"
+    ],
+    "territory": { "recolored": ["A1:J3"] },
+    "features": [
+      { "id": "marker_w", "kind": "boundary_marker", "cell": "A4", "label_key": "M3_MARKER" },
+      { "id": "marker_e", "kind": "boundary_marker", "cell": "J4", "label_key": "M3_MARKER" },
+      { "id": "relay", "kind": "relay_point", "cell": "F4", "label_key": "M3_RELAY" },
+      { "id": "ruin", "kind": "point_of_interest", "cell": "D2", "label_key": "M3_RUIN" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "sc1", "type": "scout", "cell": "D10" },
+      { "id": "sc2", "type": "scout", "cell": "E10" },
+      { "id": "tec", "type": "technician", "cell": "F10" }
+    ],
+    "extraction": ["D10:F10"]
+  },
+  "guardians": [],
+  "alert": { "initial": "watch", "enabled": false },
+  "objectives": {
+    "main": {
+      "text_key": "M3_OBJ_MAIN",
+      "condition": { "sequence": [
+        { "all": [
+          { "type": "feature_revealed", "feature": "marker_w" },
+          { "type": "feature_revealed", "feature": "marker_e" },
+          { "type": "interacted", "feature": "relay" }
+        ] },
+        { "type": "all_units_extracted" }
+      ] }
+    },
+    "records": [
+      { "id": "r_clean", "text_key": "M3_REC_CLEAN",
+        "condition": { "type": "never_end_turn_on", "territory": "recolored" } },
+      { "id": "r_ruin", "text_key": "M3_REC_RUIN",
+        "condition": { "all": [
+          { "type": "cells_revealed", "cells": ["D2"] },
+          { "not": { "type": "territory_entered", "territory": "recolored" } }
+        ] } }
+    ],
+    "failure": { "all": [
+      { "type": "countdown_expired", "countdown": "closure" },
+      { "not": { "type": "interacted", "feature": "relay" } }
+    ] },
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_seen", "when": { "type": "territory_revealed", "territory": "recolored" },
+      "do": [ { "type": "show_tip", "key": "TIP_RECOLORED" } ] },
+    { "id": "t_react",
+      "when": { "any": [
+        { "type": "interacted", "feature": "relay" },
+        { "type": "unit_end_turn_on", "territory": "recolored" }
+      ] },
+      "do": [
+        { "type": "territory_advance", "territory": "recolored", "direction": "S", "rows_per_phase": 1, "damage": 1 },
+        { "type": "start_countdown", "id": "closure", "turns": 5, "label_key": "M3_COUNTDOWN" },
+        { "type": "dialogue", "lines": [ { "speaker": "systems", "key": "M3_DLG_REACTION" } ] }
+      ] },
+    { "id": "t_close", "when": { "type": "countdown_expired", "countdown": "closure" },
+      "do": [ { "type": "close_extraction" } ] }
+  ],
+  "rewards": { "data": 3, "fragments": 1 },
+  "campaign_effects": [
+    { "type": "chronicle", "entry": "recoloration", "status": "observed" },
+    { "type": "sector_state", "persist": "recolored_front" }
+  ]
+}

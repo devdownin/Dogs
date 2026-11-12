@@ -1,0 +1,10 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Piège : l'Éclaireur reste en E6 après sa Sonde. La Sentinelle regarde au sud à la phase 3, portée 4.",
+  "turns": [
+    [ { "unit": "tec", "move": "D7" }, { "unit": "sc1", "move": "E8" } ],
+    [ { "unit": "sc1", "move": "E6", "act": "probe", "target": "E2" } ],
+    [ ]
+  ],
+  "expect": { "result": null, "alert_max": "warning" }
+}

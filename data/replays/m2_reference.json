@@ -1,0 +1,15 @@
+{
+  "mission": "m2_echos_poussiere",
+  "description": "Les Éclaireurs examinent les anomalies pendant que le Technicien rejoint la source.",
+  "turns": [
+    [ { "unit": "sc1", "move": "B5" }, { "unit": "sc2", "move": "F6" }, { "unit": "tec", "move": "E6" } ],
+    [ { "unit": "sc1", "move": "B3", "act": "interact", "target": "B2" },
+      { "unit": "sc2", "move": "G5", "act": "interact", "target": "G4" },
+      { "unit": "tec", "move": "E3" } ],
+    [ { "unit": "tec", "move": "G3", "act": "interface", "target": "G2" } ],
+    [ { "unit": "tec", "move": "E4" } ],
+    [ { "unit": "tec", "move": "E7" } ],
+    [ { "unit": "tec", "move": "D8", "act": "extract" } ]
+  ],
+  "expect": { "result": "victory", "turn": 6, "records": { "r_fast": true } }
+}

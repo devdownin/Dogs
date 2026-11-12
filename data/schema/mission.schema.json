@@ -1,0 +1,586 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dogsofgods/schema/mission.schema.json",
+  "title": "Dogs of Gods — mission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format_version",
+    "id",
+    "act",
+    "order",
+    "title_key",
+    "type",
+    "rule_introduced",
+    "map",
+    "deployment",
+    "guardians",
+    "alert",
+    "objectives",
+    "triggers",
+    "rewards",
+    "campaign_effects"
+  ],
+  "properties": {
+    "format_version": {
+      "const": 1
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "act": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "order": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "title_key": {
+      "$ref": "#/$defs/key"
+    },
+    "type": {
+      "enum": [
+        "reconnaissance",
+        "study",
+        "ruins",
+        "recovery",
+        "infiltration",
+        "defense",
+        "neutralization",
+        "reconquest",
+        "choice"
+      ]
+    },
+    "rule_introduced": {
+      "type": "string"
+    },
+    "map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height",
+        "rows"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 6,
+          "maximum": 16
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 6,
+          "maximum": 16
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[.RMrCGBX]( [.RMrCGBX])*$"
+          }
+        },
+        "elevated": {
+          "$ref": "#/$defs/cellList"
+        },
+        "territory": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recolored": {
+              "$ref": "#/$defs/cellList"
+            },
+            "linked": {
+              "$ref": "#/$defs/cellList"
+            }
+          }
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "kind",
+              "cell"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "kind": {
+                "enum": [
+                  "anomaly",
+                  "signal_source",
+                  "relay_point",
+                  "beacon",
+                  "node",
+                  "boundary_marker",
+                  "point_of_interest",
+                  "fragment_cache"
+                ]
+              },
+              "cell": {
+                "$ref": "#/$defs/cell"
+              },
+              "label_key": {
+                "$ref": "#/$defs/key"
+              }
+            }
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "units",
+        "extraction"
+      ],
+      "properties": {
+        "energy": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "units": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "type",
+              "cell"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "type": {
+                "enum": [
+                  "scout",
+                  "technician",
+                  "protector",
+                  "interceptor"
+                ]
+              },
+              "cell": {
+                "$ref": "#/$defs/cell"
+              },
+              "locked": {
+                "type": "boolean",
+                "default": true
+              }
+            }
+          }
+        },
+        "extraction": {
+          "$ref": "#/$defs/cellList"
+        }
+      }
+    },
+    "guardians": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "type",
+          "cell"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "type": {
+            "enum": [
+              "sentinel",
+              "patroller",
+              "regulator",
+              "herald"
+            ]
+          },
+          "cell": {
+            "$ref": "#/$defs/cell"
+          },
+          "facing": {
+            "$ref": "#/$defs/dir"
+          },
+          "facing_cycle": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/dir"
+            }
+          },
+          "route": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "$ref": "#/$defs/cell"
+            }
+          },
+          "route_mode": {
+            "enum": [
+              "loop",
+              "ping_pong"
+            ]
+          },
+          "dormant": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initial"
+      ],
+      "properties": {
+        "initial": {
+          "$ref": "#/$defs/alertLevel"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "objectives": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "main",
+        "records"
+      ],
+      "properties": {
+        "main": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text_key",
+            "condition"
+          ],
+          "properties": {
+            "text_key": {
+              "$ref": "#/$defs/key"
+            },
+            "condition": {
+              "$ref": "#/$defs/condition"
+            },
+            "deadline_turn": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "text_key",
+              "condition"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "text_key": {
+                "$ref": "#/$defs/key"
+              },
+              "condition": {
+                "$ref": "#/$defs/condition"
+              }
+            }
+          }
+        },
+        "failure": {
+          "$ref": "#/$defs/condition"
+        },
+        "retreat_allowed": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "when",
+          "do"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "once": {
+            "type": "boolean",
+            "default": true
+          },
+          "when": {
+            "$ref": "#/$defs/condition"
+          },
+          "do": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/action"
+            }
+          }
+        }
+      }
+    },
+    "rewards": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "materials": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fragments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "per_record": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "data": {
+              "type": "integer"
+            },
+            "materials": {
+              "type": "integer"
+            }
+          }
+        },
+        "ship_stage": {
+          "enum": [
+            "survival",
+            "observation",
+            "link",
+            "research",
+            "projection",
+            "navigation"
+          ]
+        }
+      }
+    },
+    "campaign_effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "open_sector",
+              "chronicle",
+              "gauge",
+              "codex",
+              "sector_state"
+            ]
+          },
+          "if_record": {
+            "$ref": "#/$defs/id"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "key": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_]*$"
+    },
+    "cell": {
+      "type": "string",
+      "pattern": "^[A-P](1[0-6]|[1-9])$"
+    },
+    "cellRange": {
+      "type": "string",
+      "pattern": "^[A-P](1[0-6]|[1-9]):[A-P](1[0-6]|[1-9])$"
+    },
+    "cellList": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/cell"
+          },
+          {
+            "$ref": "#/$defs/cellRange"
+          }
+        ]
+      }
+    },
+    "dir": {
+      "enum": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    "alertLevel": {
+      "enum": [
+        "watch",
+        "warning",
+        "interception",
+        "lockdown"
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "all"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "all": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/condition"
+              }
+            }
+          }
+        },
+        {
+          "required": [
+            "any"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "any": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/condition"
+              }
+            }
+          }
+        },
+        {
+          "required": [
+            "sequence"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "sequence": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/condition"
+              }
+            }
+          }
+        },
+        {
+          "required": [
+            "not"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "not": {
+              "$ref": "#/$defs/condition"
+            }
+          }
+        },
+        {
+          "required": [
+            "type"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "turn_start",
+                "turn_end",
+                "max_turns",
+                "unit_in",
+                "all_units_extracted",
+                "unit_extracted",
+                "unit_disabled",
+                "interacted",
+                "feature_revealed",
+                "cells_revealed",
+                "reveal_ratio_at_least",
+                "terrain_entered",
+                "territory_revealed",
+                "territory_entered",
+                "never_end_turn_on",
+                "guardian_observed",
+                "alert_at_least",
+                "alert_never_above",
+                "countdown_expired",
+                "flag",
+                "no_unit_disabled",
+                "unit_end_turn_on"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "show_tip",
+            "dialogue",
+            "set_flag",
+            "highlight",
+            "camera_focus",
+            "start_countdown",
+            "territory_advance",
+            "close_extraction",
+            "set_alert",
+            "guardian_order",
+            "cinematic",
+            "end_mission"
+          ]
+        }
+      }
+    }
+  }
+}

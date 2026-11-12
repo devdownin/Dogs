@@ -1,0 +1,10 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Piège : s'arrêter sur le gué D5 au tour 3.",
+  "turns": [
+    [ { "unit": "tec", "move": "D7" } ],
+    [ { "unit": "tec", "move": "D6" } ],
+    [ { "unit": "tec", "move": "D5" } ]
+  ],
+  "expect": { "result": null, "alert_max": "warning" }
+}
