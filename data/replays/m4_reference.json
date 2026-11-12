@@ -1,0 +1,11 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Solution sans alerte de la fiche : attendre en D6, franchir le gué quand la Sentinelle regarde au sud.",
+  "turns": [
+    [ { "unit": "tec", "move": "D7" } ],
+    [ { "unit": "tec", "move": "D6" } ],
+    [ { "unit": "tec", "move": "D3" } ],
+    [ { "unit": "tec", "move": "E2", "act": "interface", "target": "E1" } ]
+  ],
+  "expect": { "result": "victory", "turn": 4, "alert_max": "watch", "records": { "r_quiet": true } }
+}

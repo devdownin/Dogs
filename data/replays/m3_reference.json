@@ -1,0 +1,14 @@
+{
+  "mission": "m3_couleur_de_trop",
+  "description": "Observer les deux bornes, poser le relais au tour 3, se replier par l'est du canyon.",
+  "turns": [
+    [ { "unit": "tec", "move": "G8" }, { "unit": "sc1", "move": "A9" }, { "unit": "sc2", "move": "H8" } ],
+    [ { "unit": "tec", "move": "G5" }, { "unit": "sc1", "move": "A8" }, { "unit": "sc2", "move": "I6" } ],
+    [ { "unit": "tec", "move": "F5", "act": "interface", "target": "F4" },
+      { "unit": "sc1", "move": "D10", "act": "extract" }, { "unit": "sc2", "move": "F8" } ],
+    [ { "unit": "tec", "move": "G7" }, { "unit": "sc2", "move": "E10", "act": "extract" } ],
+    [ { "unit": "tec", "move": "G10" } ],
+    [ { "unit": "tec", "move": "F10", "act": "extract" } ]
+  ],
+  "expect": { "result": "victory", "turn": 6, "records": { "r_clean": true } }
+}

@@ -1,0 +1,135 @@
+name: ci
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: 4.7-stable
+  GODOT_TEMPLATES: 4.7.stable
+
+jobs:
+  lint:
+    name: Lint (GDScript, Python, shell, YAML)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - run: pip install -r requirements-ci.txt
+      - name: GDScript - gdformat
+        run: gdformat --check core ui tests
+      - name: GDScript - gdlint
+        run: gdlint core ui tests
+      - name: Python - ruff
+        run: ruff check tools
+      - name: Shell - shellcheck
+        run: shellcheck tools/*.sh
+      - name: YAML - yamllint
+        run: yamllint .github
+
+  data:
+    name: Données et simulateur de référence
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - run: pip install -r requirements-ci.txt
+      - name: Schéma, cohérence, i18n et rejeu des replays (Python)
+        run: python3 -I tools/validate.py data
+
+  godot:
+    name: Cœur de règles et scène (Godot)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-editor-${{ env.GODOT_VERSION }}
+      - name: Installer Godot
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          curl -sSL -o g.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q g.zip && mv "Godot_v${GODOT_VERSION}_linux.x86_64" godot && rm g.zip
+      - name: Importer le projet
+        run: |
+          ~/godot/godot --headless --path . --import || true
+          ~/godot/godot --headless --path . --import
+      - name: Rejouer les replays dans le cœur GDScript
+        run: ~/godot/godot --headless --path . -s tests/run_replays.gd
+      - name: Jouer la scène par touchers simulés
+        run: ~/godot/godot --headless --path . -s tests/run_ui.gd
+
+  android:
+    name: Build APK de test (Android)
+    needs: [lint, data, godot]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: SDK Android (build-tools 36.1.0, plateforme 36)
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.1.0" "platforms;android-36" > /dev/null
+      - name: Cache Godot et modèles d'export
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-android
+      - name: Installer Godot et les modèles Android
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot ~/.local/share/godot/export_templates/$GODOT_TEMPLATES
+          cd ~/godot
+          curl -sSL -o g.zip "https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q g.zip && mv "Godot_v${GODOT_VERSION}_linux.x86_64" godot && rm g.zip
+          curl -sSL -o t.tpz "https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          unzip -q t.tpz 'templates/android_*' 'templates/version.txt'
+          mv templates/* ~/.local/share/godot/export_templates/$GODOT_TEMPLATES/ && rm -rf templates t.tpz
+      - name: Importer le projet
+        run: |
+          ~/godot/godot --headless --path . --import || true
+          ~/godot/godot --headless --path . --import
+      - name: APK de test (clé de debug)
+        run: GODOT=$HOME/godot/godot tools/build_android.sh apk
+      - name: Vérifier l'APK (arm64, alignement 16 Ko, aucune permission)
+        run: |
+          apk=build/dogs-of-gods-test.apk
+          test -s "$apk"
+          unzip -l "$apk" | grep -q 'lib/arm64-v8a/' || { echo "bibliothèques arm64 absentes"; exit 1; }
+          if unzip -l "$apk" | grep -E 'lib/(armeabi-v7a|x86|x86_64)/'; then echo "ABI inattendue"; exit 1; fi
+          "$ANDROID_HOME/build-tools/36.1.0/zipalign" -c -P 16 4 "$apk"
+          "$ANDROID_HOME/build-tools/36.1.0/aapt2" dump permissions "$apk" | tee perms.txt
+          ! grep -q '^uses-permission' perms.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dogs-of-gods-test-apk
+          path: build/dogs-of-gods-test.apk
+          retention-days: 14

@@ -1,0 +1,10 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Piège : rester en D6 un tour de trop. La Sentinelle regarde au sud à la phase 3.",
+  "turns": [
+    [ { "unit": "tec", "move": "D7" } ],
+    [ { "unit": "tec", "move": "D6" } ],
+    [ ]
+  ],
+  "expect": { "result": null, "alert_max": "warning" }
+}

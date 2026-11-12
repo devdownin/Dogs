@@ -1,0 +1,11 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Variante avec Sonde : un Éclaireur révèle le plateau au tour 2, puis s'écarte du cône avant la phase 3.",
+  "turns": [
+    [ { "unit": "tec", "move": "D7" }, { "unit": "sc1", "move": "E8" } ],
+    [ { "unit": "tec", "move": "D6" }, { "unit": "sc1", "move": "E6", "act": "probe", "target": "E2" } ],
+    [ { "unit": "tec", "move": "D3" }, { "unit": "sc1", "move": "E7" } ],
+    [ { "unit": "tec", "move": "E2", "act": "interface", "target": "E1" } ]
+  ],
+  "expect": { "result": "victory", "turn": 4, "alert_max": "watch", "records": { "r_quiet": true } }
+}

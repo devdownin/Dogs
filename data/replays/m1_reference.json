@@ -1,0 +1,13 @@
+{
+  "mission": "m1_sol_inconnu",
+  "description": "Un Éclaireur monte au point haut et redescend ; l'autre cartographie l'ouest.",
+  "turns": [
+    [ { "unit": "sc1", "move": "C4" }, { "unit": "sc2", "move": "C6" } ],
+    [ { "unit": "sc1", "move": "F2" } ],
+    [ { "unit": "sc1", "move": "H1" } ],
+    [ { "unit": "sc1", "move": "E3" } ],
+    [ { "unit": "sc1", "move": "A4" }, { "unit": "sc2", "move": "A8", "act": "extract" } ],
+    [ { "unit": "sc1", "move": "A7", "act": "extract" } ]
+  ],
+  "expect": { "result": "victory", "turn": 6, "records": { "r_fast": true } }
+}

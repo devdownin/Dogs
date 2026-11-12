@@ -1,0 +1,32 @@
+keys,fr,en
+UI_TURN,Tour %d,Turn %d
+UI_ALERT,Alerte : %s,Alert: %s
+ALERT_WATCH,Veille,Watch
+ALERT_WARNING,Avertissement,Warning
+ALERT_INTERCEPTION,Interception,Interception
+ALERT_LOCKDOWN,Verrouillage,Lockdown
+UI_END_TURN,Fin de tour,End turn
+UI_UNDO,Annuler,Undo
+UI_DANGER,Danger,Danger
+UI_DEBUG,Tout voir,Reveal all
+UI_ACT_INTERACT,Interagir,Interact
+UI_ACT_INTERFACE,Interface,Interface
+UI_ACT_EXTRACT,Rappel,Recall
+UI_CONFIRM_MOVE,Touchez encore pour confirmer (coût %d).,Tap again to confirm (cost %d).
+UI_DETECTED,Détection en %s.,Detected at %s.
+UI_ALERT_NOW,Alerte : %s.,Alert: %s.
+UI_COUNTDOWN,%s : %d tours,%s: %d turns
+UI_VICTORY,Mission réussie,Mission complete
+UI_FAILURE,Mission échouée,Mission failed
+UI_RETREAT,Repli,Retreat
+UI_RECORD_OK,Relevé obtenu,Record earned
+UI_RECORD_KO,Relevé manqué,Record missed
+UI_RETRY,Rejouer,Retry
+UI_NEXT,Mission suivante,Next mission
+UI_ENDED_TURN,Fin en %d tours,Finished in %d turns
+SPEAKER_XENOLOGIST,Xénologue,Xenologist
+SPEAKER_OPERATOR,Opératrice,Operator
+SPEAKER_SYSTEMS,Systèmes,Systems
+UI_ACT_PROBE,Sonde,Probe
+UI_PROBE_TARGET,Touchez le centre de la zone à sonder (portée %d).,Tap the centre of the area to probe (range %d).
+UI_PROBE_CONFIRM,Touchez encore pour lancer la Sonde.,Tap again to launch the Probe.

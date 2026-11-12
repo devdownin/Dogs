@@ -1,0 +1,84 @@
+name: android
+# APK de test à chaque poussée sur main ; AAB signé pour le Play Store sur une étiquette v*
+# (seulement si les secrets de la clé d'envoi sont configurés).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7-stable
+  GODOT_TEMPLATES: 4.7.stable
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: SDK Android (build-tools 36.1.0, plateforme 36)
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.1.0" "platforms;android-36" > /dev/null
+
+      - name: Cache Godot et modèles d'export
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-android
+
+      - name: Installer Godot et les modèles Android
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot ~/.local/share/godot/export_templates/$GODOT_TEMPLATES
+          cd ~/godot
+          curl -sSL -o g.zip https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_linux.x86_64.zip
+          unzip -q g.zip && mv Godot_v${GODOT_VERSION}_linux.x86_64 godot && rm g.zip
+          curl -sSL -o t.tpz https://github.com/godotengine/godot/releases/download/$GODOT_VERSION/Godot_v${GODOT_VERSION}_export_templates.tpz
+          unzip -q t.tpz 'templates/android_*' 'templates/version.txt'
+          mv templates/* ~/.local/share/godot/export_templates/$GODOT_TEMPLATES/ && rm -rf templates t.tpz
+
+      - name: Tests (données, règles, scène)
+        run: |
+          pip install jsonschema
+          python3 -I tools/validate.py data
+          ~/godot/godot --headless --path . --import || true
+          ~/godot/godot --headless --path . --import
+          ~/godot/godot --headless --path . -s tests/run_replays.gd
+          ~/godot/godot --headless --path . -s tests/run_ui.gd
+
+      - name: APK de test
+        run: GODOT=$HOME/godot/godot tools/build_android.sh apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dogs-of-gods-test-apk
+          path: build/dogs-of-gods-test.apk
+
+      - name: AAB Play Store
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$UPLOAD_KEYSTORE_BASE64" ]; then echo "Secrets de la clé d'envoi absents : AAB non construit."; exit 0; fi
+          echo "$UPLOAD_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.keystore"
+          export GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$RUNNER_TEMP/upload.keystore"
+          GODOT=$HOME/godot/godot tools/build_android.sh aab
+          rm -f "$RUNNER_TEMP/upload.keystore"
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: dogs-of-gods-aab
+          path: build/dogs-of-gods.aab
+          if-no-files-found: ignore

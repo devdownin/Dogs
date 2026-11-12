@@ -1,0 +1,75 @@
+{
+  "format_version": 1,
+  "id": "m4_le_veilleur",
+  "act": 1,
+  "order": 4,
+  "title_key": "M4_TITLE",
+  "type": "infiltration",
+  "rule_introduced": "intents_alert_probe",
+  "map": {
+    "width": 10,
+    "height": 10,
+    "rows": [
+      "R R . M M M . . R R",
+      "R . . M X M . . . R",
+      ". . . . r . . R . .",
+      ". R . . . . . R . .",
+      "C C C G C C C . R .",
+      ". . . . . . . . . .",
+      ". R . . . . . . B B",
+      ". R . . . . . . B B",
+      ". . . . . . R . . .",
+      ". . . . . . . . . R"
+    ],
+    "elevated": ["E2"],
+    "territory": { "recolored": ["G1:G3"] },
+    "features": [
+      { "id": "beacon", "kind": "beacon", "cell": "E1", "label_key": "M4_BEACON" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "sc1", "type": "scout", "cell": "B10" },
+      { "id": "sc2", "type": "scout", "cell": "C10" },
+      { "id": "tec", "type": "technician", "cell": "D10" }
+    ],
+    "extraction": ["B10:D10"]
+  },
+  "guardians": [
+    { "id": "sen1", "type": "sentinel", "cell": "F2", "facing_cycle": ["S", "SW", "S", "SE"] },
+    { "id": "pat1", "type": "patroller", "cell": "C4", "route": ["C4", "G4"], "route_mode": "ping_pong" }
+  ],
+  "alert": { "initial": "watch" },
+  "objectives": {
+    "main": {
+      "text_key": "M4_OBJ_MAIN",
+      "condition": { "type": "interacted", "feature": "beacon" }
+    },
+    "records": [
+      { "id": "r_quiet", "text_key": "M4_REC_QUIET", "condition": { "type": "alert_never_above", "level": "watch" } },
+      { "id": "r_map", "text_key": "M4_REC_MAP", "condition": { "type": "reveal_ratio_at_least", "value": 0.8 } }
+    ],
+    "failure": { "type": "unit_disabled", "unit": "tec" },
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_intents", "when": { "type": "guardian_observed", "guardian": "any" },
+      "do": [ { "type": "show_tip", "key": "TIP_INTENTS" } ] },
+    { "id": "t_probe", "when": { "type": "turn_start", "turn": 2 },
+      "do": [ { "type": "show_tip", "key": "TIP_PROBE" } ] },
+    { "id": "t_seen", "when": { "type": "alert_at_least", "level": "warning" },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "operator", "key": "M4_DLG_SEEN" } ] } ] },
+    { "id": "t_beacon", "when": { "type": "interacted", "feature": "beacon" },
+      "do": [
+        { "type": "guardian_order", "guardian": "sen1", "face_cell": "E1" },
+        { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M4_DLG_BEACON" } ] }
+      ] }
+  ],
+  "rewards": { "data": 3, "fragments": 1, "per_record": { "data": 1 } },
+  "campaign_effects": [
+    { "type": "codex", "entry": "sentinel" },
+    { "type": "codex", "entry": "patroller" },
+    { "type": "gauge", "gauge": "concord", "delta": 1, "if_record": "r_quiet" }
+  ]
+}

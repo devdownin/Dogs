@@ -1,0 +1,4 @@
+jsonschema>=4
+gdtoolkit==4.*
+ruff
+yamllint
