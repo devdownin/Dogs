@@ -13,7 +13,12 @@ static func load_json(path: String) -> Variant:
 		return null
 	var json := JSON.new()
 	if json.parse(text) != OK:
-		push_error("%s : JSON invalide ligne %d (%s)" % [path, json.get_error_line(), json.get_error_message()])
+		push_error(
+			(
+				"%s : JSON invalide ligne %d (%s)"
+				% [path, json.get_error_line(), json.get_error_message()]
+			)
+		)
 		return null
 	return json.data
 

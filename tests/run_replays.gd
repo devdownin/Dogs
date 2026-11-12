@@ -15,7 +15,16 @@ func _init() -> void:
 		if not f.ends_with(".json"):
 			continue
 		var problems := _run(REPLAYS + f)
-		print("%s %s%s" % ["OK " if problems.is_empty() else "KO ", f, "" if problems.is_empty() else " : " + "; ".join(problems)])
+		print(
+			(
+				"%s %s%s"
+				% [
+					"OK " if problems.is_empty() else "KO ",
+					f,
+					"" if problems.is_empty() else " : " + "; ".join(problems)
+				]
+			)
+		)
 		if not problems.is_empty():
 			failed += 1
 	failed += _check_intents()
@@ -53,7 +62,9 @@ func _run(path: String) -> PackedStringArray:
 	if expect.has("turn") and g.result_turn != int(expect["turn"]):
 		problems.append("fin au tour %d, attendu %d" % [g.result_turn, int(expect["turn"])])
 	if expect.has("alert_max") and GameState.ALERTS[g.alert_max] != expect["alert_max"]:
-		problems.append("alerte max %s, attendue %s" % [GameState.ALERTS[g.alert_max], expect["alert_max"]])
+		problems.append(
+			"alerte max %s, attendue %s" % [GameState.ALERTS[g.alert_max], expect["alert_max"]]
+		)
 	var recs := g.records()
 	for k: String in expect.get("records", {}):
 		if recs.get(k) != expect["records"][k]:
@@ -78,5 +89,10 @@ func _check_intents() -> int:
 		var route: Array = announced["routes"]["pat1"]
 		if announced["watched"] != actual or route[-1] != g.guards["pat1"]["pos"]:
 			bad += 1
-	print("%s intentions annoncées = intentions exécutées (M4, 8 phases)" % ["OK " if bad == 0 else "KO "])
+	print(
+		(
+			"%s intentions annoncées = intentions exécutées (M4, 8 phases)"
+			% ["OK " if bad == 0 else "KO "]
+		)
+	)
 	return bad

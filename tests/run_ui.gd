@@ -26,11 +26,15 @@ func _run() -> void:
 	_tap(main, "D10")
 	_check(main.selected == "tec", "toucher un drone le sélectionne")
 	_tap(main, "D7")
-	_check(main.preview == Cells.parse("D7") and main.game.units["tec"]["pos"] == Cells.parse("D10"),
-			"premier toucher : aperçu sans déplacement")
+	_check(
+		main.preview == Cells.parse("D7") and main.game.units["tec"]["pos"] == Cells.parse("D10"),
+		"premier toucher : aperçu sans déplacement"
+	)
 	await _shot(main, "m4_apercu")
 	_tap(main, "D7")
-	_check(main.game.units["tec"]["pos"] == Cells.parse("D7"), "second toucher : déplacement confirmé")
+	_check(
+		main.game.units["tec"]["pos"] == Cells.parse("D7"), "second toucher : déplacement confirmé"
+	)
 
 	main.end_turn()
 	_tap(main, "D7")
@@ -46,10 +50,16 @@ func _run() -> void:
 	_tap(main, "E2")
 	_tap(main, "E2")
 	var acts: Array = main.game.available_actions("tec")
-	_check(acts.size() == 1 and acts[0]["kind"] == "interface", "le bouton Interface est proposé près de la balise")
+	_check(
+		acts.size() == 1 and acts[0]["kind"] == "interface",
+		"le bouton Interface est proposé près de la balise"
+	)
 	_check(main._actions.get_child_count() == 1, "un seul bouton d'action affiché")
 	main.do_action(acts[0])
-	_check(main.game.result == "victory" and main.game.alert_max == 0, "M4 gagnée sans alerte par touchers")
+	_check(
+		main.game.result == "victory" and main.game.alert_max == 0,
+		"M4 gagnée sans alerte par touchers"
+	)
 	_check(main._end_panel.visible, "le bilan de mission s'affiche")
 	await _shot(main, "m4_bilan")
 
@@ -64,7 +74,10 @@ func _run() -> void:
 			main.end_turn()
 	main.do_action(main.game.available_actions("tec")[0])
 	main.end_turn()
-	_check(main.game.countdowns.has("closure") and "4" in main._status.text, "le compte à rebours est affiché")
+	_check(
+		main.game.countdowns.has("closure") and "4" in main._status.text,
+		"le compte à rebours est affiché"
+	)
 	_check(main.game.recolored.has(Cells.parse("A4")), "le territoire a avancé d'une ligne")
 	await _shot(main, "m3_reaction")
 
@@ -79,8 +92,14 @@ func _run() -> void:
 	_tap(main, "D9")
 	_check(not main._undo.disabled, "un déplacement qui ne révèle rien est annulable")
 	main.undo()
-	_check(main.game.units["tec"]["pos"] == Cells.parse("D10") and main.game.units["sc2"]["pos"] == Cells.parse("C7") and not main.game.units["tec"]["moved"],
-			"annuler rétablit la position et le droit de se déplacer, sans toucher au reste")
+	_check(
+		(
+			main.game.units["tec"]["pos"] == Cells.parse("D10")
+			and main.game.units["sc2"]["pos"] == Cells.parse("C7")
+			and not main.game.units["tec"]["moved"]
+		),
+		"annuler rétablit la position et le droit de se déplacer, sans toucher au reste"
+	)
 	_check(main._undo.disabled, "on ne peut pas annuler deux fois")
 
 	# Toucher une case hors de portée ne fait rien ; un trajet illégal n'est jamais joué.
@@ -88,7 +107,9 @@ func _run() -> void:
 	_tap(main, "A7")
 	_tap(main, "H1")
 	_tap(main, "H1")
-	_check(main.game.units["sc1"]["pos"] == Cells.parse("A7"), "une case hors de portée est ignorée")
+	_check(
+		main.game.units["sc1"]["pos"] == Cells.parse("A7"), "une case hors de portée est ignorée"
+	)
 	await _shot(main, "m1_depart")
 
 	await _test_zoom(main)
@@ -106,7 +127,10 @@ func _test_zoom(main: Control) -> void:
 	await process_frame
 	var cs0 := board.cell_size()
 	print("   (vue %s, carte %s)" % [root.get_visible_rect().size, board.size])
-	_check(cs0 >= 90.0 and cs0 <= 100.0, "zoom initial : case de %d unités (≈ 48 dp visés)" % roundi(cs0))
+	_check(
+		cs0 >= 90.0 and cs0 <= 100.0,
+		"zoom initial : case de %d unités (≈ 48 dp visés)" % roundi(cs0)
+	)
 	_check(board.is_visible_cell(Cells.parse("D10")), "la vue initiale montre les drones")
 
 	# Un toucher bref sur une case sélectionne bien le drone qui s'y trouve.
@@ -122,7 +146,10 @@ func _test_zoom(main: Control) -> void:
 		_motion(board, p + Vector2(0, 40.0 * (i + 1)), Vector2(0, 40))
 	_mouse(board, p + Vector2(0, 240), false)
 	_check(board._cam.y < cam0.y and main.selected == "", "glisser fait défiler sans sélectionner")
-	_check(board.is_visible_cell(Cells.parse("E1")), "le défilement permet d'atteindre le nord de la carte")
+	_check(
+		board.is_visible_cell(Cells.parse("E1")),
+		"le défilement permet d'atteindre le nord de la carte"
+	)
 
 	# Le défilement est borné : impossible de perdre la carte.
 	for i in 30:
@@ -138,18 +165,30 @@ func _test_zoom(main: Control) -> void:
 	_touch(board, 1, c + Vector2(150, 0), false)
 	_mouse(board, c - Vector2(50, 0), false)
 	_touch(board, 0, c - Vector2(50, 0), false)
-	_check(board.cell_size() > cs1 * 1.3 and main.selected == "", "pincer zoome (%d → %d) sans sélectionner" % [roundi(cs1), roundi(board.cell_size())])
+	_check(
+		board.cell_size() > cs1 * 1.3 and main.selected == "",
+		"pincer zoome (%d → %d) sans sélectionner" % [roundi(cs1), roundi(board.cell_size())]
+	)
 	_check(board.cell_size() <= BoardView.MAX_CELL, "zoom maximal respecté")
 
 	# Molette : dézoom jusqu'à voir toute la carte, puis plus loin c'est bloqué.
 	for i in 20:
 		board.zoom_at(1.0 / BoardView.WHEEL_STEP, c)
-	_check(is_equal_approx(board.cell_size(), board.min_cell()), "zoom minimal = carte entière (%d)" % roundi(board.cell_size()))
-	_check(board.is_visible_cell(Cells.parse("A1")) and board.is_visible_cell(Cells.parse("J10")), "au zoom minimal, tout est visible")
+	_check(
+		is_equal_approx(board.cell_size(), board.min_cell()),
+		"zoom minimal = carte entière (%d)" % roundi(board.cell_size())
+	)
+	_check(
+		board.is_visible_cell(Cells.parse("A1")) and board.is_visible_cell(Cells.parse("J10")),
+		"au zoom minimal, tout est visible"
+	)
 
 	# Après zoom, le toucher vise toujours la bonne case.
 	board.zoom_at(1.8, board.cell_rect(Cells.parse("F2")).get_center())
-	_check(board.cell_at(board.cell_rect(Cells.parse("F2")).get_center()) == Cells.parse("F2"), "après zoom centré sur F2, F2 reste sous le doigt")
+	_check(
+		board.cell_at(board.cell_rect(Cells.parse("F2")).get_center()) == Cells.parse("F2"),
+		"après zoom centré sur F2, F2 reste sous le doigt"
+	)
 	await _shot(main, "m4_zoom")
 
 
@@ -176,12 +215,21 @@ func _test_probe(main: Control) -> void:
 	_check(main.mode == "probe", "Sonde : mode ciblage")
 	main._board.center_on(Cells.parse("E3"))
 	_tap(main, "E1")
-	_check(main.mode == "probe" and main.preview == Cells.parse("E1"), "premier toucher : aperçu de la zone")
+	_check(
+		main.mode == "probe" and main.preview == Cells.parse("E1"),
+		"premier toucher : aperçu de la zone"
+	)
 	await _shot(main, "m4_sonde_apercu")
 	_tap(main, "E1")
-	_check(main.game.probed.has(Cells.parse("F2")) and main.game.observed_guards.has("sen1"), "second toucher : zone sondée, Sentinelle observée")
+	_check(
+		main.game.probed.has(Cells.parse("F2")) and main.game.observed_guards.has("sen1"),
+		"second toucher : zone sondée, Sentinelle observée"
+	)
 	_check(main.game.units["sc1"]["acted"] and main.mode == "", "la Sonde consomme l'action")
-	_check(not main._message.text.begins_with(tr("UI_PROBE_CONFIRM").left(10)), "le message de confirmation disparaît après le lancement")
+	_check(
+		not main._message.text.begins_with(tr("UI_PROBE_CONFIRM").left(10)),
+		"le message de confirmation disparaît après le lancement"
+	)
 	_check(main.game.intents()["watched"].size() > 0, "les intentions de la Sentinelle s'affichent")
 	await _shot(main, "m4_sonde")
 
@@ -189,7 +237,10 @@ func _test_probe(main: Control) -> void:
 	_tap(main, "C10")
 	main.do_action({"kind": "probe", "target": Vector2i(-1, -1), "feature": ""})
 	_tap(main, "J1")
-	_check(main.mode == "" and not main.game.units["sc2"]["acted"], "toucher hors de portée annule le ciblage")
+	_check(
+		main.mode == "" and not main.game.units["sc2"]["acted"],
+		"toucher hors de portée annule le ciblage"
+	)
 
 	main.end_turn()
 	_check(main.game.probed.is_empty(), "la zone sondée s'efface au tour suivant")

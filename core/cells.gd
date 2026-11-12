@@ -2,6 +2,7 @@ class_name Cells
 extends RefCounted
 ## Conversion entre la notation des données ("D7", "A1:J3") et les coordonnées de grille.
 
+
 static func parse(c: String) -> Vector2i:
 	return Vector2i(c.unicode_at(0) - 65, int(c.substr(1)) - 1)
 

@@ -4,7 +4,9 @@ extends Control
 ## traduit des touchers en commandes et des événements en affichage.
 
 const MISSION_DIR := "res://data/missions/"
-const MISSION_IDS: Array[String] = ["m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur"]
+const MISSION_IDS: Array[String] = [
+	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur"
+]
 const NONE := Vector2i(-1, -1)
 
 var def: MissionDef
@@ -40,6 +42,7 @@ func _ready() -> void:
 
 
 # ---------------------------------------------------------------- interface
+
 
 func _build_ui() -> void:
 	var bg := ColorRect.new()
@@ -90,13 +93,8 @@ func _build_ui() -> void:
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 10)
 	box.add_child(bottom)
-	var danger := _toggle("UI_DANGER", true, func(on: bool) -> void:
-		show_danger = on
-		_refresh())
-	bottom.add_child(danger)
-	bottom.add_child(_toggle("UI_DEBUG", false, func(on: bool) -> void:
-		reveal_all = on
-		_refresh()))
+	bottom.add_child(_toggle("UI_DANGER", true, _set_show_danger))
+	bottom.add_child(_toggle("UI_DEBUG", false, _set_reveal_all))
 	_undo = _button("UI_UNDO", undo)
 	bottom.add_child(_undo)
 	_end_turn = _button("UI_END_TURN", end_turn)
@@ -143,8 +141,12 @@ func _apply_safe_area() -> void:
 	if OS.has_feature("mobile") and win.x > 0.0 and win.y > 0.0:
 		var safe := Rect2(DisplayServer.get_display_safe_area())
 		var k := get_viewport_rect().size / win
-		inset = [safe.position.x * k.x, safe.position.y * k.y,
-				(win.x - safe.end.x) * k.x, (win.y - safe.end.y) * k.y]
+		inset = [
+			safe.position.x * k.x,
+			safe.position.y * k.y,
+			(win.x - safe.end.x) * k.x,
+			(win.y - safe.end.y) * k.y
+		]
 	_box.offset_left = MARGIN + maxf(inset[0], 0.0)
 	_box.offset_top = MARGIN + maxf(inset[1], 0.0)
 	_box.offset_right = -MARGIN - maxf(inset[2], 0.0)
@@ -176,6 +178,17 @@ func _toggle(key: String, on: bool, on_toggled: Callable) -> Button:
 
 # ---------------------------------------------------------------- partie
 
+
+func _set_show_danger(on: bool) -> void:
+	show_danger = on
+	_refresh()
+
+
+func _set_reveal_all(on: bool) -> void:
+	reveal_all = on
+	_refresh()
+
+
 func load_mission(index: int) -> void:
 	_mission_index = clampi(index, 0, MISSION_IDS.size() - 1)
 	def = MissionLoader.load_mission(MISSION_DIR + MISSION_IDS[_mission_index] + ".json")
@@ -183,7 +196,9 @@ func load_mission(index: int) -> void:
 	for id in MISSION_IDS:
 		_picker.add_item(id.substr(0, 2).to_upper())
 	_picker.select(_mission_index)
-	_picker.set_item_text(_mission_index, "M%d — %s" % [_mission_index + 1, tr(def.data["title_key"])])
+	_picker.set_item_text(
+		_mission_index, "M%d — %s" % [_mission_index + 1, tr(def.data["title_key"])]
+	)
 	_log.clear()
 	_countdown_labels.clear()
 	_message.text = ""
@@ -301,8 +316,12 @@ func _play(cmd: Dictionary) -> void:
 	for i in range(events, game.events.size()):
 		if game.events[i]["type"] in ["script_action", "mission_ended"]:
 			scripted = true
-	cmd["undoable"] = cmd["t"] == "move" and not scripted \
-			and game.revealed.size() == revealed and game.observed_guards.size() == observed
+	cmd["undoable"] = (
+		cmd["t"] == "move"
+		and not scripted
+		and game.revealed.size() == revealed
+		and game.observed_guards.size() == observed
+	)
 	_log.append(cmd)
 	_consume_events()
 
@@ -323,6 +342,7 @@ func _apply(cmd: Dictionary) -> bool:
 
 # ---------------------------------------------------------------- affichage
 
+
 func _consume_events() -> void:
 	var lines := PackedStringArray()
 	for i in range(_events_seen, game.events.size()):
@@ -342,7 +362,15 @@ func _consume_events() -> void:
 						lines.append(tr(a["key"]))
 					"dialogue":
 						for ln: Dictionary in a["lines"]:
-							lines.append("%s : %s" % [tr("SPEAKER_" + (ln["speaker"] as String).to_upper()), tr(ln["key"])])
+							lines.append(
+								(
+									"%s : %s"
+									% [
+										tr("SPEAKER_" + (ln["speaker"] as String).to_upper()),
+										tr(ln["key"])
+									]
+								)
+							)
 					"start_countdown":
 						_countdown_labels[a["id"]] = tr(a.get("label_key", ""))
 	_events_seen = game.events.size()
@@ -355,7 +383,9 @@ func _refresh() -> void:
 	if game.alert_enabled:
 		status += "   " + tr("UI_ALERT") % tr("ALERT_" + game.alert_name().to_upper())
 	for cid in game.countdowns:
-		status += "\n" + tr("UI_COUNTDOWN") % [_countdown_labels.get(cid, cid), game.countdowns[cid]]
+		status += (
+			"\n" + tr("UI_COUNTDOWN") % [_countdown_labels.get(cid, cid), game.countdowns[cid]]
+		)
 	_status.text = status
 	_objective.text = tr(def.data["objectives"]["main"]["text_key"])
 	for c in _actions.get_children():
@@ -376,7 +406,10 @@ func _refresh() -> void:
 	_end_turn.disabled = not game.result.is_empty()
 	_end_panel.visible = not game.result.is_empty()
 	if _end_panel.visible:
-		var text := "%s\n%s\n" % [tr("UI_" + game.result.to_upper()), tr("UI_ENDED_TURN") % game.result_turn]
+		var text := (
+			"%s\n%s\n"
+			% [tr("UI_" + game.result.to_upper()), tr("UI_ENDED_TURN") % game.result_turn]
+		)
 		var recs := game.records()
 		for r: Dictionary in def.data["objectives"]["records"]:
 			var ok: bool = recs[r["id"]] and game.result == "victory"

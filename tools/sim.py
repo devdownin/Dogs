@@ -380,7 +380,7 @@ class Game:
             if g["type"] == "patroller" and g["route"]:
                 g["ri"], g["dirn"] = self.next_waypoint(g)
                 target = g["route"][g["ri"]]
-                dist, prev = self.m.paths(g["pos"])
+                _dist, prev = self.m.paths(g["pos"])
                 path, p = [target], target
                 while p != g["pos"]:
                     p = prev[p]; path.append(p)

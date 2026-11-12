@@ -6,9 +6,18 @@ extends RefCounted
 const COST := {".": 1, "R": 2, "X": 2, "M": 1, "r": 1, "G": 1, "C": -1, "B": -1}
 const BLOCKS_LOS := ["R", "X"]
 const DIRS := {
-	"N": Vector2i(0, -1), "NE": Vector2i(1, -1), "E": Vector2i(1, 0), "SE": Vector2i(1, 1),
-	"S": Vector2i(0, 1), "SW": Vector2i(-1, 1), "W": Vector2i(-1, 0), "NW": Vector2i(-1, -1)}
-const NEIGHBORS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	"N": Vector2i(0, -1),
+	"NE": Vector2i(1, -1),
+	"E": Vector2i(1, 0),
+	"SE": Vector2i(1, 1),
+	"S": Vector2i(0, 1),
+	"SW": Vector2i(-1, 1),
+	"W": Vector2i(-1, 0),
+	"NW": Vector2i(-1, -1)
+}
+const NEIGHBORS: Array[Vector2i] = [
+	Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)
+]
 
 var data: Dictionary
 var id: String
@@ -67,7 +76,11 @@ func paths(src: Vector2i, blocked: Dictionary = {}) -> Dictionary:
 	while not open.is_empty():
 		var p := Vector2i(-1, -1)
 		for q: Vector2i in open:
-			if p.x < 0 or dist[q] < dist[p] or (dist[q] == dist[p] and (q.x < p.x or (q.x == p.x and q.y < p.y))):
+			if (
+				p.x < 0
+				or dist[q] < dist[p]
+				or (dist[q] == dist[p] and (q.x < p.x or (q.x == p.x and q.y < p.y)))
+			):
 				p = q
 		open.erase(p)
 		for off in NEIGHBORS:

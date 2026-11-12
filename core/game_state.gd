@@ -11,8 +11,13 @@ extends RefCounted
 ## objectifs et déclencheurs. Combat, modules et Liaison viendront avec les
 ## missions qui les utilisent.
 
-const UNITS := {  # mouvement, intégrité, vision
-	"scout": [5, 2, 4], "technician": [3, 2, 2], "protector": [3, 4, 2], "interceptor": [4, 3, 3]}
+const UNITS := {
+	# mouvement, intégrité, vision
+	"scout": [5, 2, 4],
+	"technician": [3, 2, 2],
+	"protector": [3, 4, 2],
+	"interceptor": [4, 3, 3]
+}
 const PATROLLER_MOVE := 4
 const PATROLLER_SIGHT := 2
 const ALERTS: Array[String] = ["watch", "warning", "interception", "lockdown"]
@@ -57,16 +62,27 @@ func _init(mission: MissionDef) -> void:
 	var d := def.data
 	for u: Dictionary in d["deployment"]["units"]:
 		units[u["id"]] = {
-			"type": u["type"], "pos": Cells.parse(u["cell"]), "hp": UNITS[u["type"]][1],
-			"status": "active", "moved": false, "acted": false}
+			"type": u["type"],
+			"pos": Cells.parse(u["cell"]),
+			"hp": UNITS[u["type"]][1],
+			"status": "active",
+			"moved": false,
+			"acted": false
+		}
 	for g: Dictionary in d["guardians"]:
 		var route: Array[Vector2i] = []
 		for c: String in g.get("route", []):
 			route.append(Cells.parse(c))
 		guards[g["id"]] = {
-			"type": g["type"], "pos": Cells.parse(g["cell"]), "cycle": g.get("facing_cycle", []),
-			"facing": g.get("facing", "S"), "route": route, "mode": g.get("route_mode", "loop"),
-			"ri": 0, "dirn": 1}
+			"type": g["type"],
+			"pos": Cells.parse(g["cell"]),
+			"cycle": g.get("facing_cycle", []),
+			"facing": g.get("facing", "S"),
+			"route": route,
+			"mode": g.get("route_mode", "loop"),
+			"ri": 0,
+			"dirn": 1
+		}
 	for p in Cells.expand(d["map"].get("territory", {}).get("recolored", [])):
 		recolored[p] = true
 	alert_enabled = d["alert"].get("enabled", true)
@@ -76,6 +92,7 @@ func _init(mission: MissionDef) -> void:
 
 
 # ---------------------------------------------------------------- lecture
+
 
 func active_units() -> Array[String]:
 	var out: Array[String] = []
@@ -186,6 +203,7 @@ func records() -> Dictionary[String, bool]:
 
 # ---------------------------------------------------------------- commandes
 
+
 func start_turn() -> void:
 	turn += 1
 	probed.clear()
@@ -251,7 +269,9 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 				if def.features[id]["pos"] == target:
 					fid = id
 			if fid.is_empty() or Cells.manhattan(target, u["pos"]) != 1:
-				return _refuse("%s : pas de point d'intérêt adjacent en %s" % [uid, Cells.name_of(target)])
+				return _refuse(
+					"%s : pas de point d'intérêt adjacent en %s" % [uid, Cells.name_of(target)]
+				)
 			if def.features[fid]["kind"] in INTERFACE_KINDS and u["type"] != "technician":
 				return _refuse("%s : ce point exige le Technicien" % uid)
 			interacted[fid] = true
@@ -282,6 +302,7 @@ func end_player_turn() -> void:
 
 
 # ---------------------------------------------------------------- phase des Gardiens
+
 
 func _guardian_phase() -> void:
 	var watched: Dictionary[Vector2i, bool] = {}
@@ -314,7 +335,9 @@ func _guardian_phase() -> void:
 		for gid in guards:
 			if Cells.manhattan(p, guards[gid]["pos"]) == 1:
 				near_guard = true
-		var hidden: bool = u["type"] == "scout" and def.terrain(p) in MissionDef.BLOCKS_LOS and not near_guard
+		var hidden: bool = (
+			u["type"] == "scout" and def.terrain(p) in MissionDef.BLOCKS_LOS and not near_guard
+		)
 		if (watched.has(p) and not hidden) or (recolored.has(p) and not guards.is_empty()):
 			detected[p] = true
 	if alert_enabled and not guards.is_empty():
@@ -382,6 +405,7 @@ func _patrol_path(g: Dictionary, target: Vector2i) -> Array[Vector2i]:
 
 
 # ---------------------------------------------------------------- conditions, déclencheurs, fin
+
 
 func _check() -> void:
 	for tr: Dictionary in def.data["triggers"]:
@@ -542,6 +566,7 @@ func _cond(c: Dictionary, path: String) -> bool:
 
 
 # ---------------------------------------------------------------- utilitaires
+
 
 func _can_command(uid: String) -> bool:
 	last_error = ""

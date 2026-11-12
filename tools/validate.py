@@ -11,7 +11,16 @@ from pathlib import Path
 import jsonschema
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from sim import ALERTS, COST, Game, Mission, RuleError, expand, manhattan, parse_cell, replay  # noqa: E402
+from sim import (
+    ALERTS,
+    COST,
+    Mission,
+    RuleError,
+    expand,
+    manhattan,
+    parse_cell,
+    replay,
+)
 
 ACTION_PARAMS = {
     "show_tip": ["key"], "dialogue": ["lines"], "set_flag": ["name"], "highlight": ["feature"],

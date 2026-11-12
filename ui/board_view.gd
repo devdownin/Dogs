@@ -6,8 +6,15 @@ extends Control
 signal cell_tapped(cell: Vector2i)
 
 const TERRAIN := {
-	".": Color("d99254"), "R": Color("545c68"), "M": Color("be7846"), "r": Color("e2b078"),
-	"C": Color("8e342c"), "G": Color("c49678"), "B": Color("96c4d6"), "X": Color("969696")}
+	".": Color("d99254"),
+	"R": Color("545c68"),
+	"M": Color("be7846"),
+	"r": Color("e2b078"),
+	"C": Color("8e342c"),
+	"G": Color("c49678"),
+	"B": Color("96c4d6"),
+	"X": Color("969696")
+}
 const PACK := Color("2fe0c8")
 const GUARD := Color("a85af0")
 const IVORY := Color("eadfc8")
@@ -43,6 +50,7 @@ func _ready() -> void:
 
 
 # ---------------------------------------------------------------- vue
+
 
 ## Recadre au zoom initial, centré sur `focus` (en cases). Différé si la taille est encore nulle.
 func reset_view(focus: Vector2) -> void:
@@ -140,13 +148,17 @@ func _clamp_cam() -> void:
 # Deux doigts : pincer = zoom, déplacer = défilement. Souris : molette = zoom.
 # Le toucher est émis au relâchement, et jamais après un glissement ou un pincement.
 
+
 func _gui_input(event: InputEvent) -> void:
 	if _cs <= 0.0:
 		return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]:
-			zoom_at(WHEEL_STEP if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / WHEEL_STEP, mb.position)
+			zoom_at(
+				WHEEL_STEP if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / WHEEL_STEP,
+				mb.position
+			)
 			accept_event()
 		elif mb.button_index == MOUSE_BUTTON_LEFT:
 			if mb.pressed:
@@ -263,7 +275,12 @@ func _draw() -> void:
 		var c := cell_rect(f["pos"]).get_center()
 		var col := Color(IVORY, 0.35) if game.interacted.has(fid) else IVORY
 		var d := s * 0.2
-		draw_colored_polygon(PackedVector2Array([c + Vector2(0, -d), c + Vector2(d, 0), c + Vector2(0, d), c + Vector2(-d, 0)]), col)
+		draw_colored_polygon(
+			PackedVector2Array(
+				[c + Vector2(0, -d), c + Vector2(d, 0), c + Vector2(0, d), c + Vector2(-d, 0)]
+			),
+			col
+		)
 
 	for gid: String in intents["routes"]:
 		var route: Array = intents["routes"][gid]
@@ -306,7 +323,11 @@ func _draw() -> void:
 			continue
 		var c := cell_rect(u["pos"]).get_center()
 		var spent: bool = u["moved"] and u["acted"]
-		var col := Color(0.4, 0.4, 0.4) if u["status"] == "disabled" else (PACK.darkened(0.3) if spent else PACK)
+		var col := (
+			Color(0.4, 0.4, 0.4)
+			if u["status"] == "disabled"
+			else (PACK.darkened(0.3) if spent else PACK)
+		)
 		draw_circle(c, s * 0.34, col)
 		draw_arc(c, s * 0.34, 0, TAU, 32, Color.BLACK, 2.0)
 		if uid == main.selected:
@@ -323,7 +344,13 @@ func _area_rect(cells: Array[Vector2i]) -> Rect2:
 
 func _dashed_rect(r: Rect2, col: Color, s: float) -> void:
 	var dash := s * 0.12
-	var pts := [r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), r.position]
+	var pts := [
+		r.position,
+		Vector2(r.end.x, r.position.y),
+		r.end,
+		Vector2(r.position.x, r.end.y),
+		r.position
+	]
 	for i in 4:
 		draw_dashed_line(pts[i], pts[i + 1], col, 3.0, dash)
 
@@ -342,4 +369,12 @@ func _hatch(r: Rect2, col: Color) -> void:
 func _letter(font: Font, center: Vector2, text: String, s: float) -> void:
 	var fs := int(s * 0.4)
 	var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-	draw_string(font, center + Vector2(-w / 2.0, fs * 0.35), text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color.BLACK)
+	draw_string(
+		font,
+		center + Vector2(-w / 2.0, fs * 0.35),
+		text,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		fs,
+		Color.BLACK
+	)
