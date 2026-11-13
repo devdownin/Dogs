@@ -16,7 +16,7 @@ Ces points complètent le GDD (§3.5) ; ils y sont reportés.
 5. **Interagir et Interface** s'exercent sur une case adjacente.
 6. **Extraction.** Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone. Elle consomme l'action du tour.
 
-> **Données :** ces quatre missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
+> **Données :** ces cinq missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
 
 ### Légende commune
 
@@ -59,7 +59,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 |---|---|
 | Tour 1 | Bulle : toucher un drone, toucher une case, confirmer |
 | Première entrée en rocaille | Bulle : coût 2, la rocaille masque la vue |
-| Éclaireur en H1 | La vision depuis la mésa dévoile un large secteur ; des fragments manufacturés brillent en D2. Réplique de la xénologue. |
+| Éclaireur en H1 | La vision depuis la mésa dévoile un large secteur ; des fragments manufacturés brillent en D2. Réplique d'ATHENA. |
 | Retour des deux drones | Fin. Dernier plan : une silhouette immobile hors carte, au nord. |
 
 - **Échec :** impossible (aucune menace). Le repli avant H1 termine la mission sans récompense.
@@ -220,7 +220,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 |---|---|
 | Premier Gardien observé | Bulle : les hachures violettes montrent ce qu'il surveillera |
 | Tour 2 | Bulle : *Sonde* disponible |
-| Premier cran d'alerte franchi | Réplique : « Il nous a vus. Pourtant il n'attaque pas. » |
+| Premier cran d'alerte franchi | Réplique d'ATHENA : « Vous êtes détectés. Aucune attaque. » |
 | *Interface* sur la balise | La Sentinelle se tourne vers la balise, pas vers le drone. Fin. |
 
 - **Échec :** Technicien hors service. Aucun combat requis ni possible à ce stade.
