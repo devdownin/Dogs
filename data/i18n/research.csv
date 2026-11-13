@@ -28,3 +28,10 @@ HYP_XEN_2,Mémoire des jardins,Memory of the gardens
 HYP_XEN_3A,Les Gardiens protègent,The Guardians protect
 HYP_XEN_3B,Les Gardiens ont causé la chute,The Guardians caused the fall
 HYP_XEN_4,La langue de l'Arbitre,The Arbiter's language
+HYP_CREW_0,Diagnostic des caissons,Stasis pod diagnostics
+HYP_CREW_MEDIC,Réveil : médecin,Wake: physician
+HYP_CREW_OPERATOR,Réveil : opératrice de la Meute,Wake: Pack operator
+HYP_CREW_SYSTEMS,Réveil : responsable des systèmes,Wake: systems officer
+HYP_CREW_XENOLOGIST,Réveil : xénologue,Wake: xenologist
+HYP_CREW_COMMANDER,Réveil : commandante,Wake: commander
+HYP_CREW_PILOT,Réveil : pilote,Wake: pilot

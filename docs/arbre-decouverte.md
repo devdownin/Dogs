@@ -51,7 +51,7 @@ L'arbre se dessine donc au fil de l'exploration : il n'existe pas d'écran rempl
 
 ## 5. Les branches
 
-Quatre branches. Les trois premières renforcent la Meute ; la quatrième sert la compréhension du monde et la jauge **Savoir**.
+Cinq branches. Les trois premières renforcent la Meute ; la quatrième sert la compréhension du monde et la jauge **Savoir** ; la cinquième réveille l'équipage (§6 bis).
 
 | Branche | Thème | Découvertes typiques |
 |---|---|---|
@@ -84,6 +84,26 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer.
 
 XEN-3a et XEN-3b sont **exclusives**. Le quatrième dénouement (Savoir complet, GDD §7.6) exige XEN-1, XEN-2, l'une des XEN-3 et XEN-4.
 
+## 6 bis. Équipage : réveiller les dormeurs (validé le 13 novembre 2026)
+
+Les caissons ont souffert du transit : impossible de réveiller qui que ce soit sans risque avant qu'ATHENA ait compris la panne. Le réveil devient donc une **cinquième branche**, étudiée comme les autres.
+
+**Coût permanent :** chaque membre réveillé consomme du support vital, soit **−1 Énergie de déploiement par mission**. Réveiller tôt donne des voix et des avantages, mais déploie moins de drones. Seul le responsable des systèmes compense ce coût.
+
+| Id | Réveil | Requiert | Cycles | Données | Avantage |
+|---|---|---|---:|---:|---|
+| CRW-0 | Diagnostic des caissons | Étape « Recherche » du vaisseau (fin d'Acte I) | 2 | 20 | Rend les réveils possibles |
+| CRW-1 | Médecin | CRW-0 | 2 | 15 | Les réveils suivants prennent 1 cycle de moins |
+| CRW-2 | Opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 20 | Un vétéran choisit entre trois traits au lieu de deux |
+| CRW-3 | Responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 20 | +1 Énergie par mission (annule son propre coût) |
+| CRW-4 | Xénologue | CRW-1 ; base des Jardins géométriques | 2 | 20 | Les hypothèses de Xénologie prennent 1 cycle de moins |
+| CRW-5 | Commandante | CRW-2, CRW-3 et CRW-4 | 3 | 30 | Ouvre des options de décision dans IV-2 et IV-4 |
+| CRW-6 | Pilote | CRW-1 ; étape « Navigation » | 2 | 30 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
+
+Les rôles reprennent les personnages du récit (commandante, responsable des systèmes, xénologue, opératrice de la Meute) ; médecin et pilote complètent les six. La « voix du bord » du récit est ATHENA.
+
+**Voix :** chaque dormeur réveillé prend la parole dans les comptes rendus de son domaine ; ATHENA reste la voix des faits et des probabilités. Avant le réveil, on n'entend ces personnages que dans leurs journaux d'avant le transit, ce qui permet de les présenter au joueur avant qu'il choisisse qui réveiller.
+
 ## 7. Effets sur le reste du jeu
 
 - **Économie :** les Données servent désormais d'abord à la recherche ; la contrainte réelle devient le **temps** d'ATHENA (une seule étude à la fois jusqu'à la fin de l'Acte I).
@@ -94,5 +114,4 @@ XEN-3a et XEN-3b sont **exclusives**. Le quatrième dénouement (Savoir complet,
 
 ## 8. Questions ouvertes
 
-1. **Réveil de l'équipage :** impossible en début de partie. Proposition : le réveil devient un objectif de campagne (une hypothèse d'Ingénierie par dormeur, ou une étape du vaisseau), chaque membre réveillé apportant une voix et un avantage. À valider.
-2. **Exclusivité XEN-3 :** choix définitif, ou ATHENA peut-elle revenir sur sa conclusion en fin d'Acte IV contre un coût élevé ?
+1. **Exclusivité XEN-3 :** choix définitif, ou ATHENA peut-elle revenir sur sa conclusion en fin d'Acte IV contre un coût élevé ?

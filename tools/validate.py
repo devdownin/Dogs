@@ -160,7 +160,7 @@ def static_checks(d, keys):
     return errs
 
 
-BRANCHES = {"observation", "link", "engineering", "xenology"}
+BRANCHES = {"observation", "link", "engineering", "xenology", "crew"}
 NATURES = {"knowledge_base", "sample", "observation", "chronicle"}
 STAGES = {"survival", "observation", "link", "research", "projection", "navigation"}
 
@@ -188,8 +188,8 @@ def research_checks(root):
             errs.append(f"{w} : branche {h['branch']} inconnue")
         if h["title_key"] not in keys:
             errs.append(f"{w} : clé {h['title_key']} non traduite")
-        if not (req.get("discoveries") or req.get("ship_stage")):
-            errs.append(f"{w} : aucune découverte ni étape requise (elle ne se révélerait jamais)")
+        if not any(req.get(k) for k in ("discoveries", "ship_stage", "hypotheses", "any_hypothesis")):
+            errs.append(f"{w} : rien ne la révèle (ni découverte, ni étape, ni hypothèse parente)")
         if req.get("ship_stage", "survival") not in STAGES:
             errs.append(f"{w} : étape {req['ship_stage']} inconnue")
         for d in req.get("discoveries", []):

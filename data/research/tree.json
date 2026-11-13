@@ -272,6 +272,157 @@
         "type": "unlock_rule",
         "rule": "arbiter_negotiation"
       }
+    },
+    {
+      "id": "crew_0",
+      "branch": "crew",
+      "title_key": "HYP_CREW_0",
+      "requires": {
+        "discoveries": [],
+        "ship_stage": "research"
+      },
+      "cycles": 2,
+      "data_cost": 20,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "stasis_wake"
+      }
+    },
+    {
+      "id": "crew_medic",
+      "branch": "crew",
+      "title_key": "HYP_CREW_MEDIC",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_0"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 15,
+      "effect": {
+        "type": "crew_wake",
+        "member": "medic",
+        "bonus": {
+          "wake_cycles": -1
+        }
+      }
+    },
+    {
+      "id": "crew_operator",
+      "branch": "crew",
+      "title_key": "HYP_CREW_OPERATOR",
+      "requires": {
+        "discoveries": [
+          "debris_guardian"
+        ],
+        "hypotheses": [
+          "crew_medic"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 20,
+      "effect": {
+        "type": "crew_wake",
+        "member": "pack_operator",
+        "bonus": {
+          "veteran_trait_choices": 3
+        }
+      }
+    },
+    {
+      "id": "crew_systems",
+      "branch": "crew",
+      "title_key": "HYP_CREW_SYSTEMS",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_medic"
+        ],
+        "ship_stage": "link"
+      },
+      "cycles": 2,
+      "data_cost": 20,
+      "effect": {
+        "type": "crew_wake",
+        "member": "systems",
+        "bonus": {
+          "energy": 1
+        }
+      }
+    },
+    {
+      "id": "crew_xenologist",
+      "branch": "crew",
+      "title_key": "HYP_CREW_XENOLOGIST",
+      "requires": {
+        "discoveries": [
+          "kb_geometric_gardens"
+        ],
+        "hypotheses": [
+          "crew_medic"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 20,
+      "effect": {
+        "type": "crew_wake",
+        "member": "xenologist",
+        "bonus": {
+          "xenology_cycles": -1
+        }
+      }
+    },
+    {
+      "id": "crew_commander",
+      "branch": "crew",
+      "title_key": "HYP_CREW_COMMANDER",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_operator",
+          "crew_systems",
+          "crew_xenologist"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 30,
+      "effect": {
+        "type": "crew_wake",
+        "member": "commander",
+        "bonus": {
+          "unlock_choices": [
+            "iv_2",
+            "iv_4"
+          ]
+        }
+      }
+    },
+    {
+      "id": "crew_pilot",
+      "branch": "crew",
+      "title_key": "HYP_CREW_PILOT",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_medic"
+        ],
+        "ship_stage": "navigation"
+      },
+      "cycles": 2,
+      "data_cost": 30,
+      "effect": {
+        "type": "crew_wake",
+        "member": "pilot",
+        "bonus": {
+          "transit_window_turns": 2
+        }
+      }
     }
-  ]
+  ],
+  "crew": {
+    "size": 6,
+    "awake_at_start": 0,
+    "energy_cost_per_awake": 1
+  }
 }
