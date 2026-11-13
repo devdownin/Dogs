@@ -55,7 +55,9 @@ static func save_campaign(c: Campaign) -> bool:
 
 
 ## Les commandes portent des cases (Vector2i) : on les écrit sous forme « E5 ».
-static func save_mission(mission_id: String, log: Array[Dictionary]) -> bool:
+static func save_mission(
+	mission_id: String, log: Array[Dictionary], rules: Array[String] = []
+) -> bool:
 	var cmds: Array = []
 	for cmd in log:
 		var c := {}
@@ -66,10 +68,10 @@ static func save_mission(mission_id: String, log: Array[Dictionary]) -> bool:
 			else:
 				c[k] = v
 		cmds.append(c)
-	return write(MISSION, {"format": FORMAT, "mission": mission_id, "log": cmds})
+	return write(MISSION, {"format": FORMAT, "mission": mission_id, "log": cmds, "rules": rules})
 
 
-## {mission, log} avec les cases reconverties, ou {} si rien d'exploitable.
+## {mission, log, rules} avec les cases reconverties, ou {} si rien d'exploitable.
 static func load_mission() -> Dictionary:
 	var d := read(MISSION)
 	if int(d.get("format", 0)) != FORMAT or not d.has("mission"):
@@ -81,4 +83,4 @@ static func load_mission() -> Dictionary:
 			if cmd.has(k):
 				cmd[k] = Vector2i(-1, -1) if cmd[k] == "-" else Cells.parse(cmd[k])
 		log.append(cmd)
-	return {"mission": d["mission"], "log": log}
+	return {"mission": d["mission"], "log": log, "rules": d.get("rules", [])}

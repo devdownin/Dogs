@@ -8,6 +8,12 @@
       "title_key": "DISC_OBS_SENTINEL_CYCLE"
     },
     {
+      "id": "obs_signal_hunt",
+      "nature": "observation",
+      "source_mission": "m5",
+      "title_key": "DISC_OBS_SIGNAL_HUNT"
+    },
+    {
       "id": "sample_recolored_soil",
       "nature": "sample",
       "source_mission": "m3",

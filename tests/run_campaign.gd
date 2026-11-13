@@ -11,6 +11,7 @@ var _failed := 0
 func _init() -> void:
 	_test_tree()
 	_test_exclusive()
+	_test_athena()
 	_test_store()
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
@@ -73,6 +74,24 @@ func _test_exclusive() -> void:
 	_check(c.cycles_needed("xen_3r") == 2, "la xénologue réveillée raccourcit la Xénologie")
 
 
+func _test_athena() -> void:
+	var c := Campaign.new()
+	_check(c.athena_doubt() == 0 and c.unlocked_rules().is_empty(), "ATHENA sûre d'elle au départ")
+	var s5 := _apply(c, "m5_reference")
+	_check(c.discoveries.has("obs_signal_hunt"), "M5 : ils traquent ce qui parle à ATHENA")
+	_check(int(s5["doubt"]) == 1, "le bilan de M5 rapporte le premier doute")
+	_check(c.state("obs_5") == "available", "« Silence radio » devient étudiable")
+	_check(c.start_study("obs_5"), "étudier « Silence radio »")
+	var s4 := _apply(c, "m4_reference")
+	_check(c.unlocked_rules() == ["radio_silence"], "silence radio débloqué pour les missions")
+	_check(c.athena_doubt() == 2 and int(s4["doubt"]) == 2, "second doute : ATHENA se sait visée")
+	_check(c.athena_recommends_waking(), "ATHENA recommande de réveiller l'équipage")
+	c.confirmed["crew_commander"] = true
+	_check(
+		not c.athena_recommends_waking(), "plus de recommandation une fois la commandante éveillée"
+	)
+
+
 func _test_store() -> void:
 	var path := "user://test_store.json"
 	SaveStore.erase(path)
@@ -91,8 +110,12 @@ func _test_store() -> void:
 		{"t": "act", "unit": "pro", "kind": "brace", "target": Vector2i(-1, -1)},
 		{"t": "end"}
 	]
-	SaveStore.save_mission("m5_prix_signal", log)
+	SaveStore.save_mission("m5_prix_signal", log, ["radio_silence"] as Array[String])
 	var back := SaveStore.load_mission()
+	_check(
+		back["rules"] == ["radio_silence"],
+		"les règles débloquées sont sauvegardées avec la mission"
+	)
 	_check(back["mission"] == "m5_prix_signal", "mission en cours retrouvée")
 	_check(
 		JSON.stringify(back["log"]) == JSON.stringify(log),

@@ -142,12 +142,13 @@ class Mission:
 
 
 class Game:
-    def __init__(self, data):
+    def __init__(self, data, rules=()):
         self.m = Mission(data)
         self.d = data
+        self.rules = set(rules)  # règles débloquées par la campagne (ex. radio_silence)
         self.units = {u["id"]: {"type": u["type"], "pos": parse_cell(u["cell"]),
                                 "hp": UNITS[u["type"]][1], "status": "active",
-                                "braced": False, "rampart": False}
+                                "braced": False, "rampart": False, "silent": False}
                       for u in data["deployment"]["units"]}
         self.guards = {}
         for g in data["guardians"]:
@@ -185,7 +186,7 @@ class Game:
     def refresh_vision(self):
         seen = set(self.probed)
         for u in self.active().values():
-            seen |= self.m.vision(u["pos"], UNITS[u["type"]][2])
+            seen |= {u["pos"]} if u["silent"] else self.m.vision(u["pos"], UNITS[u["type"]][2])
         self.current_vision = seen
         self.revealed |= seen
         for gid, g in self.guards.items():
@@ -332,7 +333,8 @@ class Game:
             self.terrains_entered.add(self.m.terrain(p))
             if p in self.recolored:
                 self.territory_entered = True
-            self.revealed |= self.m.vision(p, UNITS[u["type"]][2])
+            if not u["silent"]:
+                self.revealed |= self.m.vision(p, UNITS[u["type"]][2])
         u["pos"], u["moved"] = d, True
         self.refresh_vision()
 
@@ -340,7 +342,17 @@ class Game:
         u = self.units[uid]
         if u["status"] != "active" or u["acted"]:
             raise RuleError(f"{uid} ne peut pas agir")
-        if kind == "extract":
+        if u["silent"] and kind != "reconnect":
+            raise RuleError(f"{uid} est en silence radio")
+        if kind == "silence":
+            if "radio_silence" not in self.rules:
+                raise RuleError("silence radio non débloqué")
+            u["silent"] = True
+        elif kind == "reconnect":
+            if not u["silent"]:
+                raise RuleError(f"{uid} est déjà relié")
+            u["silent"] = False
+        elif kind == "extract":
             if not self.extraction_open or u["pos"] not in self.m.extraction:
                 raise RuleError(f"{uid} : rappel impossible ici")
             u["status"] = "extracted"
@@ -448,7 +460,8 @@ class Game:
         return u["type"] == "scout" and self.m.terrain(u["pos"]) in BLOCKS_LOS and not near
 
     def plan(self):
-        """Phase des Gardiens simulée sans modifier l'état : ce que les intentions affichent."""
+        """Phase des Gardiens simulée sans modifier l'état : ce que les intentions affichent.
+        Un drone en silence radio barre toujours le passage, mais n'est ni vu ni visé."""
         unit_at = {u["pos"]: k for k, u in self.active().items()}
         protectors = [u["pos"] for u in self.active().values() if u["type"] == "protector"]
         gpos = {gid: g["pos"] for gid, g in self.guards.items()}
@@ -469,7 +482,8 @@ class Game:
                             p = prev[p]; path.append(p)
                         for p in list(reversed(path))[1:GUARD_MOVE["patroller"] + 1]:
                             if p in unit_at:
-                                blockers.add(p)
+                                if not self.units[unit_at[p]]["silent"]:
+                                    blockers.add(p)
                                 break
                             pl["path"].append(p)
                             if any(manhattan(p, q) == 1 for q in protectors):
@@ -481,7 +495,7 @@ class Game:
                 pl["facing"] = g["cycle"][(self.turn - 1) % len(g["cycle"])] if g["cycle"] else g["facing"]
                 watched |= self.m.cone(g["pos"], pl["facing"])
             plans[gid] = pl
-        hp = {k: u["hp"] for k, u in self.active().items()}
+        hp = {k: u["hp"] for k, u in self.active().items() if not u["silent"]}
         attacks = []
         cells = set(gpos.values())
         for gid, g in self.guards.items():
@@ -501,7 +515,7 @@ class Game:
                 attacks.append((gid, k, dmg))
         detected = set(blockers)
         for p, uid in unit_at.items():
-            if hp[uid] <= 0:
+            if uid not in hp or hp[uid] <= 0:
                 continue
             if (p in watched and not self.hidden(uid, cells)) or (p in self.recolored and self.guards):
                 detected.add(p)
@@ -570,7 +584,7 @@ class Game:
 
 
 def replay(data, rep):
-    g = Game(data)
+    g = Game(data, rep.get("rules", ()))
     for cmds in rep["turns"]:
         g.start_turn()
         for c in cmds:

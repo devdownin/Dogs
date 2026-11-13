@@ -211,6 +211,12 @@
       "gauge": "concord",
       "delta": 1,
       "if_record": "r_spare"
+    },
+    {
+      "type": "discoveries",
+      "ids": [
+        "obs_signal_hunt"
+      ]
     }
   ]
 }

@@ -29,6 +29,7 @@ var _countdown_labels: Dictionary[String, String] = {}
 var _applied := false  # issue de mission déjà reportée sur la campagne
 var _summary: Dictionary = {}
 var _research: ResearchView
+var _rules: Array[String] = []  # règles débloquées, figées pour la durée de la mission
 
 var _box: VBoxContainer
 var _board: BoardView
@@ -64,6 +65,9 @@ func _resume() -> bool:
 	if index < 0:
 		return false
 	load_mission(index)
+	_rules.assign(saved.get("rules", []))
+	_new_game()
+	_consume_events()
 	var log: Array[Dictionary] = saved["log"]
 	for cmd in log:
 		if not _apply(cmd):
@@ -79,7 +83,7 @@ func _resume() -> bool:
 
 func _save_mission() -> void:
 	if game != null and game.result.is_empty() and not _log.is_empty():
-		SaveStore.save_mission(MISSION_IDS[_mission_index], _log)
+		SaveStore.save_mission(MISSION_IDS[_mission_index], _log, _rules)
 
 
 # ---------------------------------------------------------------- interface
@@ -259,6 +263,7 @@ func load_mission(index: int) -> void:
 	)
 	_log.clear()
 	_countdown_labels.clear()
+	_rules = campaign.unlocked_rules()
 	_applied = false
 	_summary = {}
 	_message.text = ""
@@ -272,7 +277,7 @@ func load_mission(index: int) -> void:
 
 
 func _new_game() -> void:
-	game = GameState.new(def)
+	game = GameState.new(def, _rules)
 	_events_seen = 0
 	selected = ""
 	preview = NONE
@@ -415,6 +420,8 @@ func _summary_text() -> String:
 	if _summary.is_empty():
 		return ""
 	var out := "\n"
+	if int(_summary.get("doubt", -1)) >= 0:
+		out += "\n" + tr("ATHENA_NOTE_%d" % _summary["doubt"]) + "\n"
 	if _summary["data"] > 0 or _summary["materials"] > 0:
 		out += "\n" + tr("UI_GAINS") % [_summary["data"], _summary["materials"]]
 	if not (_summary["stage"] as String).is_empty():
@@ -446,6 +453,10 @@ func _consume_events() -> void:
 				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
 			"unit_disabled":
 				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
+			"unit_silenced":
+				lines.append(tr("UI_SILENCED") % e["unit"])
+			"unit_reconnected":
+				lines.append(tr("UI_RECONNECTED") % e["unit"])
 			"guardian_neutralized":
 				lines.append(tr("UI_GUARD_DOWN") % e["guardian"])
 			"alert_changed":

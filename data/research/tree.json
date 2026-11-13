@@ -73,6 +73,22 @@
       }
     },
     {
+      "id": "obs_5",
+      "branch": "observation",
+      "title_key": "HYP_OBS_5",
+      "requires": {
+        "discoveries": [
+          "obs_signal_hunt"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 4,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "radio_silence"
+      }
+    },
+    {
       "id": "lia_1",
       "branch": "link",
       "title_key": "HYP_LIA_1",

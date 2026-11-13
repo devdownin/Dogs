@@ -31,6 +31,7 @@ const SENTINEL_RANGE := 3
 const NO_CELL := Vector2i(-1, -1)
 
 var def: MissionDef
+var rules: Dictionary[String, bool] = {}  # règles débloquées par la campagne (radio_silence…)
 var units: Dictionary[String, Dictionary] = {}
 var guards: Dictionary[String, Dictionary] = {}
 var recolored: Dictionary[Vector2i, bool] = {}
@@ -63,8 +64,10 @@ var _fired: Dictionary[String, bool] = {}
 var _seq: Dictionary[String, int] = {}
 
 
-func _init(mission: MissionDef) -> void:
+func _init(mission: MissionDef, unlocked: Array = []) -> void:
 	def = mission
+	for r: String in unlocked:
+		rules[r] = true
 	var d := def.data
 	for u: Dictionary in d["deployment"]["units"]:
 		units[u["id"]] = {
@@ -75,7 +78,8 @@ func _init(mission: MissionDef) -> void:
 			"moved": false,
 			"acted": false,
 			"braced": false,
-			"rampart": false
+			"rampart": false,
+			"silent": false
 		}
 	for g: Dictionary in d["guardians"]:
 		var route: Array[Vector2i] = []
@@ -144,6 +148,9 @@ func available_actions(uid: String) -> Array[Dictionary]:
 	var u := units[uid]
 	if u["status"] != "active" or u["acted"] or not result.is_empty():
 		return out
+	if u["silent"]:
+		out.append({"kind": "reconnect", "target": NO_CELL, "feature": ""})
+		return out
 	for fid in def.features:
 		var f := def.features[fid]
 		if interacted.has(fid) or Cells.manhattan(f["pos"], u["pos"]) != 1:
@@ -168,6 +175,8 @@ func available_actions(uid: String) -> Array[Dictionary]:
 	if u["type"] == "protector":
 		out.append({"kind": "rampart", "target": NO_CELL, "feature": ""})
 	out.append({"kind": "brace", "target": NO_CELL, "feature": ""})
+	if rules.has("radio_silence"):
+		out.append({"kind": "silence", "target": NO_CELL, "feature": ""})
 	if extraction_open and def.extraction.has(u["pos"]):
 		out.append({"kind": "extract", "target": NO_CELL, "feature": ""})
 	return out
@@ -220,7 +229,7 @@ func intents() -> Dictionary:
 ## Un drone peut-il frapper la case `t` (portée, ligne de vue) ?
 func can_attack(uid: String, t: Vector2i) -> bool:
 	var u := units[uid]
-	if not ATTACK.has(u["type"]) or u["status"] != "active" or u["acted"]:
+	if not ATTACK.has(u["type"]) or u["status"] != "active" or u["acted"] or u["silent"]:
 		return false
 	var d := Cells.manhattan(u["pos"], t)
 	return (
@@ -272,7 +281,8 @@ func move(uid: String, dest: Vector2i) -> bool:
 		terrains_entered[def.terrain(p)] = true
 		if recolored.has(p):
 			territory_entered = true
-		revealed.merge(def.vision(p, UNITS[u["type"]][2]))
+		if not u["silent"]:
+			revealed.merge(def.vision(p, UNITS[u["type"]][2]))
 	u["pos"] = dest
 	u["moved"] = true
 	_emit({"type": "unit_moved", "unit": uid, "path": path})
@@ -281,7 +291,8 @@ func move(uid: String, dest: Vector2i) -> bool:
 	return true
 
 
-## kind : "interact", "interface", "probe", "extract", "attack", "brace", "rampart", "repair".
+## kind : "interact", "interface", "probe", "extract", "attack", "brace", "rampart", "repair",
+## "silence", "reconnect".
 ## `target` : case du point d'intérêt, centre de la Sonde, Gardien visé ou allié à réparer.
 func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 	if not _can_command(uid):
@@ -289,7 +300,19 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 	var u := units[uid]
 	if u["acted"]:
 		return _refuse("%s a déjà agi" % uid)
+	if u["silent"] and kind != "reconnect":
+		return _refuse("%s est en silence radio" % uid)
 	match kind:
+		"silence":
+			if not rules.has("radio_silence"):
+				return _refuse("silence radio non débloqué")
+			u["silent"] = true
+			_emit({"type": "unit_silenced", "unit": uid})
+		"reconnect":
+			if not u["silent"]:
+				return _refuse("%s est déjà relié" % uid)
+			u["silent"] = false
+			_emit({"type": "unit_reconnected", "unit": uid})
 		"extract":
 			if not extraction_open or not def.extraction.has(u["pos"]):
 				return _refuse("%s : rappel impossible ici" % uid)
@@ -510,7 +533,8 @@ func _plan() -> Dictionary:
 					var full := MissionDef.trace(res["prev"], g["pos"], target)
 					for p in full.slice(0, PATROLLER_MOVE):
 						if unit_at.has(p):
-							detected[p] = true  # un drone barre la route
+							if not units[unit_at[p]]["silent"]:
+								detected[p] = true  # un drone barre la route
 							break
 						path.append(p)
 						if _next_to_any(p, protectors):
@@ -525,9 +549,10 @@ func _plan() -> Dictionary:
 		pl["watched"] = seen
 		watched.merge(seen)
 		out_guards[gid] = pl
-	var hp: Dictionary[String, int] = {}
+	var hp: Dictionary[String, int] = {}  # drones visibles : un drone en silence n'est ni vu ni visé
 	for id in active_units():
-		hp[id] = units[id]["hp"]
+		if not units[id]["silent"]:
+			hp[id] = units[id]["hp"]
 	var cells: Array[Vector2i] = []
 	cells.assign(gpos.values())
 	var attacks: Array[Dictionary] = []
@@ -566,7 +591,7 @@ func _plan() -> Dictionary:
 		attacks.append({"guardian": gid, "unit": best, "damage": dmg, "from": pos})
 	for p: Vector2i in unit_at:
 		var id := unit_at[p]
-		if hp[id] <= 0:
+		if not hp.has(id) or hp[id] <= 0:
 			continue
 		if (
 			(watched.has(p) and not _hidden(id, cells))
@@ -860,7 +885,11 @@ func _occupied(exclude: String) -> Dictionary[Vector2i, bool]:
 func _refresh_vision() -> void:
 	current_vision.clear()
 	for id in active_units():
-		current_vision.merge(def.vision(units[id]["pos"], UNITS[units[id]["type"]][2]))
+		var u := units[id]
+		if u["silent"]:
+			current_vision[u["pos"]] = true  # en silence radio, ATHENA ne reçoit plus rien
+		else:
+			current_vision.merge(def.vision(u["pos"], UNITS[u["type"]][2]))
 	current_vision.merge(probed)
 	revealed.merge(current_vision)
 	for gid in guards:

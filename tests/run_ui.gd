@@ -118,6 +118,7 @@ func _run() -> void:
 	await _test_combat(main)
 	main = await _test_resume(main)
 	await _test_research(main)
+	await _test_silence(main)
 	SaveStore.erase(SaveStore.MISSION)
 	SaveStore.erase(SaveStore.CAMPAIGN)
 
@@ -379,6 +380,40 @@ func _test_research(main: Control) -> void:
 	await _shot(main, "athena_etude")
 	main._research.closed.emit()
 	_check(not main._research.visible, "retour à la carte")
+
+
+## Silence radio, une fois l'hypothèse confirmée : le drone disparaît des intentions.
+func _test_silence(main: Control) -> void:
+	var c: Campaign = main.campaign
+	c.discoveries["obs_signal_hunt"] = true
+	c.confirmed["obs_5"] = true
+	main.open_research()
+	await _shot(main, "athena_doute")
+	main._research.closed.emit()
+	main.load_mission(3)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	var kinds: Array = main.game.available_actions("tec").map(
+		func(a: Dictionary) -> String: return a["kind"]
+	)
+	_check(kinds.has("silence"), "« Silence radio » proposé une fois débloqué")
+	main.do_action({"kind": "silence", "target": Vector2i(-1, -1)})
+	_check(main.game.units["tec"]["silent"], "le Technicien coupe sa liaison")
+	main.end_turn()
+	_tap(main, "D7")
+	_tap(main, "D6")
+	_tap(main, "D6")
+	main.end_turn()
+	main.selected = "tec"
+	main._refresh()
+	kinds = main.game.available_actions("tec").map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds == ["reconnect"], "en silence, seule la reconnexion est possible")
+	await _shot(main, "m4_silence")
+	main.end_turn()
+	_check(
+		main.game.alert == 0, "en silence, attendre sous le regard de la Sentinelle ne trahit pas"
+	)
 
 
 func _tap(main: Control, cell: String) -> void:

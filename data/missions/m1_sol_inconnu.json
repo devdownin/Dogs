@@ -59,6 +59,8 @@
         { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M1_DLG_FRAGMENTS" } ] },
         { "type": "show_tip", "key": "TIP_EXTRACT" }
       ] },
+    { "id": "t_tracked", "when": { "type": "turn_start", "turn": 3 },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M1_DLG_TRACKED" } ] } ] },
     { "id": "t_outro", "when": { "type": "all_units_extracted" },
       "do": [ { "type": "cinematic", "key": "M1_OUTRO_SILHOUETTE" } ] }
   ],

@@ -122,6 +122,34 @@ func cycles_needed(id: String) -> int:
 	return maxi(1, n)
 
 
+## Règles de mission débloquées par les hypothèses confirmées (ex. "radio_silence").
+func unlocked_rules() -> Array[String]:
+	var out: Array[String] = []
+	for id: String in confirmed:
+		var eff: Dictionary = hypotheses[id]["effect"]
+		if eff.get("type", "") == "unlock_rule":
+			out.append(eff["rule"])
+	return out
+
+
+## Doute d'ATHENA, de 0 à 3 : il grandit à mesure qu'elle comprend que les Gardiens
+## combattent les IA, donc elle. Il colore ses rapports ; à partir de 2, elle recommande
+## de rendre la décision à l'équipage.
+func athena_doubt() -> int:
+	var level := 0
+	if discoveries.has("obs_signal_hunt"):
+		level += 1
+	if confirmed.has("obs_5"):
+		level += 1
+	if confirmed.has("xen_3b") or confirmed.has("xen_3r"):
+		level += 1
+	return level
+
+
+func athena_recommends_waking() -> bool:
+	return athena_doubt() >= 2 and not confirmed.has("crew_commander")
+
+
 func crew_awake() -> int:
 	var n := 0
 	for id: String in confirmed:
@@ -139,7 +167,9 @@ func apply_mission(def: MissionDef, game: GameState) -> Dictionary:
 	var d := def.data
 	var won := game.result == "victory"
 	var recs := game.records()
+	var doubt_before := athena_doubt()
 	var summary := {
+		"doubt": -1,
 		"data": 0,
 		"materials": 0,
 		"discoveries": [] as Array[String],
@@ -185,6 +215,8 @@ func apply_mission(def: MissionDef, game: GameState) -> Dictionary:
 	if not game.neutralized.is_empty():
 		_discover("debris_guardian", summary)
 	_tick(summary)
+	if athena_doubt() > doubt_before:
+		summary["doubt"] = athena_doubt()
 	return summary
 
 

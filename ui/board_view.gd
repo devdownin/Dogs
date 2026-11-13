@@ -379,8 +379,12 @@ func _draw() -> void:
 			draw_set_transform(c, 0.0, Vector2(1.0, 0.42))
 			draw_arc(Vector2.ZERO, s * 0.5, 0, TAU, 40, IVORY, maxf(4.0, s * 0.07))
 			draw_set_transform(Vector2.ZERO)
+		if u["silent"]:
+			tint.a = 0.45  # en silence radio : invisible pour les Gardiens, aveugle pour ATHENA
 		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint)
 		var r := cell_rect(u["pos"])
+		if u["silent"]:
+			_dashed_rect(r.grow(-s * 0.06), IVORY, s)
 		if u["rampart"]:
 			draw_rect(r.grow(-s * 0.04), PACK, false, maxf(3.0, s * 0.05))
 		if u["braced"]:

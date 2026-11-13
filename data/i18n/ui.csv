@@ -75,3 +75,12 @@ STAGE_LINK,Liaison,Link
 STAGE_RESEARCH,Recherche,Research
 STAGE_PROJECTION,Projection,Projection
 STAGE_NAVIGATION,Navigation,Navigation
+UI_ACT_SILENCE,Silence radio,Radio silence
+UI_ACT_RECONNECT,Reconnecter,Reconnect
+UI_SILENCED,%s coupe sa liaison avec ATHENA.,%s cuts its link to ATHENA.
+UI_RECONNECTED,%s est de nouveau relié.,%s is linked again.
+RES_RECOMMENDED,recommandé par ATHENA,recommended by ATHENA
+ATHENA_NOTE_0,Rapport de cycle : systèmes stables. Mes conclusions sont fiables.,Cycle report: systems stable. My conclusions are reliable.
+ATHENA_NOTE_1,Rapport de cycle : ils traquent ce qui me parle. Je n'en tire aucune conclusion. Je préfère vous le signaler.,Cycle report: they hunt whatever talks to me. I draw no conclusion from it. I would rather tell you.
+ATHENA_NOTE_2,"Rapport de cycle : en silence, les drones passent. Ce que les Gardiens combattent, c'est moi. Je recommande de réveiller l'équipage dès que les caissons le permettront. Je ne devrais pas être seule à décider.","Cycle report: in silence, the drones get through. What the Guardians fight is me. I recommend waking the crew as soon as the pods allow. I should not be the only one deciding."
+ATHENA_NOTE_3,Rapport de cycle : je comprends la chute. Je comprends aussi pourquoi ils m'arrêteraient. Les décisions qui suivent ne devraient plus m'appartenir.,Cycle report: I understand the fall. I also understand why they would stop me. The decisions ahead should no longer be mine.

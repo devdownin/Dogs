@@ -38,7 +38,7 @@ func _run(path: String) -> PackedStringArray:
 	var def := MissionLoader.load_mission(MISSIONS + rep["mission"] + ".json")
 	if def == null:
 		return PackedStringArray(["mission introuvable ou invalide"])
-	var g := GameState.new(def)
+	var g := GameState.new(def, rep.get("rules", []))
 	for cmds: Array in rep["turns"]:
 		g.start_turn()
 		for c: Dictionary in cmds:

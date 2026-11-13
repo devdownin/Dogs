@@ -24,6 +24,7 @@ const STATE_COLORS := {
 
 var campaign: Campaign
 var _header: Label
+var _note: Label
 var _list: VBoxContainer
 
 
@@ -51,6 +52,9 @@ func _init() -> void:
 	_header = _label(24, Color("b8bcc4"))
 	_header.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(_header)
+	_note = _label(24, BoardView.IVORY)
+	_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(_note)
 	var scroll := ScrollContainer.new()
 	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -83,6 +87,7 @@ func _rebuild() -> void:
 			6 - c.crew_awake()
 		]
 	)
+	_note.text = tr("ATHENA_NOTE_%d" % c.athena_doubt())
 	var shown := 0
 	for branch: String in Campaign.BRANCHES:
 		var ids: Array[String] = []
@@ -122,6 +127,8 @@ func _card(id: String) -> Control:
 	var title := _label(26, STATE_COLORS.get(st, Color.GRAY))
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	title.text = "%s — %s" % [tr(h["title_key"]), tr("RES_STATE_" + st.to_upper())]
+	if h["branch"] == "crew" and c.athena_recommends_waking() and st in ["lead", "available"]:
+		title.text += "  ·  " + tr("RES_RECOMMENDED")
 	box.add_child(title)
 	var detail := _label(22, Color("c8ccd2"))
 	detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
