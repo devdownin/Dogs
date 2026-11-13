@@ -1,6 +1,6 @@
 # Dogs of Gods — Brief de la planche de style n° 3 « Carte en jeu »
 
-> **Version :** 1.0 — 12 novembre 2026
+> **Version :** 1.1 — 13 novembre 2026 (palette « craie » validée, cf. `planche-assets.png`)
 > **Destinataire :** illustrateur ou pipeline de génération suivi d'une retouche manuelle.
 > **Documents liés :** `dogs-gdd-v2-regles-campagne.md` (règles), `dogs-spec-technique-v2.md` (pipeline graphique), planches n° 1 et n° 2 (`1000039185.png`, `1000039186.png`).
 
@@ -9,7 +9,7 @@
 Les planches n° 1 et n° 2 fixent le décor. Celle-ci doit prouver que **le jeu se lit** : unités, brouillard, territoire et intentions des Gardiens posés sur une carte alignée sur la grille. Elle sert de cible visuelle à la tranche verticale (jalon 2) et tranche trois questions :
 
 1. Une case suffit-elle à identifier son terrain ?
-2. Le turquoise (Meute) et le violet (Gardiens) tiennent-ils sur le désert orange, le canyon rouge et les bassins bleus ?
+2. Le turquoise (Meute) et le violet (Gardiens) tiennent-ils sur le désert ocre-gris, le canyon rouille et les bassins gris-bleu ?
 3. Les sept unités se distinguent-elles à la taille réelle du téléphone ?
 
 Ce n'est pas une illustration d'ambiance : c'est une **capture d'écran idéale** de la carte, sans interface autour.
@@ -44,13 +44,13 @@ La composition part de cette grille, pas l'inverse. Le nord est en haut ; colonn
 
 | Signe | Terrain | Consigne de dessin |
 |---|---|---|
-| `.` | Plaine désertique | Sol orangé craquelé, quasi plat ; aucun relief qui pourrait passer pour de la rocaille |
+| `.` | Plaine désertique | Sol ocre-gris crayeux craquelé, quasi plat ; aucun relief qui pourrait passer pour de la rocaille |
 | `R` | Rocaille | Crêtes ardoise, **entièrement contenues dans la case** ; le pic peut dépasser vers le haut de 30 % au plus |
 | `M` | Mésa | Plateau surélevé d'un seul tenant (D1–F2), falaise visible côté sud |
 | `r` | Rampe | Seul accès à la mésa, clairement praticable |
-| `C` | Canyon | Faille rouge continue de A5 à G5, bords nets alignés sur les cases |
+| `C` | Canyon | Faille rouille sombre continue de A5 à G5, bords nets alignés sur les cases |
 | `G` | Gué | Passage évident dans le canyon (éboulis ou pont naturel) |
-| `B` | Bassin cristallin | Bleu pâle, plaques géométriques, bloc 2 × 2 |
+| `B` | Bassin cristallin | Gris-bleu glacé, plaques géométriques, bloc 2 × 2 |
 | `X` | Ruine | Arche brisée sur la mésa, objectif de la scène |
 | `N` | Nœud | Borne technique ancienne, ici **capturée** : lueur turquoise |
 | `b` | Balise d'atterrissage | Petit équipement humain, turquoise, modeste face aux ruines |
@@ -107,15 +107,21 @@ Le croisement à réussir : en D5, le gué est à la fois sur le trajet ivoire e
 
 | Usage | Couleur |
 |---|---|
-| Désert | Orangés et ocres des planches n° 1 et n° 2 |
-| Rocaille, ruines | Gris ardoise, gris pierre |
-| Canyon | Rouges bruns |
-| Bassins | Bleu pâle |
+| Désert | Ocre-gris crayeux `#B2987A`, ombres `#806858` |
+| Mésa | Ocre pâle `#D6C8B0` |
+| Rocaille, ruines | Ardoise `#606A7A` (clair `#9EA8B2`, ombre `#303848`) |
+| Canyon | Rouille sombre `#702C26` → `#2C161E` |
+| Bassins | Gris-bleu glacé `#A4BEC8`, arêtes `#E0EAEC` |
+| Coques de la Meute | Blanc cassé usé `#E0DACC` |
+| Pierre des Gardiens | Gris pierre `#707684`, ombre `#3A3E4E` |
+| Trait | Encre bleu nuit `#161A24` |
 | **Meute, relié** | Turquoise lumineux, base `#1FA38F` éclaircie, émissif |
 | **Gardiens, recolorié, danger** | Violet, base `#C49BEA`, plus saturé pour les hachures |
 | **Sélection, trajet** | Ivoire `#EADFC8` |
 
-Orange, rouge et bleu pâle sont **interdits** pour toute information de jeu. Turquoise et violet n'apparaissent nulle part dans le décor naturel.
+Ocre, rouille et gris-bleu sont **interdits** pour toute information de jeu. Turquoise et violet n'apparaissent nulle part dans le décor naturel.
+
+**Matière :** couleurs désaturées et froides, voiles gris-bleu sur le sol, grain de craie ou de pastel sec, trait d'encre fin ; ambiance minérale et mélancolique inspirée de la bande dessinée de science-fiction européenne. Seules les lueurs de faction sont saturées. Référence : `docs/art/planche-assets.png`, générée par `tools/gen_art.py`.
 
 ## 7. Calques à livrer
 
@@ -155,10 +161,11 @@ Les calques 5 à 10 seront refaits en shader dans le jeu : ils servent ici de r�
 ```
 Top-down tactical game map, square grid 10x10, hand-painted digital illustration,
 terrain features drawn in three-quarter oblique view, each feature fully contained
-inside its grid cell. Orange cracked desert plain, slate-grey rocky ridges, one
+inside its grid cell. Desaturated chalky ochre-grey cracked desert plain, slate-grey rocky ridges, one
 raised mesa plateau with a ramp on its south side and a broken stone arch ruin on
-top, a red canyon crossing the map from the west edge with a single rocky ford,
-a pale blue crystalline basin in the east. Melancholic mineral science-fiction,
+top, a dark rust canyon crossing the map from the west edge with a single rocky ford,
+a cold grey-blue crystalline basin in the east. Melancholic mineral European comic-book science-fiction, dry pastel and chalk texture,
+cold muted palette, fine ink linework,
 monumental ancient ruins, worn materials. Single light from the north-west, short
 shadows. No units, no characters, no grid lines, no text, no symmetry, no purple,
 no teal.

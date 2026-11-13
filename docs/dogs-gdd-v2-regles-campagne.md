@@ -3,7 +3,7 @@
 > **Version :** 2.0 — 12 novembre 2026
 > **Rôle :** complète `spexdogs_revised.md` (univers et récit, conservé tel quel) en arrêtant les règles laissées « à spécifier », et décline le mode campagne.
 > **Objectif de conception :** un jeu qu'on comprend en une mission, qu'on maîtrise en trente.
-> **Décisions validées (12 novembre 2026) :** rendu 2D peint ; combat sans hasard avec intentions visibles.
+> **Décisions validées :** rendu 2D peint ; combat sans hasard avec intentions visibles (12 novembre 2026) ; palette du décor « craie » (13 novembre 2026).
 > **Statut :** le reste est une **proposition chiffrée à valider par prototype**. Les valeurs sont volontairement petites pour être équilibrées vite.
 
 ## 1. Constats sur les documents et les pistes graphiques
@@ -29,7 +29,8 @@ Les deux images sont d'excellentes **planches de style**, pas encore des cartes 
 - **Problème de lecture :** les reliefs chevauchent plusieurs cases ; on ne peut pas dire si une case est franchissable. Règle à imposer : **un relief occupe des cases entières**, et le dessin d'une case suffit à identifier son type.
 - **Grille incrustée dans l'image :** elle doit être une surcouche du jeu (activable, masquée hors sélection), jamais peinte dans le décor.
 - **Image symétrique (n° 2) :** les ruines dupliquées en miroir trahissent la génération et contredisent « un monde trop ordonné » seulement par endroits. À réserver à un futur mode Escarmouche ; les cartes de campagne doivent être asymétriques, comme l'image n° 1.
-- **Conflit de couleurs :** le terrain consomme déjà l'orange, le rouge et le bleu. La signalétique doit donc vivre ailleurs : **turquoise lumineux pour la Meute, violet pour les Gardiens et la recoloration, ivoire pour la sélection**. La recoloration devient un motif géométrique violet qui « quadrille » le désert : troublant, artificiel, et impossible à confondre avec le canyon.
+- **Palette du décor (validée le 13 nov. 2026) :** les orangés des planches sont désaturés vers un ocre-gris crayeux, le canyon vire à la rouille sombre, les bassins au gris-bleu glacé ; grain de craie et trait d'encre. Les couleurs vives restent réservées à l'information de jeu.
+- **Conflit de couleurs :** le terrain consomme déjà l'ocre, la rouille et le gris-bleu. La signalétique doit donc vivre ailleurs : **turquoise lumineux pour la Meute, violet pour les Gardiens et la recoloration, ivoire pour la sélection**. La recoloration devient un motif géométrique violet qui « quadrille » le désert : troublant, artificiel, et impossible à confondre avec le canyon.
 - **Manques :** aucune unité, aucun état de brouillard ni de territoire sur les images. Une troisième planche montrant unités, brouillard et zone recoloriée est le prochain livrable graphique à produire.
 
 ## 2. Les trois règles qui portent tout le jeu
@@ -261,5 +262,5 @@ Escarmouche sur cartes symétriques, défi quotidien, multijoueur. La campagne s
 
 1. ~~Combat sans hasard et intentions visibles (§2)~~ — **validé le 12 novembre 2026.**
 2. Règle de Liaison (§3.6) : à tester tôt, c'est la plus risquée pour le confort de jeu.
-3. Palette violet/turquoise (§1.2), à vérifier sur écran et en niveaux de gris.
+3. ~~Palette du décor et violet/turquoise (§1.2)~~ — **validée le 13 novembre 2026** ; reste à vérifier en niveaux de gris.
 4. Volume de 30 missions et trois jauges de campagne (§7).

@@ -102,9 +102,10 @@ Alternative écartée pour l'instant : unités 3D temps réel composées sur la 
 | Gardiens, recoloration, danger | Violet (base `#C49BEA`, plus saturé pour les alertes) | Absent du terrain |
 | Sélection, trajets | Ivoire `#EADFC8` | |
 | Interface, fond | `#1E2329` | |
-| **Interdits en signalétique** | Orange, rouge, bleu pâle | Déjà pris par désert, canyon, bassins |
+| Décor (validé le 13 nov. 2026) | Ocre-gris `#B2987A`, ardoise `#606A7A`, rouille `#702C26`, gris-bleu `#A4BEC8`, encre `#161A24` | Désaturé, grain de craie ; détail dans le brief de la planche n° 3 |
+| **Interdits en signalétique** | Ocre, rouille, gris-bleu | Déjà pris par désert, canyon, bassins |
 
-`#FF6A3D` (« menace » de la v1) disparaît : invisible sur le désert. Toute information portée par la couleur l'est aussi par une forme ou un motif (hachures de danger, icône d'intention), ce qui couvre le daltonisme sans mode séparé.
+`#FF6A3D` (« menace » de la v1) disparaît : invisible sur le désert. Les graphismes du prototype sont générés par `tools/gen_art.py` (déterministe) en attendant les illustrations définitives. Toute information portée par la couleur l'est aussi par une forme ou un motif (hachures de danger, icône d'intention), ce qui couvre le daltonisme sans mode séparé.
 
 ### 4.4 Interface, illustrations, son
 
