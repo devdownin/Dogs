@@ -1,7 +1,7 @@
-# Dogs of Gods — Fiches des missions 1 à 5 (prototype)
+# Dogs of Gods — Fiches des missions 1 à 6 (prototype)
 
-> **Version :** 1.1 — 13 novembre 2026 (ajout de la Mission 5, premier combat)
-> **Rôle :** contenu jouable du prototype : cinq missions, sans graphisme définitif.
+> **Version :** 1.2 — 13 novembre 2026 (Missions 5 et 6 : combat, Intercepteur, silence radio)
+> **Rôle :** contenu jouable du prototype : six missions, sans graphisme définitif.
 > **Documents liés :** `dogs-gdd-v2-regles-campagne.md` (règles), `dogs-spec-technique-v2.md` (architecture), `brief-planche-style-3.md` (la carte de la Mission 4 reprend celle de la planche).
 > **Vérification :** les coûts de trajet cités ont été calculés par script sur les grilles ci-dessous. Les durées et l'intérêt de jeu restent à confirmer manette en main.
 
@@ -16,7 +16,7 @@ Ces points complètent le GDD (§3.5) ; ils y sont reportés.
 5. **Interagir et Interface** s'exercent sur une case adjacente.
 6. **Extraction.** Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone. Elle consomme l'action du tour.
 
-> **Données :** ces cinq missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
+> **Données :** ces six missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
 
 ### Légende commune
 
@@ -271,6 +271,49 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 
 ---
 
+## Mission 6 — « La première chronique »
+
+| | |
+|---|---|
+| Acte, type, carte | I, récupération, 12 × 12 |
+| Situation | Une base de connaissances intacte, au cœur d'un champ recolorié. |
+| Question posée | Peut-on entrer sans être vu ? |
+| **Règle introduite** | Intercepteur (*Impulsion*, *Élan*) ; essai de *Silence radio*, accordé par la mission |
+| Déploiement | Éclaireur, Technicien, Intercepteur, Protecteur, en B11, C11, D11, E11 |
+| Durée visée | 10 à 12 tours, 15 minutes |
+
+```
+      A  B  C  D  E  F  G  H  I  J  K  L
+  1   R  R  v  v  X  o  X  v  v  c  R  R
+  2   R  .  v  v  X  p  X  v  v  v  R  R
+  3   .  .  R  v  v  v  v  v  R  v  .  .
+  4   .  .  v  v  v  v  v  v  v  v  R  .
+  5   .  R  v  v  v  v  v  v  v  v  .  .
+  6   .  .  .  R  .  .  .  .  R  .  .  .
+  7   C  C  C  C  G  C  C  C  C  C  .  .
+  8   .  .  .  .  .  .  .  .  .  .  .  .
+  9   .  R  .  .  .  .  .  .  .  R  .  .
+ 10   .  .  .  .  R  .  .  .  .  .  B  B
+ 11   .  b  b  b  b  .  .  .  .  .  B  B
+ 12   .  .  .  .  .  .  .  .  R  .  .  .
+```
+
+`v` sol recolorié (C1:J5) · `o` base de connaissances F1 · `p` poche F2, seule case du champ qui n'est pas recoloriée · `c` cache de fragments J1 · Patrouilleurs : ligne 8 (A8 ↔ L8) et ligne 3 (C3 ↔ I3)
+
+- **Objectif principal :** ouvrir la base (*Interface* du Technicien), puis rappeler le Technicien.
+- **Relevé 1 :** rester en *Veille*. **Relevé 2 :** pousser jusqu'au cache J1.
+- **Échec :** Technicien hors service, ou mission non terminée au tour 16.
+- **La contrainte :** depuis le sud du champ, la poche est à 4 cases ; le Technicien doit finir au moins un tour sur le sol violet, où tout drone relié est vu. En silence radio, il traverse sans être vu, mais il doit se reconnecter pour agir, et la poche n'est hors de vue qu'une phase sur deux.
+
+**Solution de référence (11 tours, Veille tenue).** Le Technicien franchit le gué quand le Patrouilleur du sud est loin, coupe sa liaison en entrant dans le champ, attend un tour, se reconnecte dans la poche à une phase sûre. L'Intercepteur, passé par l'est (K7, L7), fige le Patrouilleur du nord par une *Impulsion* depuis K3 pendant l'ouverture de la base. Retour en silence, reconnexion en D9, rappel en D11.
+
+- **Pièges rejoués :** finir un tour sur le sol violet sans couper la liaison (détection immédiate) ; à l'inverse, la force paie aussi : l'Intercepteur lancé en ligne droite (D11 → D8) frappe à 3 dégâts et neutralise un Patrouilleur d'un coup, au prix d'un cran d'alerte.
+- **Découverte vérifiable :** un registre de décisions dont aucune n'est signée par une personne (découverte « La première chronique », qui ouvre *Grammaire des ruines*).
+- **Effets :** essai de silence radio consigné (il faut ensuite étudier *Silence radio* pour en disposer dans les missions suivantes) ; Concorde +1 si *Veille* tenue.
+- **Récompenses :** 4 Données, 1 Matériau, 1 Fragment ; +1 Donnée par relevé.
+
+---
+
 ## Ce que le prototype doit apprendre
 
 | Question | Mission | Signe de réussite |
@@ -280,6 +323,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 | Le compte à rebours est-il tendu sans être injuste ? | 3 | Échec au premier essai rare, relevé 1 raté fréquent |
 | Les intentions visibles suffisent-elles à créer la réflexion ? | 4 | Le joueur attend volontairement un tour |
 | Le combat annoncé se lit-il comme une énigme plutôt qu'un échange de coups ? | 5 | Le joueur se tapit et répare au lieu de frapper |
+| Le silence radio est-il un vrai choix (voir ou être vu) ? | 6 | Le joueur se reconnecte au bon moment sans aide |
 | La règle « vu seulement en fin de tour » est-elle comprise ? | 4 | Aucune détection jugée arbitraire |
 
 Si la Mission 4 n'est pas intéressante en aplats, aucun graphisme ne la sauvera : c'est le test décisif du jalon 1.

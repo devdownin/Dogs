@@ -71,7 +71,7 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer (ramen�
 | OBS-2 | Rythme des veilleurs | Observation : cycle complet d'une Sentinelle (M4) | 1 | 4 | Le prochain pivot de chaque Sentinelle observée est affiché |
 | OBS-3 | Signature violette | Échantillon de sol recolorié (M3) | 2 | 5 | Le territoire recolorié est visible même dans le brouillard inconnu |
 | OBS-4 | Sonde profonde | OBS-2 ; base « Ceux qui veillent » (III-2) | 2 | 8 | La Sonde révèle une croix de 5 cases de rayon 2 au lieu de 3 × 3 |
-| OBS-5 | Silence radio | Observation : ils traquent ce qui parle à ATHENA (M5) | 1 | 4 | Un drone peut couper sa liaison : invisible aux Gardiens, mais aveugle et sans action jusqu'à la reconnexion (GDD §3.5) |
+| OBS-5 | Silence radio | Ils traquent ce qui parle à ATHENA (M5) ; essai de silence radio (M6) | 1 | 4 | Un drone peut couper sa liaison : invisible aux Gardiens, mais aveugle et sans action jusqu'à la reconnexion (GDD §3.5) |
 | LIA-1 | Relais embarqué | Observation : nœud capturé (II-2) | 1 | 4 | Module *Relais embarqué* : portée de Liaison 6 |
 | LIA-2 | Résonance cristalline | Échantillon de cristal de bassin (II-4a) | 2 | 5 | En bordure de bassin, Liaison +2 (règle du GDD §3.2, désormais à débloquer) |
 | LIA-3 | Protocole des nœuds | LIA-1 ; base « Une voix sans destinataire » (III-1) | 2 | 8 | Un nœud capturé résiste 2 tours à la recoloration même coupé de la balise |

@@ -1,7 +1,7 @@
 # Dogs of Gods — prototype jouable
 
 Projet Godot 4.7 (GDScript typé, moteur de rendu Compatibility). Ouvrir le projet et lancer (F5) :
-les missions 1 à 5 sont jouables, en portrait, à la souris ou au doigt. La partie est sauvegardée
+les missions 1 à 6 sont jouables, en portrait, à la souris ou au doigt. La partie est sauvegardée
 après chaque commande et reprend à l'identique au lancement suivant.
 
 **Jouer :** toucher un drone, toucher une case (aperçu du trajet), toucher encore pour confirmer.
@@ -9,7 +9,7 @@ après chaque commande et reprend à l'identique au lancement suivant.
 compté qu'au relâchement, et jamais après un glissement.
 **Sonde :** sélectionner un Éclaireur, bouton « Sonde », toucher le centre de la zone (les cases hors
 de portée sont assombries), toucher encore pour lancer.
-**Combat (M5) :** les coups que les Gardiens porteront sont annoncés (trait violet, dégâts chiffrés).
+**Combat (M5, M6) :** les coups que les Gardiens porteront sont annoncés (trait violet, dégâts chiffrés).
 *Se tapir*, *Rempart* et *Réparer* les réduisent ou les compensent ; *Frapper* vise un Gardien à portée.
 **ATHENA :** l'IA de bord étudie les hypothèses ouvertes par les découvertes (un cycle par mission jouée).
 *Silence radio* (une fois étudié) rend un drone invisible aux Gardiens, mais aveugle jusqu'à sa reconnexion.
@@ -23,7 +23,7 @@ core/mission_loader.gd   Lecture et contrôle d'un fichier de mission
 core/game_state.gd       État de partie, commandes du joueur, phase des Gardiens, combat, objectifs
 core/campaign.gd         Campagne : ressources, découvertes, études d'ATHENA
 core/save_store.gd       Sauvegardes locales (écriture atomique, copie de secours)
-data/missions/           Missions 1 à 5
+data/missions/           Missions 1 à 6
 data/research/           Arbre de découverte et découvertes
 data/replays/            Solutions de référence et pièges
 data/i18n/missions.csv   Textes fr/en

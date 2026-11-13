@@ -33,7 +33,7 @@ Le vocabulaire fermé est la contrainte principale : si une mission a besoin d'u
 | `B` | Bassin cristallin | — |
 | `X` | Ruine | 2 |
 
-Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases surélevées autres que `M`, par exemple une ruine sur la mésa), `territory.recolored` et `territory.linked`, `features` (points d'intérêt).
+Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases surélevées autres que `M`, par exemple une ruine sur la mésa), `territory.recolored` (avec `territory.except` pour des trous) et `territory.linked`, `features` (points d'intérêt).
 
 ## 3. Structure d'un fichier
 
@@ -48,10 +48,11 @@ Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases 
 | `objectives` | `main` (condition, `deadline_turn` facultatif), `records` (2 au plus), `failure`, `retreat_allowed` |
 | `triggers` | `id`, `when` (condition), `do` (actions), `once` (vrai par défaut) |
 | `rewards` | Matériaux, Données, Fragments, `per_record`, `ship_stage` |
+| `rules` | Facultatif : règles accordées pour cette mission seulement (essai de terrain), ex. `["radio_silence"]` |
 | `campaign_effects` | `open_sector`, `chronicle`, `codex`, `gauge`, `sector_state`, `discoveries` (`ids`) ; `if_record` pour conditionner à un relevé |
 | Point `knowledge_base` | Base de connaissances d'une ruine ; `discovery` = découverte accordée à l'ouverture (voir `arbre-decouverte.md`) |
 
-Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (tout drone) ; `signal_source`, `relay_point`, `beacon`, `node` (Technicien, *Interface*) ; `boundary_marker` (à observer seulement).
+Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (tout drone) ; `signal_source`, `relay_point`, `beacon`, `node`, `knowledge_base` (Technicien, *Interface* ; une base livre sa découverte `discovery` dès son ouverture, même en cas de repli) ; `boundary_marker` (à observer seulement).
 
 ## 4. Conditions
 
@@ -123,7 +124,7 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 }
 ```
 
-`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` (`target` = Gardien), `brace`, `rampart` ou `repair` (`target` = allié). `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
+`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` ou `impulse` (`target` = Gardien), `brace`, `rampart`, `repair` (`target` = allié), `silence` ou `reconnect`. `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
 
 `rules` (facultatif) liste les règles débloquées par la campagne pour ce rejeu (ex. `["radio_silence"]`, qui permet `silence` et `reconnect`).
 
@@ -144,6 +145,9 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 | M5 piège « émettre sans couverture » | Échec à la phase 2 |
 | M4 en silence radio | Victoire au tour 6, alerte *Veille* malgré l'attente sous le regard de la Sentinelle |
 | M4 piège « se reconnecter sous le regard » | Détection en D6 à la phase 3 |
+| M6 référence (silence radio, Impulsion) | Victoire au tour 11, alerte *Veille* |
+| M6 piège « sans silence sur le sol violet » | Détection en F4 à la phase 4 |
+| M6 Élan | Patrouilleur neutralisé d'un coup (3 dégâts), alerte *Avertissement* |
 
 Test de non-régression : décaler d'un cran le regard de la Sentinelle fait échouer la référence M4. Les solutions de référence ne remportent pas tous les relevés (M2 ruines, M3 ruine, M4 carte), qui restent donc des défis.
 

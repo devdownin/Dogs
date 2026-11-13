@@ -115,7 +115,9 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 - **Poursuite :** une détection lance les Patrouilleurs vers la case détectée la plus proche ; ils reprennent leur ronde une fois la case atteinte ou l'alerte retombée à *Veille*. Un script peut aussi les envoyer vers une case (`chase_cell`).
 - **Neutraliser un Gardien** l'ôte de la carte, fait monter l'alerte d'un cran et laisse des débris (découverte « Débris de Gardien »).
 - **Réparer** (Technicien, case adjacente) : +1 intégrité, ou relève un drone hors service à 1 point.
-- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue ; *Impulsion* et *Élan* arrivent avec l'Intercepteur (M6).
+- **Intercepteur (réalisé, M6) :** *Impulsion* fige un Gardien à 2 cases au plus (ligne de vue) pendant la prochaine phase : ni déplacement, ni regard, ni coup ; recharge de 3 tours ; elle ne fait pas monter l'alerte. *Élan* : après un déplacement d'au moins 3 cases dans une seule direction, sa frappe gagne +1 (3 dégâts : un Patrouilleur tombe d'un coup).
+- **Rondes :** un Patrouilleur ne vise le point de ronde suivant qu'une fois le précédent atteint.
+- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue.
 
 **Crans d'alerte.**
 
@@ -130,7 +132,7 @@ La jauge baisse d'un cran quand un nœud est capturé ou après 3 tours sans dé
 
 **Silence radio (réalisé le 13 novembre 2026, débloqué par l'hypothèse OBS-5).**
 
-Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation.
+Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation. La Mission 6 l'accorde à titre d'essai de terrain ; cet essai est la seconde condition de l'hypothèse.
 
 ### 3.6 Liaison (introduite à l'Acte II)
 
