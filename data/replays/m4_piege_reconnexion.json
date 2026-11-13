@@ -1,0 +1,11 @@
+{
+  "mission": "m4_le_veilleur",
+  "description": "Piège : se reconnecter en D6 sous le regard de la Sentinelle ; la détection reprend dès la phase suivante.",
+  "rules": ["radio_silence"],
+  "turns": [
+    [ { "unit": "tec", "move": "D7", "act": "silence" } ],
+    [ { "unit": "tec", "move": "D6" } ],
+    [ { "unit": "tec", "act": "reconnect" } ]
+  ],
+  "expect": { "result": null, "alert_max": "warning" }
+}

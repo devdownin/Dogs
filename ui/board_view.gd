@@ -5,22 +5,35 @@ extends Control
 
 signal cell_tapped(cell: Vector2i)
 
-const TERRAIN := {
-	".": Color("d99254"),
-	"R": Color("545c68"),
-	"M": Color("be7846"),
-	"r": Color("e2b078"),
-	"C": Color("8e342c"),
-	"G": Color("c49678"),
-	"B": Color("96c4d6"),
-	"X": Color("969696")
+const TILE_NAME := {
+	".": "plain",
+	"R": "rock",
+	"M": "mesa",
+	"r": "ramp",
+	"C": "canyon",
+	"G": "ford",
+	"B": "basin",
+	"X": "ruin"
 }
+const TILE_VARIANTS := {
+	"plain": 4,
+	"rock": 3,
+	"mesa": 3,
+	"ramp": 1,
+	"canyon": 3,
+	"ford": 1,
+	"basin": 3,
+	"ruin": 1,
+	"fog": 3
+}
+const SPRITES := [
+	"scout", "technician", "protector", "interceptor", "sentinel", "patroller", "regulator"
+]
+const CLIFF := Color("3a3038")
 const PACK := Color("2fe0c8")
 const GUARD := Color("a85af0")
 const IVORY := Color("eadfc8")
 const FOG := Color("1e2329")
-const UNIT_LETTER := {"scout": "É", "technician": "T", "protector": "P", "interceptor": "I"}
-const GUARD_LETTER := {"sentinel": "S", "patroller": "P", "regulator": "R", "herald": "H"}
 
 ## Taille de case visée au zoom initial, en unités d'affichage (2 unités ≈ 1 dp sur un
 ## téléphone de 360 dp de large). 96 ≈ 48 dp ; 140 ≈ 70 dp. Le zoom minimal montre toute la carte.
@@ -31,6 +44,8 @@ const WHEEL_STEP := 1.15
 
 var main: Node  # fournit def, game, selected, preview, mode, show_danger, reveal_all
 
+var _tiles: Dictionary[String, Array] = {}
+var _sprites: Dictionary[String, Texture2D] = {}
 var _cs := 0.0  # taille d'une case
 var _cam := Vector2.ZERO  # point de la carte (en cases) au centre de la vue
 var _pending_focus := Vector2(-1, -1)
@@ -47,6 +62,33 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	resized.connect(_on_resized)
+	for tile_name: String in TILE_VARIANTS:
+		var list: Array[Texture2D] = []
+		for v: int in TILE_VARIANTS[tile_name]:
+			list.append(load("res://assets/terrain/%s_%d.png" % [tile_name, v]))
+		_tiles[tile_name] = list
+	for sprite_name: String in SPRITES:
+		_sprites[sprite_name] = load("res://assets/units/%s.png" % sprite_name)
+	for feature_name: String in ["node", "beacon"]:
+		_sprites[feature_name] = load("res://assets/features/%s.png" % feature_name)
+
+
+func _tile(tile_name: String, p: Vector2i) -> Texture2D:
+	var list: Array = _tiles[tile_name]
+	return list[posmod(p.x * 7 + p.y * 13 + p.x * p.y * 3, list.size())]
+
+
+## Sprite posé sur une case : un peu plus haut que la case, pieds en bas, socle de faction.
+func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color) -> void:
+	var r := cell_rect(p)
+	var s := r.size.x
+	var base := r.get_center() + Vector2(0, s * 0.3)
+	draw_set_transform(base, 0.0, Vector2(1.0, 0.42))
+	draw_arc(Vector2.ZERO, s * 0.4, 0, TAU, 40, faction, maxf(3.0, s * 0.05))
+	draw_set_transform(Vector2.ZERO)
+	var size := s * 1.12
+	var at := Vector2(r.get_center().x - size / 2.0, r.end.y - size * 0.98)
+	draw_texture_rect(_sprites[sprite_name], Rect2(at, Vector2(size, size)), false, tint)
 
 
 # ---------------------------------------------------------------- vue
@@ -231,9 +273,10 @@ func _draw() -> void:
 	var game: GameState = main.game
 	var def: MissionDef = main.def
 	var s := cell_size()
-	var font := ThemeDB.fallback_font
 	var all: bool = main.reveal_all
-	var intents: Dictionary = game.intents() if main.show_danger else {"watched": {}, "routes": {}}
+	var intents: Dictionary = (
+		game.intents() if main.show_danger else {"watched": {}, "routes": {}, "attacks": []}
+	)
 	var probing: bool = main.mode == "probe" and main.selected != ""
 	var reach: Dictionary = {}
 	if probing:
@@ -247,12 +290,19 @@ func _draw() -> void:
 			var r := cell_rect(p)
 			var known: bool = all or game.revealed.has(p)
 			if not known:
-				draw_rect(r, FOG.lightened(0.07))
+				draw_texture_rect(_tile("fog", p), r, false)
 				draw_rect(r, Color(0, 0, 0, 0.35), false, 1.0)
 				continue
-			draw_rect(r, TERRAIN[def.terrain(p)])
-			if def.elevated.has(p) and def.terrain(p) != "M":
-				draw_rect(r.grow(-s * 0.08), TERRAIN["M"], false, s * 0.06)
+			draw_texture_rect(_tile(TILE_NAME[def.terrain(p)], p), r, false)
+			var below := p + Vector2i(0, 1)
+			if def.elevated.has(p) and def.terrain(p) != "r" and not def.elevated.has(below):
+				draw_rect(Rect2(r.position.x, r.end.y - s * 0.14, s, s * 0.14), CLIFF)
+				draw_line(
+					Vector2(r.position.x, r.end.y - s * 0.14),
+					Vector2(r.end.x, r.end.y - s * 0.14),
+					IVORY.darkened(0.15),
+					2.0
+				)
 			if game.recolored.has(p):
 				draw_rect(r, Color(GUARD, 0.38))
 				draw_rect(r.grow(-s * 0.22), Color(GUARD, 0.7), false, 1.5)
@@ -272,15 +322,13 @@ func _draw() -> void:
 		var f: Dictionary = def.features[fid]
 		if not (all or game.revealed.has(f["pos"])):
 			continue
-		var c := cell_rect(f["pos"]).get_center()
-		var col := Color(IVORY, 0.35) if game.interacted.has(fid) else IVORY
-		var d := s * 0.2
-		draw_colored_polygon(
-			PackedVector2Array(
-				[c + Vector2(0, -d), c + Vector2(d, 0), c + Vector2(0, d), c + Vector2(-d, 0)]
-			),
-			col
-		)
+		var done: bool = game.interacted.has(fid)
+		var kind: String = "beacon" if String(f.get("kind", "")) == "beacon" else "node"
+		if def.terrain(f["pos"]) == "X":
+			var c := cell_rect(f["pos"]).get_center()
+			draw_arc(c, s * 0.42, 0, TAU, 32, Color(IVORY, 0.3 if done else 0.9), 3.0)
+		else:
+			_sprite(kind, f["pos"], PACK if done else Color(IVORY, 0.7), Color.WHITE)
 
 	for gid: String in intents["routes"]:
 		var route: Array = intents["routes"][gid]
@@ -309,30 +357,75 @@ func _draw() -> void:
 		var g: Dictionary = game.guards[gid]
 		if not (all or game.current_vision.has(g["pos"])):
 			continue
-		var r := cell_rect(g["pos"]).grow(-s * 0.16)
-		draw_rect(r, GUARD)
-		draw_rect(r, Color.BLACK, false, 2.0)
-		_letter(font, r.get_center(), GUARD_LETTER[g["type"]], s)
+		var gc := cell_rect(g["pos"]).get_center()
 		if g["type"] == "sentinel":
 			var dir := Vector2(MissionDef.DIRS[g["facing"]]).normalized()
-			draw_line(r.get_center(), r.get_center() + dir * s * 0.55, Color.BLACK, 4.0)
+			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
+		_sprite(g["type"], g["pos"], GUARD, Color.WHITE)
+		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
 
 	for uid: String in game.units:
 		var u: Dictionary = game.units[uid]
 		if u["status"] == "extracted":
 			continue
-		var c := cell_rect(u["pos"]).get_center()
 		var spent: bool = u["moved"] and u["acted"]
-		var col := (
-			Color(0.4, 0.4, 0.4)
-			if u["status"] == "disabled"
-			else (PACK.darkened(0.3) if spent else PACK)
-		)
-		draw_circle(c, s * 0.34, col)
-		draw_arc(c, s * 0.34, 0, TAU, 32, Color.BLACK, 2.0)
+		var tint := Color.WHITE
+		if u["status"] == "disabled":
+			tint = Color(0.45, 0.45, 0.5)
+		elif spent:
+			tint = Color(0.68, 0.7, 0.74)
 		if uid == main.selected:
-			draw_arc(c, s * 0.42, 0, TAU, 32, IVORY, 5.0)
-		_letter(font, c, UNIT_LETTER[u["type"]], s)
+			var c := cell_rect(u["pos"]).get_center() + Vector2(0, s * 0.3)
+			draw_set_transform(c, 0.0, Vector2(1.0, 0.42))
+			draw_arc(Vector2.ZERO, s * 0.5, 0, TAU, 40, IVORY, maxf(4.0, s * 0.07))
+			draw_set_transform(Vector2.ZERO)
+		if u["silent"]:
+			tint.a = 0.45  # en silence radio : invisible pour les Gardiens, aveugle pour ATHENA
+		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint)
+		var r := cell_rect(u["pos"])
+		if u["silent"]:
+			_dashed_rect(r.grow(-s * 0.06), IVORY, s)
+		if u["rampart"]:
+			draw_rect(r.grow(-s * 0.04), PACK, false, maxf(3.0, s * 0.05))
+		if u["braced"]:
+			var b := r.position + Vector2(s * 0.12, s * 0.12)
+			draw_polyline(
+				PackedVector2Array([b, b + Vector2(s * 0.08, s * 0.08), b + Vector2(s * 0.16, 0)]),
+				IVORY,
+				3.0
+			)
+		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], PACK)
+
+	# Coups annoncés : trait violet du Gardien vers sa cible, dégâts inscrits sur la cible.
+	var font := ThemeDB.fallback_font
+	for at: Dictionary in intents["attacks"]:
+		var from := cell_rect(at["from"]).get_center()
+		var to := cell_rect(game.units[at["unit"]]["pos"]).get_center()
+		draw_line(from, to, GUARD, maxf(4.0, s * 0.06))
+		var tip := to - (to - from).normalized() * s * 0.32
+		draw_circle(tip, s * 0.16, GUARD)
+		var txt := "-%d" % at["damage"]
+		var fs := int(s * 0.22)
+		var w := font.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		draw_string(
+			font, tip + Vector2(-w / 2.0, fs * 0.35), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs
+		)
+
+
+## Intégrité sous l'unité : une encoche par point, pleine ou vide.
+func _pips(p: Vector2i, hp: int, max_hp: int, col: Color) -> void:
+	var r := cell_rect(p)
+	var w := r.size.x * 0.12
+	var gap := w * 0.35
+	var total := max_hp * w + (max_hp - 1) * gap
+	var x := r.get_center().x - total / 2.0
+	var y := r.end.y - r.size.x * 0.1
+	for i in max_hp:
+		var box := Rect2(x + i * (w + gap), y, w, r.size.x * 0.06)
+		draw_rect(box, Color(0, 0, 0, 0.6))
+		if i < hp:
+			draw_rect(box.grow(-1), col)
+	return
 
 
 func _area_rect(cells: Array[Vector2i]) -> Rect2:
@@ -364,17 +457,3 @@ func _hatch(r: Rect2, col: Color) -> void:
 		draw_line(r.position + Vector2(s, k), r.position + Vector2(k, s), col, 2.0)
 		k += step
 	draw_line(r.position + Vector2(s, 0), r.position + Vector2(0, s), col, 2.0)
-
-
-func _letter(font: Font, center: Vector2, text: String, s: float) -> void:
-	var fs := int(s * 0.4)
-	var w := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
-	draw_string(
-		font,
-		center + Vector2(-w / 2.0, fs * 0.35),
-		text,
-		HORIZONTAL_ALIGNMENT_LEFT,
-		-1,
-		fs,
-		Color.BLACK
-	)

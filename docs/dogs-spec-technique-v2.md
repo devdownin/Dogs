@@ -102,9 +102,10 @@ Alternative écartée pour l'instant : unités 3D temps réel composées sur la 
 | Gardiens, recoloration, danger | Violet (base `#C49BEA`, plus saturé pour les alertes) | Absent du terrain |
 | Sélection, trajets | Ivoire `#EADFC8` | |
 | Interface, fond | `#1E2329` | |
-| **Interdits en signalétique** | Orange, rouge, bleu pâle | Déjà pris par désert, canyon, bassins |
+| Décor (validé le 13 nov. 2026) | Ocre-gris `#B2987A`, ardoise `#606A7A`, rouille `#702C26`, gris-bleu `#A4BEC8`, encre `#161A24` | Désaturé, grain de craie ; détail dans le brief de la planche n° 3 |
+| **Interdits en signalétique** | Ocre, rouille, gris-bleu | Déjà pris par désert, canyon, bassins |
 
-`#FF6A3D` (« menace » de la v1) disparaît : invisible sur le désert. Toute information portée par la couleur l'est aussi par une forme ou un motif (hachures de danger, icône d'intention), ce qui couvre le daltonisme sans mode séparé.
+`#FF6A3D` (« menace » de la v1) disparaît : invisible sur le désert. Les graphismes du prototype sont générés par `tools/gen_art.py` (déterministe) en attendant les illustrations définitives. Toute information portée par la couleur l'est aussi par une forme ou un motif (hachures de danger, icône d'intention), ce qui couvre le daltonisme sans mode séparé.
 
 ### 4.4 Interface, illustrations, son
 
@@ -135,6 +136,7 @@ Alternative écartée pour l'instant : unités 3D temps réel composées sur la 
 - Sauvegarde automatique à chaque fin de tour et à chaque mise en arrière-plan de l'application. La reprise restitue le tour exact.
 - Écriture atomique (fichier temporaire puis renommage), copie de la sauvegarde précédente conservée, format versionné avec migrations.
 - Deux fichiers : campagne (progression, Atlas, Meute) et mission en cours (état + journal de commandes).
+- **Réalisé (13 novembre 2026) :** `core/save_store.gd` et `core/campaign.gd`. Le journal de mission est écrit après chaque commande (et à la mise en arrière-plan), la campagne à chaque fin de mission et à chaque étude lancée ; écriture atomique avec copie `.bak` de secours ; la reprise rejoue le journal et repart d'une mission neuve si les données ont changé. Testé par `tests/run_campaign.gd` et `tests/run_ui.gd`.
 - **Synchronisation facultative** par les parties enregistrées de Google Play Jeux, via le plugin communautaire Godot dédié. La limite de 3 Mo par sauvegarde est très au-dessus du besoin. En cas de conflit entre appareil et nuage, le joueur choisit ; jamais d'écrasement silencieux.
 - Aucune télémétrie par défaut. Suivi de stabilité par les indicateurs de la console Play, sans SDK tiers. Toute mesure d'usage est soumise à consentement.
 - Localisation français et anglais dès le premier jalon (fichiers de traduction, aucune chaîne dans le code).

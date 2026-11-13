@@ -38,7 +38,7 @@ func _run(path: String) -> PackedStringArray:
 	var def := MissionLoader.load_mission(MISSIONS + rep["mission"] + ".json")
 	if def == null:
 		return PackedStringArray(["mission introuvable ou invalide"])
-	var g := GameState.new(def)
+	var g := GameState.new(def, rep.get("rules", []))
 	for cmds: Array in rep["turns"]:
 		g.start_turn()
 		for c: Dictionary in cmds:
@@ -52,7 +52,12 @@ func _run(path: String) -> PackedStringArray:
 					return PackedStringArray(["commande refusée : " + g.last_error])
 		if not g.result.is_empty():
 			break
+		var announced := _announced_attacks(g._plan())
+		var first := g.events.size()
 		g.end_player_turn()
+		var done := _executed_attacks(g.events.slice(first))
+		if announced != done:
+			problems.append("tour %d : coups annoncés %s, portés %s" % [g.turn, announced, done])
 		if not g.result.is_empty():
 			break
 	var expect: Dictionary = rep["expect"]
@@ -69,7 +74,46 @@ func _run(path: String) -> PackedStringArray:
 	for k: String in expect.get("records", {}):
 		if recs.get(k) != expect["records"][k]:
 			problems.append("relevé %s = %s" % [k, recs.get(k)])
+	problems.append_array(_state_problems(g, expect.get("state", {})))
 	return problems
+
+
+## État final attendu : unités [case, intégrité, statut] ;
+## Gardiens [case, intégrité] ou "neutralized".
+func _state_problems(g: GameState, state: Dictionary) -> PackedStringArray:
+	var out := PackedStringArray()
+	var units: Dictionary = state.get("units", {})
+	for uid: String in units:
+		var u := g.units[uid]
+		var got := [Cells.name_of(u["pos"]), u["hp"], u["status"]]
+		var want: Array = units[uid]
+		if str(got) != str([want[0], int(want[1]), want[2]]):
+			out.append("unité %s = %s, attendu %s" % [uid, got, want])
+	var guards: Dictionary = state.get("guardians", {})
+	for gid: String in guards:
+		var want: Variant = guards[gid]
+		var got: Variant = "neutralized"
+		if g.guards.has(gid):
+			got = [Cells.name_of(g.guards[gid]["pos"]), g.guards[gid]["hp"]]
+		var want_s := str(want) if want is String else str([want[0], int(want[1])])
+		if str(got) != want_s:
+			out.append("Gardien %s = %s, attendu %s" % [gid, got, want])
+	return out
+
+
+func _announced_attacks(plan: Dictionary) -> String:
+	var out: Array = []
+	for at: Dictionary in plan["attacks"]:
+		out.append([at["guardian"], at["unit"], at["damage"]])
+	return str(out)
+
+
+func _executed_attacks(events: Array[Dictionary]) -> String:
+	var out: Array = []
+	for e in events:
+		if e["type"] == "unit_attacked":
+			out.append([e["guardian"], e["unit"], e["damage"]])
+	return str(out)
 
 
 ## Garantie centrale du jeu : ce que intents() annonce avant la phase des Gardiens

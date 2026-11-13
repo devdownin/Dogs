@@ -1,16 +1,21 @@
 extends Control
-## Scène jouable du prototype (jalon 1) : carte en aplats, commande à trois touchers,
-## affichage des intentions. Toute la logique de jeu est dans GameState ; cette scène
-## traduit des touchers en commandes et des événements en affichage.
+## Scène jouable du prototype : carte, commande à trois touchers, intentions, combat,
+## sauvegarde et écran d'ATHENA. Toute la logique de jeu est dans GameState et Campaign ;
+## cette scène traduit des touchers en commandes et des événements en affichage.
+##
+## Sauvegarde : le journal de commandes de la mission est écrit après chaque commande,
+## la campagne à chaque fin de mission et à chaque étude lancée. La reprise rejoue le
+## journal : le cœur étant déterministe, l'état restitué est exact.
 
 const MISSION_DIR := "res://data/missions/"
 const MISSION_IDS: Array[String] = [
-	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur"
+	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur", "m5_prix_signal"
 ]
 const NONE := Vector2i(-1, -1)
 
 var def: MissionDef
 var game: GameState
+var campaign: Campaign
 var selected := ""
 var preview := NONE
 var mode := ""  # "" ou "probe" (choix de la zone à sonder)
@@ -21,6 +26,10 @@ var _mission_index := 0
 var _log: Array[Dictionary] = []  # commandes jouées ; permet d'annuler en rejouant
 var _events_seen := 0
 var _countdown_labels: Dictionary[String, String] = {}
+var _applied := false  # issue de mission déjà reportée sur la campagne
+var _summary: Dictionary = {}
+var _research: ResearchView
+var _rules: Array[String] = []  # règles débloquées, figées pour la durée de la mission
 
 var _box: VBoxContainer
 var _board: BoardView
@@ -28,7 +37,7 @@ var _picker: OptionButton
 var _status: Label
 var _objective: Label
 var _message: Label
-var _actions: HBoxContainer
+var _actions: HFlowContainer
 var _undo: Button
 var _end_turn: Button
 var _end_panel: PanelContainer
@@ -37,8 +46,44 @@ var _next: Button
 
 
 func _ready() -> void:
+	campaign = SaveStore.load_campaign()
 	_build_ui()
-	load_mission(0)
+	if not _resume():
+		load_mission(0)
+
+
+func _notification(what: int) -> void:
+	if what in [NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_CLOSE_REQUEST]:
+		_save_mission()
+
+
+## Reprend la mission sauvegardée. Faux si rien à reprendre ou si le journal ne se
+## rejoue plus (données de mission modifiées depuis) : on repart alors d'une mission neuve.
+func _resume() -> bool:
+	var saved := SaveStore.load_mission()
+	var index := MISSION_IDS.find(saved.get("mission", ""))
+	if index < 0:
+		return false
+	load_mission(index)
+	_rules.assign(saved.get("rules", []))
+	_new_game()
+	_consume_events()
+	var log: Array[Dictionary] = saved["log"]
+	for cmd in log:
+		if not _apply(cmd):
+			SaveStore.erase(SaveStore.MISSION)
+			load_mission(index)
+			return false
+		_log.append(cmd)
+	_consume_events()
+	_message.text = tr("UI_RESUMED")
+	_refresh()
+	return true
+
+
+func _save_mission() -> void:
+	if game != null and game.result.is_empty() and not _log.is_empty():
+		SaveStore.save_mission(MISSION_IDS[_mission_index], _log, _rules)
 
 
 # ---------------------------------------------------------------- interface
@@ -64,6 +109,9 @@ func _build_ui() -> void:
 	_picker.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_picker.item_selected.connect(load_mission)
 	top.add_child(_picker)
+	var athena := _button("UI_ATHENA", open_research)
+	athena.custom_minimum_size.x = 150
+	top.add_child(athena)
 	_status = _label(26)
 	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -85,9 +133,10 @@ func _build_ui() -> void:
 	_message.add_theme_color_override("font_color", BoardView.IVORY)
 	box.add_child(_message)
 
-	_actions = HBoxContainer.new()
+	_actions = HFlowContainer.new()
 	_actions.custom_minimum_size.y = 96
-	_actions.add_theme_constant_override("separation", 10)
+	_actions.add_theme_constant_override("h_separation", 10)
+	_actions.add_theme_constant_override("v_separation", 10)
 	box.add_child(_actions)
 
 	var bottom := HBoxContainer.new()
@@ -130,6 +179,19 @@ func _build_ui() -> void:
 	_next = _button("UI_NEXT", func() -> void: load_mission(_mission_index + 1))
 	_next.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	end_buttons.add_child(_next)
+	var end_athena := _button("UI_ATHENA", open_research)
+	end_athena.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	end_buttons.add_child(end_athena)
+
+	_research = ResearchView.new()
+	_research.visible = false
+	_research.closed.connect(func() -> void: _research.visible = false)
+	_research.study_started.connect(func(_id: String) -> void: SaveStore.save_campaign(campaign))
+	add_child(_research)
+
+
+func open_research() -> void:
+	_research.show_campaign(campaign)
 
 
 ## Garde l'interface hors des encoches et des barres système (plein écran sur Android).
@@ -201,6 +263,9 @@ func load_mission(index: int) -> void:
 	)
 	_log.clear()
 	_countdown_labels.clear()
+	_rules = campaign.unlocked_rules()
+	_applied = false
+	_summary = {}
 	_message.text = ""
 	_new_game()
 	var centroid := Vector2.ZERO
@@ -212,7 +277,7 @@ func load_mission(index: int) -> void:
 
 
 func _new_game() -> void:
-	game = GameState.new(def)
+	game = GameState.new(def, _rules)
 	_events_seen = 0
 	selected = ""
 	preview = NONE
@@ -299,6 +364,7 @@ func undo() -> void:
 		_apply(cmd)
 		_log.append(cmd)
 	_events_seen = game.events.size()
+	_save_mission()
 	mode = ""
 	selected = unit
 	_message.text = ""
@@ -324,6 +390,13 @@ func _play(cmd: Dictionary) -> void:
 	)
 	_log.append(cmd)
 	_consume_events()
+	if game.result.is_empty():
+		_save_mission()
+	elif not _applied:
+		_applied = true
+		_summary = campaign.apply_mission(def, game)
+		SaveStore.save_campaign(campaign)
+		SaveStore.erase(SaveStore.MISSION)
 
 
 func _apply(cmd: Dictionary) -> bool:
@@ -343,6 +416,29 @@ func _apply(cmd: Dictionary) -> bool:
 # ---------------------------------------------------------------- affichage
 
 
+func _summary_text() -> String:
+	if _summary.is_empty():
+		return ""
+	var out := "\n"
+	if int(_summary.get("doubt", -1)) >= 0:
+		out += "\n" + tr("ATHENA_NOTE_%d" % _summary["doubt"]) + "\n"
+	if _summary["data"] > 0 or _summary["materials"] > 0:
+		out += "\n" + tr("UI_GAINS") % [_summary["data"], _summary["materials"]]
+	if not (_summary["stage"] as String).is_empty():
+		out += "\n" + tr("UI_NEW_STAGE") % tr("STAGE_" + (_summary["stage"] as String).to_upper())
+	var names := PackedStringArray()
+	for id: String in _summary["discoveries"]:
+		names.append(tr(campaign.discovery_defs[id]["title_key"]))
+	if not names.is_empty():
+		out += "\n" + tr("UI_NEW_DISCOVERIES") % ", ".join(names)
+	names = PackedStringArray()
+	for id: String in _summary["confirmed"]:
+		names.append(tr(campaign.hypotheses[id]["title_key"]))
+	if not names.is_empty():
+		out += "\n" + tr("UI_CONFIRMED") % ", ".join(names)
+	return out
+
+
 func _consume_events() -> void:
 	var lines := PackedStringArray()
 	for i in range(_events_seen, game.events.size()):
@@ -353,6 +449,16 @@ func _consume_events() -> void:
 				for c: Vector2i in e["cells"]:
 					names.append(Cells.name_of(c))
 				lines.append(tr("UI_DETECTED") % ", ".join(names))
+			"unit_attacked":
+				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
+			"unit_disabled":
+				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
+			"unit_silenced":
+				lines.append(tr("UI_SILENCED") % e["unit"])
+			"unit_reconnected":
+				lines.append(tr("UI_RECONNECTED") % e["unit"])
+			"guardian_neutralized":
+				lines.append(tr("UI_GUARD_DOWN") % e["guardian"])
 			"alert_changed":
 				lines.append(tr("UI_ALERT_NOW") % tr("ALERT_" + (e["level"] as String).to_upper()))
 			"script_action":
@@ -394,6 +500,8 @@ func _refresh() -> void:
 	if selected != "" and game.units[selected]["status"] == "active":
 		for a in game.available_actions(selected):
 			var b := _button("UI_ACT_" + (a["kind"] as String).to_upper(), do_action.bind(a))
+			if a["kind"] in ["attack", "repair"]:
+				b.text += " " + Cells.name_of(a["target"])
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			if a["kind"] == "probe":
 				b.toggle_mode = true
@@ -414,6 +522,7 @@ func _refresh() -> void:
 		for r: Dictionary in def.data["objectives"]["records"]:
 			var ok: bool = recs[r["id"]] and game.result == "victory"
 			text += "\n%s  %s" % ["✔" if ok else "✘", tr(r["text_key"])]
+		text += _summary_text()
 		_end_text.text = text
 		_next.visible = game.result == "victory" and _mission_index < MISSION_IDS.size() - 1
 	_board.queue_redraw()

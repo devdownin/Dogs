@@ -59,15 +59,16 @@
     { "id": "t_probe", "when": { "type": "turn_start", "turn": 2 },
       "do": [ { "type": "show_tip", "key": "TIP_PROBE" } ] },
     { "id": "t_seen", "when": { "type": "alert_at_least", "level": "warning" },
-      "do": [ { "type": "dialogue", "lines": [ { "speaker": "operator", "key": "M4_DLG_SEEN" } ] } ] },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M4_DLG_SEEN" } ] } ] },
     { "id": "t_beacon", "when": { "type": "interacted", "feature": "beacon" },
       "do": [
         { "type": "guardian_order", "guardian": "sen1", "face_cell": "E1" },
-        { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M4_DLG_BEACON" } ] }
+        { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M4_DLG_BEACON" } ] }
       ] }
   ],
   "rewards": { "data": 3, "fragments": 1, "per_record": { "data": 1 } },
   "campaign_effects": [
+    { "type": "discoveries", "ids": ["obs_sentinel_cycle"] },
     { "type": "codex", "entry": "sentinel" },
     { "type": "codex", "entry": "patroller" },
     { "type": "gauge", "gauge": "concord", "delta": 1, "if_record": "r_quiet" }

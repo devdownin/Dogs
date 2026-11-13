@@ -16,6 +16,7 @@ from sim import (
     COST,
     Mission,
     RuleError,
+    cell_name,
     expand,
     manhattan,
     parse_cell,
@@ -34,7 +35,8 @@ COND_PARAMS = {
     "reveal_ratio_at_least": ["value"], "terrain_entered": ["terrain"], "territory_revealed": ["territory"],
     "territory_entered": ["territory"], "never_end_turn_on": ["territory"], "unit_end_turn_on": ["territory"],
     "guardian_observed": [], "alert_at_least": ["level"], "alert_never_above": ["level"],
-    "countdown_expired": ["countdown"], "flag": ["name"]}
+    "countdown_expired": ["countdown"], "flag": ["name"], "guardian_neutralized": [],
+    "no_guardian_neutralized": []}
 
 
 def walk_conditions(c):
@@ -128,7 +130,7 @@ def static_checks(d, keys):
                     errs.append(f"déclencheur {t['id']} : {a['type']} sans paramètre {p}")
             if a.get("feature") and a["feature"] not in feat_ids:
                 errs.append(f"déclencheur {t['id']} : point d'intérêt inconnu {a['feature']}")
-            if a.get("guardian") and a["guardian"] not in guard_ids:
+            if a.get("guardian") and a["guardian"] not in [*guard_ids, "all"]:
                 errs.append(f"déclencheur {t['id']} : Gardien inconnu {a['guardian']}")
     for e in d["campaign_effects"]:
         if e.get("if_record") and e["if_record"] not in record_ids:
@@ -158,6 +160,92 @@ def static_checks(d, keys):
         if not ok:
             errs.append(f"point {f['id']} : aucune case adjacente accessible pour l'unité requise")
     return errs
+
+
+BRANCHES = {"observation", "link", "engineering", "xenology", "crew"}
+NATURES = {"knowledge_base", "sample", "observation", "chronicle"}
+STAGES = {"survival", "observation", "link", "research", "projection", "navigation"}
+
+
+def state_problems(g, state):
+    """Compare l'état final : unités [case, intégrité, statut], Gardiens [case, intégrité] ou "neutralized"."""
+    out = []
+    for uid, (cell, hp, status) in state.get("units", {}).items():
+        u = g.units[uid]
+        got = [cell_name(u["pos"]), u["hp"], u["status"]]
+        if got != [cell, hp, status]:
+            out.append(f"unité {uid} = {got}, attendu {[cell, hp, status]}")
+    for gid, want in state.get("guardians", {}).items():
+        gd = g.guards.get(gid)
+        got = "neutralized" if gd is None else [cell_name(gd["pos"]), gd["hp"]]
+        if got != want:
+            out.append(f"Gardien {gid} = {got}, attendu {want}")
+    return out
+
+
+def research_checks(root):
+    """Arbre de découverte : références, exclusivités, absence de cycle, traductions."""
+    errs = []
+    disc = json.loads((root / "research/discoveries.json").read_text(encoding="utf-8"))["discoveries"]
+    tree = json.loads((root / "research/tree.json").read_text(encoding="utf-8"))["hypotheses"]
+    with open(root / "i18n/research.csv", encoding="utf-8") as fh:
+        keys = {r["keys"] for r in csv.DictReader(fh) if r.get("fr") and r.get("en")}
+    dids = [d["id"] for d in disc]
+    hids = [h["id"] for h in tree]
+    for name, ids in (("découverte", dids), ("hypothèse", hids)):
+        errs += [f"{name} {i} en double" for i in {i for i in ids if ids.count(i) > 1}]
+    for d in disc:
+        if d["nature"] not in NATURES:
+            errs.append(f"découverte {d['id']} : nature {d['nature']} inconnue")
+        if d["title_key"] not in keys:
+            errs.append(f"découverte {d['id']} : clé {d['title_key']} non traduite")
+    used = set()
+    for h in tree:
+        req, w = h["requires"], f"hypothèse {h['id']}"
+        if h["branch"] not in BRANCHES:
+            errs.append(f"{w} : branche {h['branch']} inconnue")
+        for k in (h["title_key"], h["title_key"] + "_FX"):
+            if k not in keys:
+                errs.append(f"{w} : clé {k} non traduite")
+        if not any(req.get(k) for k in ("discoveries", "ship_stage", "hypotheses", "any_hypothesis")):
+            errs.append(f"{w} : rien ne la révèle (ni découverte, ni étape, ni hypothèse parente)")
+        if req.get("ship_stage", "survival") not in STAGES:
+            errs.append(f"{w} : étape {req['ship_stage']} inconnue")
+        for d in req.get("discoveries", []):
+            used.add(d)
+            if d not in dids:
+                errs.append(f"{w} : découverte {d} inconnue")
+        for p in req.get("hypotheses", []) + req.get("any_hypothesis", []):
+            if p not in hids:
+                errs.append(f"{w} : hypothèse parente {p} inconnue")
+        ex = h.get("exclusive_with")
+        if ex and next((o.get("exclusive_with") for o in tree if o["id"] == ex), None) != h["id"]:
+            errs.append(f"{w} : exclusivité avec {ex} non réciproque")
+        if h["cycles"] < 1 or h["data_cost"] < 0:
+            errs.append(f"{w} : durée ou coût invalide")
+    errs += [f"découverte {d} : n'alimente aucune hypothèse" for d in dids if d not in used]
+    for mf in sorted((root / "missions").glob("*.json")):
+        md = json.loads(mf.read_text(encoding="utf-8"))
+        for e in md.get("campaign_effects", []):
+            errs += [f"{mf.name} : découverte {i} inconnue" for i in e.get("ids", []) if e["type"] == "discoveries" and i not in dids]
+    parents = {h["id"]: h["requires"].get("hypotheses", []) + h["requires"].get("any_hypothesis", []) for h in tree}
+    state = {}
+
+    def cyclic(n):
+        if state.get(n) == 1:
+            return True
+        if state.get(n) == 2:
+            return False
+        state[n] = 1
+        bad = any(cyclic(p) for p in parents.get(n, []) if p in parents)
+        state[n] = 2
+        return bad
+
+    errs += [f"hypothèse {h} : dépendance circulaire" for h in hids if cyclic(h)]
+    print(f"{'OK ' if not errs else 'KO '} arbre de découverte ({len(hids)} hypothèses, {len(dids)} découvertes)")
+    for e in errs:
+        print(f"     - {e}")
+    return bool(errs)
 
 
 def main(root):
@@ -202,6 +290,7 @@ def main(root):
             for k, v in exp.get("records", {}).items():
                 if recs.get(k) != v:
                     problems.append(f"relevé {k} = {recs.get(k)}, attendu {v}")
+            problems += state_problems(g, exp.get("state", {}))
         except RuleError as e:
             problems = [f"commande illégale : {e}"]
             g = None
@@ -214,6 +303,8 @@ def main(root):
             for line in g.log:
                 print(f"       · {line}")
         failed |= bool(problems)
+    if (root / "research").exists():
+        failed |= research_checks(root)
     if missing_en:
         print(f"Note : {len(missing_en)} clés sans traduction anglaise.")
     return 1 if failed else 0

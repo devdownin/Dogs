@@ -1,0 +1,95 @@
+{
+  "format_version": 1,
+  "discoveries": [
+    {
+      "id": "obs_sentinel_cycle",
+      "nature": "observation",
+      "source_mission": "m4",
+      "title_key": "DISC_OBS_SENTINEL_CYCLE"
+    },
+    {
+      "id": "obs_signal_hunt",
+      "nature": "observation",
+      "source_mission": "m5",
+      "title_key": "DISC_OBS_SIGNAL_HUNT"
+    },
+    {
+      "id": "sample_recolored_soil",
+      "nature": "sample",
+      "source_mission": "m3",
+      "title_key": "DISC_SAMPLE_RECOLORED_SOIL"
+    },
+    {
+      "id": "sample_rock",
+      "nature": "sample",
+      "source_mission": "m2",
+      "title_key": "DISC_SAMPLE_ROCK"
+    },
+    {
+      "id": "sample_basin_crystal",
+      "nature": "sample",
+      "source_mission": "ii_4a",
+      "title_key": "DISC_SAMPLE_BASIN_CRYSTAL"
+    },
+    {
+      "id": "obs_node_captured",
+      "nature": "observation",
+      "source_mission": "ii_2",
+      "title_key": "DISC_OBS_NODE_CAPTURED"
+    },
+    {
+      "id": "debris_guardian",
+      "nature": "sample",
+      "source_mission": "m5",
+      "title_key": "DISC_DEBRIS_GUARDIAN"
+    },
+    {
+      "id": "chronicle_first",
+      "nature": "chronicle",
+      "source_mission": "m6",
+      "title_key": "DISC_CHRONICLE_FIRST"
+    },
+    {
+      "id": "kb_geometric_gardens",
+      "nature": "knowledge_base",
+      "source_mission": "ii_2",
+      "title_key": "DISC_KB_GEOMETRIC_GARDENS"
+    },
+    {
+      "id": "kb_voice_without_recipient",
+      "nature": "knowledge_base",
+      "source_mission": "iii_1",
+      "title_key": "DISC_KB_VOICE_WITHOUT_RECIPIENT"
+    },
+    {
+      "id": "kb_those_who_watch",
+      "nature": "knowledge_base",
+      "source_mission": "iii_2",
+      "title_key": "DISC_KB_THOSE_WHO_WATCH"
+    },
+    {
+      "id": "chronicle_two_versions_a",
+      "nature": "chronicle",
+      "source_mission": "iii_3",
+      "title_key": "DISC_CHRONICLE_TWO_VERSIONS_A"
+    },
+    {
+      "id": "chronicle_two_versions_b",
+      "nature": "chronicle",
+      "source_mission": "iii_3",
+      "title_key": "DISC_CHRONICLE_TWO_VERSIONS_B"
+    },
+    {
+      "id": "kb_last_protocol",
+      "nature": "knowledge_base",
+      "source_mission": "iii_6",
+      "title_key": "DISC_KB_LAST_PROTOCOL"
+    },
+    {
+      "id": "kb_master_relay",
+      "nature": "knowledge_base",
+      "source_mission": "iv_2",
+      "title_key": "DISC_KB_MASTER_RELAY"
+    }
+  ]
+}

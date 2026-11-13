@@ -1,7 +1,7 @@
-# Dogs of Gods — Fiches des missions 1 à 4 (prototype, jalon 1)
+# Dogs of Gods — Fiches des missions 1 à 5 (prototype)
 
-> **Version :** 1.0 — 12 novembre 2026
-> **Rôle :** contenu jouable du jalon 1 « Cœur » : quatre missions en aplats, sans graphisme définitif.
+> **Version :** 1.1 — 13 novembre 2026 (ajout de la Mission 5, premier combat)
+> **Rôle :** contenu jouable du prototype : cinq missions, sans graphisme définitif.
 > **Documents liés :** `dogs-gdd-v2-regles-campagne.md` (règles), `dogs-spec-technique-v2.md` (architecture), `brief-planche-style-3.md` (la carte de la Mission 4 reprend celle de la planche).
 > **Vérification :** les coûts de trajet cités ont été calculés par script sur les grilles ci-dessous. Les durées et l'intérêt de jeu restent à confirmer manette en main.
 
@@ -16,7 +16,7 @@ Ces points complètent le GDD (§3.5) ; ils y sont reportés.
 5. **Interagir et Interface** s'exercent sur une case adjacente.
 6. **Extraction.** Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone. Elle consomme l'action du tour.
 
-> **Données :** ces quatre missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
+> **Données :** ces cinq missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
 
 ### Légende commune
 
@@ -59,7 +59,8 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 |---|---|
 | Tour 1 | Bulle : toucher un drone, toucher une case, confirmer |
 | Première entrée en rocaille | Bulle : coût 2, la rocaille masque la vue |
-| Éclaireur en H1 | La vision depuis la mésa dévoile un large secteur ; des fragments manufacturés brillent en D2. Réplique de la xénologue. |
+| Tour 3 | ATHENA : la balise d'atterrissage n'intéresse personne ; ce sont les drones que quelque chose observe (premier indice) |
+| Éclaireur en H1 | La vision depuis la mésa dévoile un large secteur ; des fragments manufacturés brillent en D2. Réplique d'ATHENA. |
 | Retour des deux drones | Fin. Dernier plan : une silhouette immobile hors carte, au nord. |
 
 - **Échec :** impossible (aucune menace). Le repli avant H1 termine la mission sans récompense.
@@ -152,7 +153,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 | Déclencheur | Événement |
 |---|---|
 | Première case `v` révélée | Bulle : sur ce sol, vous êtes vus |
-| Relais posé | Le motif pulse et commence à avancer. Compteur de 5 tours affiché. |
+| Relais posé | Le motif pulse et commence à avancer. Compteur de 5 tours affiché. ATHENA : il s'est mis en mouvement quand le relais s'est connecté à elle. |
 | Chaque avancée | La ligne qui sera recouverte au tour suivant est annoncée |
 | Dernier drone extrait | Fin. Le motif s'arrête à la ligne atteinte. |
 
@@ -220,13 +221,53 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 |---|---|
 | Premier Gardien observé | Bulle : les hachures violettes montrent ce qu'il surveillera |
 | Tour 2 | Bulle : *Sonde* disponible |
-| Premier cran d'alerte franchi | Réplique : « Il nous a vus. Pourtant il n'attaque pas. » |
+| Premier cran d'alerte franchi | Réplique d'ATHENA : « Vous êtes détectés. Aucune attaque. » |
 | *Interface* sur la balise | La Sentinelle se tourne vers la balise, pas vers le drone. Fin. |
 
 - **Échec :** Technicien hors service. Aucun combat requis ni possible à ce stade.
 - **Récompenses :** 3 Données, 1 Fragment ; +1 Donnée par relevé.
 - **Effets de campagne :** fiche « Sentinelle » et « Patrouilleur » ouvertes dans l'Atlas ; Concorde +1 si *Veille* tenue.
 - **Découverte vérifiable :** le Gardien distingue les objets du terrain et hiérarchise ce qu'il regarde.
+
+---
+
+## Mission 5 — « Le prix d'un signal »
+
+| | |
+|---|---|
+| Acte, type, carte | I, défense, 10 × 10 |
+| Situation | Un relais intact pourrait joindre l'*Asterion*. L'émission attirera les machines. |
+| Question posée | Combien de temps tenir, et à quel prix ? |
+| **Règle introduite** | Combat sans hasard ; Protecteur (*Rempart*, *Ancrage*) ; *Se tapir* ; *Réparer* |
+| Déploiement | 2 Éclaireurs, 1 Technicien, 1 Protecteur, en B10, D10, E10, G10 |
+| Durée visée | 4 à 6 tours, 10 minutes |
+
+```
+      A  B  C  D  E  F  G  H  I  J
+  1   R  .  .  .  .  .  .  .  R  R
+  2   .  P1 R  .  .  .  .  .  .  .
+  3   .  .  .  .  .  R  .  .  .  .
+  4   .  R  .  .  X  .  .  .  R  .
+  5   .  .  .  R  o  .  .  .  .  .
+  6   .  .  .  .  .  .  .  R  P2 .
+  7   B  B  .  .  .  .  .  .  .  .
+  8   B  B  .  R  .  .  .  .  R  .
+  9   .  .  .  .  .  .  R  .  .  .
+ 10   .  b  .  b  b  .  b  .  .  R
+```
+
+`o` relais (ruine E5, se traverse, coût 2) · `P1` Patrouilleur B2 ↔ H2 · `P2` Patrouilleur I6 ↔ I2
+
+- **Objectif principal :** *Interface* du Technicien sur le relais, puis Technicien à côté du relais (D5, F5 ou E6) quand l'émission se termine, 3 phases plus tard.
+- **Relevé 1 :** aucun drone hors service. **Relevé 2 :** ne neutraliser aucun Gardien (Concorde +1).
+- **Échec :** Technicien hors service, ou émission non tenue au tour 10.
+- **À l'activation :** alerte à *Avertissement* ; les deux Patrouilleurs foncent vers le relais.
+
+**Solution de référence (4 tours, les deux relevés).** Tour 1 : approche (Technicien E8, Protecteur E7). Tour 2 : le Protecteur monte sur le relais E5 et se tapit ; le Technicien passe en E6 et active le relais. Tours 3 et 4 : le Protecteur se tapit, le Technicien le répare. Les Patrouilleurs s'arrêtent contre le Protecteur (*Ancrage*) et ne frappent que lui : 1 dégât chacun, compensé en partie par la réparation. Le Protecteur finit à 1 point.
+
+- **Pièges rejoués :** émettre sans couverture (le Patrouilleur met le Technicien hors service dès la phase 2) ; frapper au lieu de se tapir (le Protecteur tombe ; le Technicien peut le relever).
+- **Découverte vérifiable :** les Gardiens ne visent pas le relais mais ce qui parlait à ATHENA (découverte « Ils traquent ce qui parle à ATHENA » ; ouvre l'hypothèse *Silence radio*).
+- **Récompenses :** 4 Données, 2 Matériaux ; +1 Donnée par relevé ; étape « Liaison » du vaisseau.
 
 ---
 
@@ -238,6 +279,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 | Le drone lent crée-t-il de la planification, pas de l'ennui ? | 2 | Le joueur envoie les Éclaireurs devant sans qu'on le lui dise |
 | Le compte à rebours est-il tendu sans être injuste ? | 3 | Échec au premier essai rare, relevé 1 raté fréquent |
 | Les intentions visibles suffisent-elles à créer la réflexion ? | 4 | Le joueur attend volontairement un tour |
+| Le combat annoncé se lit-il comme une énigme plutôt qu'un échange de coups ? | 5 | Le joueur se tapit et répare au lieu de frapper |
 | La règle « vu seulement en fin de tour » est-elle comprise ? | 4 | Aucune détection jugée arbitraire |
 
 Si la Mission 4 n'est pas intéressante en aplats, aucun graphisme ne la sauvera : c'est le test décisif du jalon 1.

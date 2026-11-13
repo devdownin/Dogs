@@ -2,6 +2,7 @@ extends SceneTree
 ## Joue la scène principale par touchers simulés, comme le ferait un joueur.
 ## Usage : godot --headless --path . -s tests/run_ui.gd [-- --shots dossier]
 
+var main_scene: PackedScene = load("res://ui/main.tscn")
 var _failed := 0
 var _shots := ""
 
@@ -15,7 +16,9 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	var main: Control = (load("res://ui/main.tscn") as PackedScene).instantiate()
+	SaveStore.erase(SaveStore.MISSION)
+	SaveStore.erase(SaveStore.CAMPAIGN)
+	var main: Control = (main_scene as PackedScene).instantiate()
 	root.add_child(main)
 	await process_frame
 	await process_frame
@@ -50,11 +53,9 @@ func _run() -> void:
 	_tap(main, "E2")
 	_tap(main, "E2")
 	var acts: Array = main.game.available_actions("tec")
-	_check(
-		acts.size() == 1 and acts[0]["kind"] == "interface",
-		"le bouton Interface est proposé près de la balise"
-	)
-	_check(main._actions.get_child_count() == 1, "un seul bouton d'action affiché")
+	var kinds: Array = acts.map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds == ["interface", "brace"], "Interface et Se tapir proposés près de la balise")
+	_check(main._actions.get_child_count() == acts.size(), "un bouton par action possible")
 	main.do_action(acts[0])
 	_check(
 		main.game.result == "victory" and main.game.alert_max == 0,
@@ -114,6 +115,12 @@ func _run() -> void:
 
 	await _test_zoom(main)
 	await _test_probe(main)
+	await _test_combat(main)
+	main = await _test_resume(main)
+	await _test_research(main)
+	await _test_silence(main)
+	SaveStore.erase(SaveStore.MISSION)
+	SaveStore.erase(SaveStore.CAMPAIGN)
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
@@ -283,6 +290,130 @@ func _drag(board: BoardView, index: int, pos: Vector2) -> void:
 	e.index = index
 	e.position = pos
 	board._gui_input(e)
+
+
+## Mission 5 : le Protecteur tient le relais, les coups annoncés sont ceux portés.
+func _test_combat(main: Control) -> void:
+	main.load_mission(4)
+	main.reveal_all = false
+	for cmd: Dictionary in [
+		{"t": "move", "unit": "tec", "dest": "E8"},
+		{"t": "move", "unit": "pro", "dest": "E7"},
+		{"t": "move", "unit": "sc1", "dest": "C6"},
+		{"t": "move", "unit": "sc2", "dest": "G7"},
+		{"t": "end"},
+		{"t": "move", "unit": "pro", "dest": "E5"},
+		{"t": "act", "unit": "pro", "kind": "brace", "target": "-"},
+		{"t": "move", "unit": "tec", "dest": "E6"},
+		{"t": "act", "unit": "tec", "kind": "interface", "target": "E5"},
+		{"t": "end"}
+	]:
+		var c := cmd.duplicate()
+		if c.has("dest"):
+			c["dest"] = Cells.parse(c["dest"])
+		if c.has("target"):
+			c["target"] = Vector2i(-1, -1) if c["target"] == "-" else Cells.parse(c["target"])
+		main._play(c)
+	main.selected = "tec"
+	main._refresh()
+	var acts: Array = main.game.available_actions("tec")
+	var kinds: Array = acts.map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds.has("repair"), "le Technicien peut réparer le Protecteur blessé")
+	var announced: Array = main.game.intents()["attacks"]
+	_check(announced.size() == 2, "deux coups annoncés contre le relais")
+	await _shot(main, "m5_coups_annonces")
+	var before: int = main.game.units["pro"]["hp"]
+	main.do_action(acts[kinds.find("repair")])
+	_check(main.game.units["pro"]["hp"] == before + 1, "réparer rend 1 point d'intégrité")
+	var expected: int = before + 1
+	for at: Dictionary in main.game.intents()["attacks"]:
+		if at["unit"] == "pro":
+			expected -= int(at["damage"])
+	main.end_turn()
+	_check(main.game.units["pro"]["hp"] == expected, "les coups portés sont ceux annoncés")
+
+
+## Quitter l'application en pleine mission puis la relancer restitue la partie exacte.
+func _test_resume(main: Control) -> Control:
+	main.load_mission(3)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	main.end_turn()
+	_tap(main, "C10")
+	_tap(main, "C8")
+	_tap(main, "C8")
+	var before := JSON.stringify(
+		[main.game.turn, main.game.units, main.game.guards, main.game.revealed.keys()]
+	)
+	var could_undo: bool = not main._undo.disabled
+	main.queue_free()
+	await process_frame
+	var again: Control = (main_scene as PackedScene).instantiate()
+	root.add_child(again)
+	await process_frame
+	var after := JSON.stringify(
+		[again.game.turn, again.game.units, again.game.guards, again.game.revealed.keys()]
+	)
+	_check(
+		again._mission_index == 3 and after == before, "relance : la mission reprend à l'identique"
+	)
+	_check((not again._undo.disabled) == could_undo, "relance : le droit d'annuler est conservé")
+	return again
+
+
+## Écran d'ATHENA après deux missions : pistes visibles, étude lancée et sauvegardée.
+func _test_research(main: Control) -> void:
+	var c: Campaign = main.campaign
+	c.discoveries["sample_rock"] = true
+	c.discoveries["sample_recolored_soil"] = true
+	c.discoveries["obs_sentinel_cycle"] = true
+	c.ship_stage = "observation"
+	c.data = 9
+	main.open_research()
+	await _shot(main, "athena")
+	_check(main._research.visible, "l'écran d'ATHENA s'ouvre")
+	main._research._study("ing_1")
+	_check(c.studying.has("ing_1") and c.data == 6, "étudier depuis l'écran coûte les Données")
+	var saved := SaveStore.load_campaign()
+	_check(saved.studying.has("ing_1"), "l'étude lancée est sauvegardée")
+	await _shot(main, "athena_etude")
+	main._research.closed.emit()
+	_check(not main._research.visible, "retour à la carte")
+
+
+## Silence radio, une fois l'hypothèse confirmée : le drone disparaît des intentions.
+func _test_silence(main: Control) -> void:
+	var c: Campaign = main.campaign
+	c.discoveries["obs_signal_hunt"] = true
+	c.confirmed["obs_5"] = true
+	main.open_research()
+	await _shot(main, "athena_doute")
+	main._research.closed.emit()
+	main.load_mission(3)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	var kinds: Array = main.game.available_actions("tec").map(
+		func(a: Dictionary) -> String: return a["kind"]
+	)
+	_check(kinds.has("silence"), "« Silence radio » proposé une fois débloqué")
+	main.do_action({"kind": "silence", "target": Vector2i(-1, -1)})
+	_check(main.game.units["tec"]["silent"], "le Technicien coupe sa liaison")
+	main.end_turn()
+	_tap(main, "D7")
+	_tap(main, "D6")
+	_tap(main, "D6")
+	main.end_turn()
+	main.selected = "tec"
+	main._refresh()
+	kinds = main.game.available_actions("tec").map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds == ["reconnect"], "en silence, seule la reconnexion est possible")
+	await _shot(main, "m4_silence")
+	main.end_turn()
+	_check(
+		main.game.alert == 0, "en silence, attendre sous le regard de la Sentinelle ne trahit pas"
+	)
 
 
 func _tap(main: Control, cell: String) -> void:

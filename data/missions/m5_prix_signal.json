@@ -1,0 +1,222 @@
+{
+  "format_version": 1,
+  "id": "m5_prix_signal",
+  "act": 1,
+  "order": 5,
+  "title_key": "M5_TITLE",
+  "type": "defense",
+  "rule_introduced": "combat_protector",
+  "map": {
+    "width": 10,
+    "height": 10,
+    "rows": [
+      "R . . . . . . . R R",
+      ". . R . . . . . . .",
+      ". . . . . R . . . .",
+      ". R . . X . . . R .",
+      ". . . R X . . . . .",
+      ". . . . . . . R . .",
+      "B B . . . . . . . .",
+      "B B . R . . . . R .",
+      ". . . . . . R . . .",
+      ". . . . . . . . . R"
+    ],
+    "features": [
+      {
+        "id": "relay",
+        "kind": "relay_point",
+        "cell": "E5",
+        "label_key": "M5_RELAY"
+      }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      {
+        "id": "sc1",
+        "type": "scout",
+        "cell": "B10"
+      },
+      {
+        "id": "tec",
+        "type": "technician",
+        "cell": "D10"
+      },
+      {
+        "id": "pro",
+        "type": "protector",
+        "cell": "E10"
+      },
+      {
+        "id": "sc2",
+        "type": "scout",
+        "cell": "G10"
+      }
+    ],
+    "extraction": [
+      "B10:G10"
+    ]
+  },
+  "guardians": [
+    {
+      "id": "pat1",
+      "type": "patroller",
+      "cell": "B2",
+      "route": [
+        "B2",
+        "H2"
+      ],
+      "route_mode": "ping_pong"
+    },
+    {
+      "id": "pat2",
+      "type": "patroller",
+      "cell": "I6",
+      "route": [
+        "I6",
+        "I2"
+      ],
+      "route_mode": "ping_pong"
+    }
+  ],
+  "alert": {
+    "initial": "watch"
+  },
+  "objectives": {
+    "main": {
+      "text_key": "M5_OBJ_MAIN",
+      "condition": {
+        "all": [
+          {
+            "type": "countdown_expired",
+            "countdown": "signal"
+          },
+          {
+            "type": "unit_in",
+            "unit": "tec",
+            "cells": [
+              "D5",
+              "F5",
+              "E6"
+            ]
+          }
+        ]
+      },
+      "deadline_turn": 10
+    },
+    "records": [
+      {
+        "id": "r_intact",
+        "text_key": "M5_REC_INTACT",
+        "condition": {
+          "type": "no_unit_disabled"
+        }
+      },
+      {
+        "id": "r_spare",
+        "text_key": "M5_REC_SPARE",
+        "condition": {
+          "type": "no_guardian_neutralized"
+        }
+      }
+    ],
+    "failure": {
+      "type": "unit_disabled",
+      "unit": "tec"
+    },
+    "retreat_allowed": true
+  },
+  "triggers": [
+    {
+      "id": "t_combat",
+      "when": {
+        "type": "turn_start",
+        "turn": 1
+      },
+      "do": [
+        {
+          "type": "show_tip",
+          "key": "TIP_COMBAT"
+        }
+      ]
+    },
+    {
+      "id": "t_signal",
+      "when": {
+        "type": "interacted",
+        "feature": "relay"
+      },
+      "do": [
+        {
+          "type": "start_countdown",
+          "id": "signal",
+          "turns": 3,
+          "label_key": "M5_COUNTDOWN"
+        },
+        {
+          "type": "set_alert",
+          "level": "warning"
+        },
+        {
+          "type": "guardian_order",
+          "guardian": "all",
+          "chase_cell": "E5"
+        },
+        {
+          "type": "dialogue",
+          "lines": [
+            {
+              "speaker": "athena",
+              "key": "M5_DLG_SIGNAL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "t_sent",
+      "when": {
+        "type": "countdown_expired",
+        "countdown": "signal"
+      },
+      "do": [
+        {
+          "type": "dialogue",
+          "lines": [
+            {
+              "speaker": "athena",
+              "key": "M5_DLG_SENT"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "materials": 2,
+    "data": 4,
+    "per_record": {
+      "data": 1
+    },
+    "ship_stage": "link"
+  },
+  "campaign_effects": [
+    {
+      "type": "codex",
+      "entry": "combat"
+    },
+    {
+      "type": "gauge",
+      "gauge": "concord",
+      "delta": 1,
+      "if_record": "r_spare"
+    },
+    {
+      "type": "discoveries",
+      "ids": [
+        "obs_signal_hunt"
+      ]
+    }
+  ]
+}

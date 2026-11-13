@@ -5,7 +5,7 @@ M1_REC_MAP,Révéler 90 % de la carte.,Reveal 90% of the map.
 M1_REC_FAST,Terminer en 8 tours.,Finish within 8 turns.
 M1_SUMMIT,Point haut,High point
 M1_FRAGMENTS,Éclats réfléchissants,Reflective shards
-M1_DLG_FRAGMENTS,"Ces éclats en contrebas… ce n'est pas de la roche. C'est manufacturé.","Those shards down there… that isn't rock. It's manufactured."
+M1_DLG_FRAGMENTS,Éclats en contrebas : composition non minérale. Hypothèse : objets fabriqués.,Shards below: non-mineral composition. Hypothesis: manufactured objects.
 M1_OUTRO_SILHOUETTE,Une silhouette immobile au nord.,A motionless silhouette to the north.
 M2_TITLE,Échos dans la poussière,Echoes in the Dust
 M2_OBJ_MAIN,"Examiner les deux anomalies, analyser la source, rappeler le Technicien avant la fin du tour 12.","Examine both anomalies, analyse the source, recall the Technician before the end of turn 12."
@@ -13,8 +13,8 @@ M2_REC_FAST,Terminer en 8 tours.,Finish within 8 turns.
 M2_REC_RUINS,Révéler les trois cases de ruine.,Reveal all three ruin tiles.
 M2_ANOMALY,Anomalie,Anomaly
 M2_SOURCE,Source du signal,Signal source
-M2_DLG_TECH,"Le Technicien est lent et fragile. Mais lui seul sait parler aux machines.","The Technician is slow and fragile. But only it can talk to machines."
-M2_DLG_SIGNAL,"Le rythme a changé quand on l'a touché. Il répond à quelque chose.","The rhythm changed when we touched it. It's answering something."
+M2_DLG_TECH,Le Technicien est lent et fragile. C'est pourtant le seul qui sache parler aux machines.,The Technician is slow and fragile. Yet it is the only one that can talk to machines.
+M2_DLG_SIGNAL,Le rythme a changé au contact. Il répond à quelque chose. Destinataire inconnu.,The rhythm changed on contact. It is answering something. Recipient unknown.
 M3_TITLE,Une couleur de trop,One Colour Too Many
 M3_OBJ_MAIN,"Observer les deux bornes, poser le relais, puis rappeler toute la Meute.","Observe both markers, place the relay, then recall the whole Pack."
 M3_REC_CLEAN,Ne jamais finir un tour sur le sol recolorié.,Never end a turn on recoloured ground.
@@ -23,19 +23,29 @@ M3_MARKER,Borne de frontière,Boundary marker
 M3_RELAY,Point de relais,Relay point
 M3_RUIN,Ruine,Ruin
 M3_COUNTDOWN,Fermeture de l'extraction,Extraction closing
-M3_DLG_REACTION,"Le sol a changé depuis notre dernier passage. Il avance vers nous.","The ground has changed since we passed. It's moving toward us."
+M3_DLG_REACTION,Le motif s'est mis en mouvement à l'instant où le relais s'est connecté à moi. Pas avant.,The pattern started moving the moment the relay connected to me. Not before.
 M4_TITLE,Le veilleur,The Watcher
 M4_OBJ_MAIN,Activer la balise sur le plateau avec le Technicien.,Activate the beacon on the plateau with the Technician.
 M4_REC_QUIET,Ne jamais dépasser le cran Veille.,Never rise above Watch.
 M4_REC_MAP,Révéler 80 % de la carte.,Reveal 80% of the map.
 M4_BEACON,Balise,Beacon
-M4_DLG_SEEN,"Il nous a vus. Pourtant il n'attaque pas. Il attend quelque chose.","It saw us. Yet it isn't attacking. It's waiting for something."
-M4_DLG_BEACON,"Il ne regarde pas le drone. Il regarde la balise.","It isn't looking at the drone. It's looking at the beacon."
+M4_DLG_SEEN,Vous êtes détectés. Aucune attaque. Hypothèse : il attend une confirmation.,You are detected. No attack. Hypothesis: it is waiting for confirmation.
+M4_DLG_BEACON,Il ne suit pas le drone. Il suit la balise.,It is not tracking the drone. It is tracking the beacon.
 TIP_SELECT_MOVE,"Touchez un drone, puis une case. Touchez-la encore pour confirmer.","Tap a drone, then a tile. Tap it again to confirm."
-TIP_ROCKS,"La rocaille coûte 2 et bloque la vue.","Rocks cost 2 and block line of sight."
+TIP_ROCKS,La rocaille coûte 2 et bloque la vue.,Rocks cost 2 and block line of sight.
 TIP_EXTRACT,"Sur une case d'atterrissage, l'action Rappel fait quitter la carte.","On a landing tile, the Recall action takes a drone off the map."
-TIP_INTERACT,"Interagir s'utilise sur une case adjacente.","Interact works on an adjacent tile."
-TIP_WINDOW_CLOSING,"La fenêtre de transmission se ferme dans 2 tours.","The transmission window closes in 2 turns."
+TIP_INTERACT,Interagir s'utilise sur une case adjacente.,Interact works on an adjacent tile.
+TIP_WINDOW_CLOSING,La fenêtre de transmission se ferme dans 2 tours.,The transmission window closes in 2 turns.
 TIP_RECOLORED,"Sur ce sol, vous êtes toujours vus.","On this ground, you are always seen."
-TIP_INTENTS,"Les hachures violettes montrent ce qu'il surveillera au prochain tour.","Violet hatching shows what it will watch next turn."
-TIP_PROBE,"Sonde : révèle une zone de 3 × 3 à distance.","Probe: reveals a 3 × 3 area at range."
+TIP_INTENTS,Les hachures violettes montrent ce qu'il surveillera au prochain tour.,Violet hatching shows what it will watch next turn.
+TIP_PROBE,Sonde : révèle une zone de 3 × 3 à distance.,Probe: reveals a 3 × 3 area at range.
+M5_TITLE,Le prix d'un signal,The Price of a Signal
+M5_RELAY,Relais,Relay
+M5_OBJ_MAIN,Activer le relais avec le Technicien et le garder à côté jusqu'à la fin de l'émission.,Activate the relay with the Technician and keep it beside the relay until the transmission ends.
+M5_REC_INTACT,Aucun drone hors service.,No drone disabled.
+M5_REC_SPARE,Ne neutraliser aucun Gardien.,Neutralize no Guardian.
+M5_COUNTDOWN,Émission,Transmission
+M5_DLG_SIGNAL,Émission en cours. Trois cycles. Ils vont converger vers le relais : probabilité élevée.,Transmission under way. Three cycles. They will converge on the relay: high probability.
+M5_DLG_SENT,Signal reçu. Ils n'ont jamais visé le relais : ils visaient ce qui me parlait.,Signal received. They never targeted the relay: they targeted whatever was talking to me.
+TIP_COMBAT,Les Gardiens annoncent leurs coups. Se tapir : −1 dégât. Un coup porte toujours au moins 1.,Guardians announce their strikes. Brace: −1 damage. A hit always deals at least 1.
+M1_DLG_TRACKED,La balise d'atterrissage émet en continu. Rien ne s'en approche. Ce sont les drones que quelque chose observe.,The landing beacon broadcasts constantly. Nothing approaches it. Something is watching the drones.

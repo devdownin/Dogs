@@ -1,0 +1,466 @@
+{
+  "format_version": 1,
+  "lanes": {
+    "initial": 1,
+    "after_ship_stage": {
+      "research": 2
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "obs_1",
+      "branch": "observation",
+      "title_key": "HYP_OBS_1",
+      "requires": {
+        "discoveries": [],
+        "ship_stage": "observation"
+      },
+      "cycles": 1,
+      "data_cost": 3,
+      "effect": {
+        "type": "orbital_survey",
+        "ratio": 0.2
+      }
+    },
+    {
+      "id": "obs_2",
+      "branch": "observation",
+      "title_key": "HYP_OBS_2",
+      "requires": {
+        "discoveries": [
+          "obs_sentinel_cycle"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 4,
+      "effect": {
+        "type": "show_next_sentinel_facing"
+      }
+    },
+    {
+      "id": "obs_3",
+      "branch": "observation",
+      "title_key": "HYP_OBS_3",
+      "requires": {
+        "discoveries": [
+          "sample_recolored_soil"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "territory_visible_in_fog"
+      }
+    },
+    {
+      "id": "obs_4",
+      "branch": "observation",
+      "title_key": "HYP_OBS_4",
+      "requires": {
+        "discoveries": [
+          "kb_those_who_watch"
+        ],
+        "hypotheses": [
+          "obs_2"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "probe_shape",
+        "shape": "cross",
+        "radius": 2
+      }
+    },
+    {
+      "id": "obs_5",
+      "branch": "observation",
+      "title_key": "HYP_OBS_5",
+      "requires": {
+        "discoveries": [
+          "obs_signal_hunt"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 4,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "radio_silence"
+      }
+    },
+    {
+      "id": "lia_1",
+      "branch": "link",
+      "title_key": "HYP_LIA_1",
+      "requires": {
+        "discoveries": [
+          "obs_node_captured"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 4,
+      "effect": {
+        "type": "unlock_module",
+        "module": "onboard_relay"
+      }
+    },
+    {
+      "id": "lia_2",
+      "branch": "link",
+      "title_key": "HYP_LIA_2",
+      "requires": {
+        "discoveries": [
+          "sample_basin_crystal"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "basin_link_bonus"
+      }
+    },
+    {
+      "id": "lia_3",
+      "branch": "link",
+      "title_key": "HYP_LIA_3",
+      "requires": {
+        "discoveries": [
+          "kb_voice_without_recipient"
+        ],
+        "hypotheses": [
+          "lia_1"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "node_grace_turns",
+        "turns": 2
+      }
+    },
+    {
+      "id": "ing_1",
+      "branch": "engineering",
+      "title_key": "HYP_ING_1",
+      "requires": {
+        "discoveries": [
+          "sample_rock"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 3,
+      "effect": {
+        "type": "unlock_module",
+        "module": "rock_tracks"
+      }
+    },
+    {
+      "id": "ing_2",
+      "branch": "engineering",
+      "title_key": "HYP_ING_2",
+      "requires": {
+        "discoveries": [
+          "debris_guardian"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 4,
+      "effect": {
+        "type": "unlock_module",
+        "module": "ablative_armor"
+      }
+    },
+    {
+      "id": "ing_3",
+      "branch": "engineering",
+      "title_key": "HYP_ING_3",
+      "requires": {
+        "discoveries": [
+          "kb_last_protocol"
+        ],
+        "hypotheses": [
+          "ing_2"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "ability_cooldown",
+        "ability": "impulse",
+        "turns": 2
+      }
+    },
+    {
+      "id": "xen_1",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_1",
+      "requires": {
+        "discoveries": [
+          "chronicle_first"
+        ]
+      },
+      "cycles": 1,
+      "data_cost": 3,
+      "effect": {
+        "type": "preview_knowledge_bases"
+      }
+    },
+    {
+      "id": "xen_2",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_2",
+      "requires": {
+        "discoveries": [
+          "kb_geometric_gardens"
+        ],
+        "hypotheses": [
+          "xen_1"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "show_wake_threshold"
+      }
+    },
+    {
+      "id": "xen_3a",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_3A",
+      "requires": {
+        "discoveries": [
+          "chronicle_two_versions_a"
+        ],
+        "hypotheses": [
+          "xen_2"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 8,
+      "effect": {
+        "type": "campaign",
+        "gauge": "concord",
+        "value": 1,
+        "unlock_dialogue": "iv_2_protectors"
+      },
+      "exclusive_with": "xen_3b"
+    },
+    {
+      "id": "xen_3b",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_3B",
+      "requires": {
+        "discoveries": [
+          "chronicle_two_versions_b"
+        ],
+        "hypotheses": [
+          "xen_2"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 8,
+      "effect": {
+        "type": "campaign",
+        "gauge": "dominion",
+        "value": 1,
+        "unlock_weakness": "arbiter"
+      },
+      "exclusive_with": "xen_3a"
+    },
+    {
+      "id": "xen_3r",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_3R",
+      "requires": {
+        "discoveries": [
+          "kb_master_relay"
+        ],
+        "hypotheses": [
+          "xen_3a"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 8,
+      "effect": {
+        "type": "campaign",
+        "revise": "xen_3a",
+        "unlock_weakness": "arbiter",
+        "gauge": "knowledge",
+        "value": 1
+      }
+    },
+    {
+      "id": "xen_4",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_4",
+      "requires": {
+        "discoveries": [
+          "kb_master_relay"
+        ],
+        "any_hypothesis": [
+          "xen_3b",
+          "xen_3r"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 10,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "arbiter_negotiation"
+      }
+    },
+    {
+      "id": "crew_0",
+      "branch": "crew",
+      "title_key": "HYP_CREW_0",
+      "requires": {
+        "discoveries": [],
+        "ship_stage": "research"
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "stasis_wake"
+      }
+    },
+    {
+      "id": "crew_medic",
+      "branch": "crew",
+      "title_key": "HYP_CREW_MEDIC",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_0"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 4,
+      "effect": {
+        "type": "crew_wake",
+        "member": "medic",
+        "bonus": {
+          "wake_cycles": -1
+        }
+      }
+    },
+    {
+      "id": "crew_operator",
+      "branch": "crew",
+      "title_key": "HYP_CREW_OPERATOR",
+      "requires": {
+        "discoveries": [
+          "debris_guardian"
+        ],
+        "hypotheses": [
+          "crew_medic"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "crew_wake",
+        "member": "pack_operator",
+        "bonus": {
+          "veteran_trait_choices": 3
+        }
+      }
+    },
+    {
+      "id": "crew_systems",
+      "branch": "crew",
+      "title_key": "HYP_CREW_SYSTEMS",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_medic"
+        ],
+        "ship_stage": "link"
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "crew_wake",
+        "member": "systems",
+        "bonus": {
+          "energy": 1
+        }
+      }
+    },
+    {
+      "id": "crew_xenologist",
+      "branch": "crew",
+      "title_key": "HYP_CREW_XENOLOGIST",
+      "requires": {
+        "discoveries": [
+          "kb_geometric_gardens"
+        ],
+        "hypotheses": [
+          "crew_medic"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "crew_wake",
+        "member": "xenologist",
+        "bonus": {
+          "xenology_cycles": -1
+        }
+      }
+    },
+    {
+      "id": "crew_commander",
+      "branch": "crew",
+      "title_key": "HYP_CREW_COMMANDER",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_operator",
+          "crew_systems",
+          "crew_xenologist"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 8,
+      "effect": {
+        "type": "crew_wake",
+        "member": "commander",
+        "bonus": {
+          "unlock_choices": [
+            "iv_2",
+            "iv_4"
+          ]
+        }
+      }
+    },
+    {
+      "id": "crew_pilot",
+      "branch": "crew",
+      "title_key": "HYP_CREW_PILOT",
+      "requires": {
+        "discoveries": [],
+        "hypotheses": [
+          "crew_medic"
+        ],
+        "ship_stage": "navigation"
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "crew_wake",
+        "member": "pilot",
+        "bonus": {
+          "transit_window_turns": 2
+        }
+      }
+    }
+  ],
+  "crew": {
+    "size": 6,
+    "awake_at_start": 0,
+    "energy_cost_per_awake": 1
+  }
+}

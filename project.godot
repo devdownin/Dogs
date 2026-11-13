@@ -26,7 +26,7 @@ pointing/emulate_mouse_from_touch=true
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://data/i18n/missions.fr.translation", "res://data/i18n/missions.en.translation", "res://data/i18n/ui.fr.translation", "res://data/i18n/ui.en.translation")
+locale/translations=PackedStringArray("res://data/i18n/missions.fr.translation", "res://data/i18n/missions.en.translation", "res://data/i18n/ui.fr.translation", "res://data/i18n/ui.en.translation", "res://data/i18n/research.fr.translation", "res://data/i18n/research.en.translation")
 locale/fallback="fr"
 
 [rendering]

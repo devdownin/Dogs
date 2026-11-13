@@ -7,9 +7,8 @@ extends RefCounted
 ## présentation les lit et les anime sans jamais modifier l'état.
 ## Aucun hasard : rejouer les mêmes commandes donne le même état.
 ##
-## Périmètre du jalon 1 : déplacement, vision, détection, alerte, territoire,
-## objectifs et déclencheurs. Combat, modules et Liaison viendront avec les
-## missions qui les utilisent.
+## Périmètre : déplacement, vision, détection, alerte, territoire, combat sans hasard,
+## objectifs et déclencheurs. Modules et Liaison viendront avec les missions qui les utilisent.
 
 const UNITS := {
 	# mouvement, intégrité, vision
@@ -24,8 +23,15 @@ const ALERTS: Array[String] = ["watch", "warning", "interception", "lockdown"]
 const INTERFACE_KINDS: Array[String] = ["signal_source", "relay_point", "beacon", "node"]
 const PROBE_RANGE := 5  # distance maximale entre l'Éclaireur et le centre de la zone
 const PROBE_RADIUS := 1  # zone de 3 × 3
+const GUARD_HP := {"sentinel": 3, "patroller": 3, "regulator": 5, "herald": 2}
+const ATTACK := {"protector": [1, 1, 1], "interceptor": [2, 1, 2]}  # dégâts, portée min, max
+const PATROLLER_DAMAGE := 2
+const SENTINEL_DAMAGE := 1
+const SENTINEL_RANGE := 3
+const NO_CELL := Vector2i(-1, -1)
 
 var def: MissionDef
+var rules: Dictionary[String, bool] = {}  # règles débloquées par la campagne (radio_silence…)
 var units: Dictionary[String, Dictionary] = {}
 var guards: Dictionary[String, Dictionary] = {}
 var recolored: Dictionary[Vector2i, bool] = {}
@@ -33,6 +39,7 @@ var revealed: Dictionary[Vector2i, bool] = {}
 var current_vision: Dictionary[Vector2i, bool] = {}
 var probed: Dictionary[Vector2i, bool] = {}  # zone sondée, observée jusqu'au prochain tour
 var observed_guards: Dictionary[String, bool] = {}
+var neutralized: Dictionary[String, bool] = {}
 var interacted: Dictionary[String, bool] = {}
 var flags: Dictionary[String, bool] = {}
 var terrains_entered: Dictionary[String, bool] = {}
@@ -57,8 +64,10 @@ var _fired: Dictionary[String, bool] = {}
 var _seq: Dictionary[String, int] = {}
 
 
-func _init(mission: MissionDef) -> void:
+func _init(mission: MissionDef, unlocked: Array = []) -> void:
 	def = mission
+	for r: String in unlocked:
+		rules[r] = true
 	var d := def.data
 	for u: Dictionary in d["deployment"]["units"]:
 		units[u["id"]] = {
@@ -67,7 +76,10 @@ func _init(mission: MissionDef) -> void:
 			"hp": UNITS[u["type"]][1],
 			"status": "active",
 			"moved": false,
-			"acted": false
+			"acted": false,
+			"braced": false,
+			"rampart": false,
+			"silent": false
 		}
 	for g: Dictionary in d["guardians"]:
 		var route: Array[Vector2i] = []
@@ -81,7 +93,9 @@ func _init(mission: MissionDef) -> void:
 			"route": route,
 			"mode": g.get("route_mode", "loop"),
 			"ri": 0,
-			"dirn": 1
+			"dirn": 1,
+			"hp": GUARD_HP[g["type"]],
+			"chase": NO_CELL
 		}
 	for p in Cells.expand(d["map"].get("territory", {}).get("recolored", [])):
 		recolored[p] = true
@@ -134,6 +148,9 @@ func available_actions(uid: String) -> Array[Dictionary]:
 	var u := units[uid]
 	if u["status"] != "active" or u["acted"] or not result.is_empty():
 		return out
+	if u["silent"]:
+		out.append({"kind": "reconnect", "target": NO_CELL, "feature": ""})
+		return out
 	for fid in def.features:
 		var f := def.features[fid]
 		if interacted.has(fid) or Cells.manhattan(f["pos"], u["pos"]) != 1:
@@ -144,9 +161,24 @@ func available_actions(uid: String) -> Array[Dictionary]:
 		elif f["kind"] in ["anomaly", "fragment_cache"]:
 			out.append({"kind": "interact", "target": f["pos"], "feature": fid})
 	if u["type"] == "scout":
-		out.append({"kind": "probe", "target": Vector2i(-1, -1), "feature": ""})
+		out.append({"kind": "probe", "target": NO_CELL, "feature": ""})
+	for gid in guards:
+		if can_attack(uid, guards[gid]["pos"]):
+			out.append({"kind": "attack", "target": guards[gid]["pos"], "feature": gid})
+	if u["type"] == "technician":
+		for id in units:
+			var o := units[id]
+			if id == uid or o["status"] == "extracted" or Cells.manhattan(o["pos"], u["pos"]) != 1:
+				continue
+			if o["status"] == "disabled" or o["hp"] < UNITS[o["type"]][1]:
+				out.append({"kind": "repair", "target": o["pos"], "feature": id})
+	if u["type"] == "protector":
+		out.append({"kind": "rampart", "target": NO_CELL, "feature": ""})
+	out.append({"kind": "brace", "target": NO_CELL, "feature": ""})
+	if rules.has("radio_silence"):
+		out.append({"kind": "silence", "target": NO_CELL, "feature": ""})
 	if extraction_open and def.extraction.has(u["pos"]):
-		out.append({"kind": "extract", "target": Vector2i(-1, -1), "feature": ""})
+		out.append({"kind": "extract", "target": NO_CELL, "feature": ""})
 	return out
 
 
@@ -174,24 +206,37 @@ func probe_area(center: Vector2i) -> Array[Vector2i]:
 	return out
 
 
-## Ce que les Gardiens observés surveilleront à leur prochaine phase.
-## C'est exactement ce que guardian_phase() appliquera : l'affichage ne ment jamais.
+## Ce que les Gardiens observés feront à leur prochaine phase : cases surveillées, trajets, coups.
+## C'est exactement ce que _guardian_phase() appliquera : l'affichage ne ment jamais.
 func intents() -> Dictionary:
+	var plan := _plan()
 	var watched: Dictionary[Vector2i, bool] = {}
 	var routes: Dictionary[String, Array] = {}
-	for gid in guards:
+	var attacks: Array[Dictionary] = []
+	for gid: String in plan["guards"]:
 		if not observed_guards.has(gid):
 			continue
-		var g := guards[gid]
-		if g["type"] == "sentinel":
-			watched.merge(def.cone(g["pos"], _sentinel_facing(g, turn)))
-		elif g["type"] == "patroller" and not g["route"].is_empty():
-			var wp := _next_waypoint(g)
-			var path := _patrol_path(g, g["route"][wp[0]])
-			routes[gid] = path
-			var end: Vector2i = g["pos"] if path.is_empty() else path[-1]
-			watched.merge(def.vision(end, PATROLLER_SIGHT))
-	return {"watched": watched, "routes": routes}
+		var pl: Dictionary = plan["guards"][gid]
+		watched.merge(pl["watched"])
+		if guards[gid]["type"] == "patroller":
+			routes[gid] = pl["path"]
+	for at: Dictionary in plan["attacks"]:
+		if observed_guards.has(at["guardian"]):
+			attacks.append(at)
+	return {"watched": watched, "routes": routes, "attacks": attacks}
+
+
+## Un drone peut-il frapper la case `t` (portée, ligne de vue) ?
+func can_attack(uid: String, t: Vector2i) -> bool:
+	var u := units[uid]
+	if not ATTACK.has(u["type"]) or u["status"] != "active" or u["acted"] or u["silent"]:
+		return false
+	var d := Cells.manhattan(u["pos"], t)
+	return (
+		d >= ATTACK[u["type"]][1]
+		and d <= ATTACK[u["type"]][2]
+		and def.los(u["pos"], t, def.elevated.has(u["pos"]))
+	)
 
 
 func records() -> Dictionary[String, bool]:
@@ -211,6 +256,8 @@ func start_turn() -> void:
 	for id in units:
 		units[id]["moved"] = false
 		units[id]["acted"] = false
+		units[id]["braced"] = false
+		units[id]["rampart"] = false
 	_emit({"type": "turn_started", "turn": turn})
 	_check()
 
@@ -234,7 +281,8 @@ func move(uid: String, dest: Vector2i) -> bool:
 		terrains_entered[def.terrain(p)] = true
 		if recolored.has(p):
 			territory_entered = true
-		revealed.merge(def.vision(p, UNITS[u["type"]][2]))
+		if not u["silent"]:
+			revealed.merge(def.vision(p, UNITS[u["type"]][2]))
 	u["pos"] = dest
 	u["moved"] = true
 	_emit({"type": "unit_moved", "unit": uid, "path": path})
@@ -243,15 +291,28 @@ func move(uid: String, dest: Vector2i) -> bool:
 	return true
 
 
-## kind : "interact", "interface", "probe" ou "extract". `target` : case du point d'intérêt
-## ou centre de la Sonde.
+## kind : "interact", "interface", "probe", "extract", "attack", "brace", "rampart", "repair",
+## "silence", "reconnect".
+## `target` : case du point d'intérêt, centre de la Sonde, Gardien visé ou allié à réparer.
 func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 	if not _can_command(uid):
 		return false
 	var u := units[uid]
 	if u["acted"]:
 		return _refuse("%s a déjà agi" % uid)
+	if u["silent"] and kind != "reconnect":
+		return _refuse("%s est en silence radio" % uid)
 	match kind:
+		"silence":
+			if not rules.has("radio_silence"):
+				return _refuse("silence radio non débloqué")
+			u["silent"] = true
+			_emit({"type": "unit_silenced", "unit": uid})
+		"reconnect":
+			if not u["silent"]:
+				return _refuse("%s est déjà relié" % uid)
+			u["silent"] = false
+			_emit({"type": "unit_reconnected", "unit": uid})
 		"extract":
 			if not extraction_open or not def.extraction.has(u["pos"]):
 				return _refuse("%s : rappel impossible ici" % uid)
@@ -263,6 +324,56 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 			for p in probe_area(target):
 				probed[p] = true
 			_emit({"type": "probe_launched", "unit": uid, "center": target})
+		"attack":
+			var gid := _guard_at(target)
+			if gid.is_empty() or not can_attack(uid, target):
+				return _refuse("%s : attaque impossible en %s" % [uid, Cells.name_of(target)])
+			var g := guards[gid]
+			var dmg: int = ATTACK[u["type"]][0]
+			if (
+				Cells.manhattan(u["pos"], target) > 1
+				and def.terrain(target) in MissionDef.BLOCKS_LOS
+			):
+				dmg -= 1  # couvert contre les tirs à distance
+			dmg = maxi(1, dmg)
+			g["hp"] -= dmg
+			_emit({"type": "guardian_damaged", "unit": uid, "guardian": gid, "damage": dmg})
+			if g["hp"] <= 0:
+				guards.erase(gid)
+				neutralized[gid] = true
+				_emit({"type": "guardian_neutralized", "guardian": gid})
+				if alert_enabled:
+					quiet_phases = 0
+					_set_alert(alert + 1)
+		"brace":
+			u["braced"] = true
+			_emit({"type": "unit_braced", "unit": uid})
+		"rampart":
+			if u["type"] != "protector":
+				return _refuse("%s : Rempart réservé au Protecteur" % uid)
+			u["rampart"] = true
+			_emit({"type": "rampart_raised", "unit": uid})
+		"repair":
+			var ally := ""
+			for id in units:
+				if units[id]["pos"] == target and units[id]["status"] != "extracted":
+					ally = id
+			if (
+				u["type"] != "technician"
+				or ally.is_empty()
+				or ally == uid
+				or Cells.manhattan(target, u["pos"]) != 1
+			):
+				return _refuse("%s : réparation impossible en %s" % [uid, Cells.name_of(target)])
+			var o := units[ally]
+			if o["status"] == "disabled":
+				o["status"] = "active"
+				o["hp"] = 1
+			elif o["hp"] < UNITS[o["type"]][1]:
+				o["hp"] += 1
+			else:
+				return _refuse("%s est intact" % ally)
+			_emit({"type": "unit_repaired", "unit": ally, "hp": o["hp"]})
 		"interact", "interface":
 			var fid := ""
 			for id in def.features:
@@ -305,52 +416,56 @@ func end_player_turn() -> void:
 
 
 func _guardian_phase() -> void:
-	var watched: Dictionary[Vector2i, bool] = {}
-	var detected: Dictionary[Vector2i, bool] = {}
-	var unit_at: Dictionary[Vector2i, String] = {}
-	for id in active_units():
-		unit_at[units[id]["pos"]] = id
-	for gid in guards:
+	var plan := _plan()
+	for gid: String in plan["guards"]:
 		var g := guards[gid]
-		if g["type"] == "patroller" and not g["route"].is_empty():
-			var wp := _next_waypoint(g)
-			g["ri"] = wp[0]
-			g["dirn"] = wp[1]
-			var walked: Array[Vector2i] = []
-			for p in _patrol_path(g, g["route"][g["ri"]]):
-				if unit_at.has(p):
-					detected[p] = true  # un drone barre la route
-					break
-				g["pos"] = p
-				walked.append(p)
-			_emit({"type": "guardian_moved", "guardian": gid, "path": walked})
-			watched.merge(def.vision(g["pos"], PATROLLER_SIGHT))
+		var pl: Dictionary = plan["guards"][gid]
+		var path: Array[Vector2i] = pl["path"]
+		if g["type"] == "patroller":
+			if not path.is_empty():
+				g["pos"] = path[-1]
+			if g["chase"] == NO_CELL:
+				g["ri"] = pl["ri"]
+				g["dirn"] = pl["dirn"]
+			elif g["pos"] == g["chase"]:
+				g["chase"] = NO_CELL
+			_emit({"type": "guardian_moved", "guardian": gid, "path": path})
 		elif g["type"] == "sentinel":
-			g["facing"] = _sentinel_facing(g, turn)
+			g["facing"] = pl["facing"]
 			_emit({"type": "guardian_turned", "guardian": gid, "facing": g["facing"]})
-			watched.merge(def.cone(g["pos"], g["facing"]))
-	for p: Vector2i in unit_at:
-		var u := units[unit_at[p]]
-		var near_guard := false
-		for gid in guards:
-			if Cells.manhattan(p, guards[gid]["pos"]) == 1:
-				near_guard = true
-		var hidden: bool = (
-			u["type"] == "scout" and def.terrain(p) in MissionDef.BLOCKS_LOS and not near_guard
+	for at: Dictionary in plan["attacks"]:
+		var u := units[at["unit"]]
+		u["hp"] -= int(at["damage"])
+		_emit(
+			{
+				"type": "unit_attacked",
+				"guardian": at["guardian"],
+				"unit": at["unit"],
+				"damage": at["damage"],
+				"hp": u["hp"]
+			}
 		)
-		if (watched.has(p) and not hidden) or (recolored.has(p) and not guards.is_empty()):
-			detected[p] = true
+		if u["hp"] <= 0:
+			u["status"] = "disabled"
+			_emit({"type": "unit_disabled", "unit": at["unit"]})
+	var detected: Dictionary[Vector2i, bool] = plan["detected"]
 	if alert_enabled and not guards.is_empty():
 		if not detected.is_empty():
 			quiet_phases = 0
 			_set_alert(alert + 1)
 			_emit({"type": "units_detected", "cells": detected.keys()})
+			for gid in guards:
+				if guards[gid]["type"] == "patroller":
+					guards[gid]["chase"] = _nearest(detected.keys(), guards[gid]["pos"])
 		else:
 			quiet_phases += 1
 			if quiet_phases >= 3 and alert > 0:
 				quiet_phases = 0
 				alert -= 1
 				_emit({"type": "alert_changed", "level": alert_name()})
+				if alert == 0:
+					for gid in guards:
+						guards[gid]["chase"] = NO_CELL
 	if not advance.is_empty():
 		var front := -1
 		for p: Vector2i in recolored:
@@ -379,6 +494,170 @@ func _guardian_phase() -> void:
 	_refresh_vision()
 
 
+## Simule la phase des Gardiens sans modifier l'état. Sert à la fois aux intentions
+## affichées et à la phase elle-même : les deux ne peuvent donc pas diverger.
+## Ordre : déplacements et regards (dans l'ordre de la mission), coups portés avec le cran
+## d'alerte du début de phase, puis détection.
+func _plan() -> Dictionary:
+	var unit_at: Dictionary[Vector2i, String] = {}
+	var protectors: Array[Vector2i] = []
+	for id in active_units():
+		unit_at[units[id]["pos"]] = id
+		if units[id]["type"] == "protector":
+			protectors.append(units[id]["pos"])
+	var gpos: Dictionary[String, Vector2i] = {}
+	for gid in guards:
+		gpos[gid] = guards[gid]["pos"]
+	var out_guards: Dictionary[String, Dictionary] = {}
+	var watched: Dictionary[Vector2i, bool] = {}
+	var detected: Dictionary[Vector2i, bool] = {}
+	for gid in guards:
+		var g := guards[gid]
+		var path: Array[Vector2i] = []
+		var pl := {"facing": "", "ri": g["ri"], "dirn": g["dirn"]}
+		var seen: Dictionary[Vector2i, bool] = {}
+		if g["type"] == "patroller":
+			var target: Vector2i = g["chase"]
+			if target == NO_CELL and not g["route"].is_empty():
+				var wp := _next_waypoint(g)
+				pl["ri"] = wp[0]
+				pl["dirn"] = wp[1]
+				target = g["route"][wp[0]]
+			if target != NO_CELL and target != g["pos"]:
+				var others: Dictionary[Vector2i, bool] = {}
+				for k: String in gpos:
+					if k != gid:
+						others[gpos[k]] = true
+				var res := def.paths(g["pos"], others)
+				if res["dist"].has(target):
+					var full := MissionDef.trace(res["prev"], g["pos"], target)
+					for p in full.slice(0, PATROLLER_MOVE):
+						if unit_at.has(p):
+							if not units[unit_at[p]]["silent"]:
+								detected[p] = true  # un drone barre la route
+							break
+						path.append(p)
+						if _next_to_any(p, protectors):
+							break  # Ancrage du Protecteur
+			var end: Vector2i = g["pos"] if path.is_empty() else path[-1]
+			gpos[gid] = end
+			seen = def.vision(end, PATROLLER_SIGHT)
+		elif g["type"] == "sentinel":
+			pl["facing"] = _sentinel_facing(g, turn)
+			seen = def.cone(g["pos"], pl["facing"])
+		pl["path"] = path
+		pl["watched"] = seen
+		watched.merge(seen)
+		out_guards[gid] = pl
+	var hp: Dictionary[String, int] = {}  # drones visibles : un drone en silence n'est ni vu ni visé
+	for id in active_units():
+		if not units[id]["silent"]:
+			hp[id] = units[id]["hp"]
+	var cells: Array[Vector2i] = []
+	cells.assign(gpos.values())
+	var attacks: Array[Dictionary] = []
+	for gid in guards:
+		var g := guards[gid]
+		var pos: Vector2i = gpos[gid]
+		var cand: Array[String] = []
+		var base := 0
+		var ranged := false
+		if g["type"] == "patroller" and alert >= 1:
+			base = PATROLLER_DAMAGE
+			for id: String in hp:
+				if hp[id] > 0 and Cells.manhattan(units[id]["pos"], pos) == 1:
+					cand.append(id)
+		elif g["type"] == "sentinel" and alert >= 2:
+			base = SENTINEL_DAMAGE
+			ranged = true
+			var cone: Dictionary = out_guards[gid]["watched"]
+			for id: String in hp:
+				var p: Vector2i = units[id]["pos"]
+				if (
+					hp[id] > 0
+					and cone.has(p)
+					and Cells.manhattan(p, pos) <= SENTINEL_RANGE
+					and not _hidden(id, cells)
+				):
+					cand.append(id)
+		if cand.is_empty():
+			continue
+		var best := cand[0]
+		for id in cand:
+			if _attack_key_less(id, best, pos, hp):
+				best = id
+		var dmg := _damage_to(best, base, ranged)
+		hp[best] -= dmg
+		attacks.append({"guardian": gid, "unit": best, "damage": dmg, "from": pos})
+	for p: Vector2i in unit_at:
+		var id := unit_at[p]
+		if not hp.has(id) or hp[id] <= 0:
+			continue
+		if (
+			(watched.has(p) and not _hidden(id, cells))
+			or (recolored.has(p) and not guards.is_empty())
+		):
+			detected[p] = true
+	return {"guards": out_guards, "attacks": attacks, "detected": detected}
+
+
+## Ordre de choix d'une cible : la plus proche, puis la plus entamée, puis colonne, puis ligne.
+func _attack_key_less(a: String, b: String, pos: Vector2i, hp: Dictionary[String, int]) -> bool:
+	var pa: Vector2i = units[a]["pos"]
+	var pb: Vector2i = units[b]["pos"]
+	var ka := [Cells.manhattan(pa, pos), hp[a], pa.x, pa.y]
+	var kb := [Cells.manhattan(pb, pos), hp[b], pb.x, pb.y]
+	for i in ka.size():
+		if ka[i] != kb[i]:
+			return ka[i] < kb[i]
+	return false
+
+
+## Dégâts reçus : −1 si tapi, −1 à couvert contre un tir, −1 à côté d'un Rempart ; au moins 1.
+func _damage_to(uid: String, base: int, ranged: bool) -> int:
+	var u := units[uid]
+	var dmg := base - (1 if u["braced"] else 0)
+	if ranged and def.terrain(u["pos"]) in MissionDef.BLOCKS_LOS:
+		dmg -= 1
+	for id in active_units():
+		var o := units[id]
+		if id != uid and o["rampart"] and Cells.manhattan(o["pos"], u["pos"]) == 1:
+			dmg -= 1
+			break
+	return maxi(1, dmg)
+
+
+func _hidden(uid: String, guard_cells: Array[Vector2i]) -> bool:
+	var u := units[uid]
+	if _next_to_any(u["pos"], guard_cells):
+		return false
+	return u["type"] == "scout" and def.terrain(u["pos"]) in MissionDef.BLOCKS_LOS
+
+
+func _next_to_any(p: Vector2i, cells: Array[Vector2i]) -> bool:
+	for q in cells:
+		if Cells.manhattan(p, q) == 1:
+			return true
+	return false
+
+
+func _nearest(cells: Array, from: Vector2i) -> Vector2i:
+	var best: Vector2i = cells[0]
+	for c: Vector2i in cells:
+		var dc := Cells.manhattan(c, from)
+		var db := Cells.manhattan(best, from)
+		if dc < db or (dc == db and (c.x < best.x or (c.x == best.x and c.y < best.y))):
+			best = c
+	return best
+
+
+func _guard_at(p: Vector2i) -> String:
+	for gid in guards:
+		if guards[gid]["pos"] == p:
+			return gid
+	return ""
+
+
 func _sentinel_facing(g: Dictionary, phase: int) -> String:
 	var cycle: Array = g["cycle"]
 	return g["facing"] if cycle.is_empty() else cycle[(phase - 1) % cycle.size()]
@@ -394,14 +673,6 @@ func _next_waypoint(g: Dictionary) -> Array[int]:
 	if ri + dirn < 0 or ri + dirn >= n:
 		dirn = -dirn
 	return [ri + dirn, dirn]
-
-
-func _patrol_path(g: Dictionary, target: Vector2i) -> Array[Vector2i]:
-	var res := def.paths(g["pos"])
-	if not res["dist"].has(target) or target == g["pos"]:
-		return []
-	var path := MissionDef.trace(res["prev"], g["pos"], target)
-	return path.slice(0, PATROLLER_MOVE)
 
 
 # ---------------------------------------------------------------- conditions, déclencheurs, fin
@@ -455,6 +726,11 @@ func _act(a: Dictionary) -> void:
 			_set_alert(ALERTS.find(a["level"]))
 		"end_mission":
 			_finish(a["result"])
+		"guardian_order":
+			if a.has("chase_cell"):
+				for gid in guards:
+					if a["guardian"] in ["all", gid] and guards[gid]["type"] == "patroller":
+						guards[gid]["chase"] = Cells.parse(a["chase_cell"])
 	# Toutes les actions, y compris celles de pure présentation (bulles, répliques,
 	# mises en évidence), sont transmises telles quelles à l'interface.
 	_emit({"type": "script_action", "action": a})
@@ -561,6 +837,11 @@ func _cond(c: Dictionary, path: String) -> bool:
 			return expired.has(c["countdown"])
 		"flag":
 			return flags.has(c["name"])
+		"guardian_neutralized":
+			var who: String = c.get("guardian", "any")
+			return not neutralized.is_empty() if who == "any" else neutralized.has(who)
+		"no_guardian_neutralized":
+			return neutralized.is_empty()
 	push_error("Condition inconnue : %s" % c["type"])
 	return false
 
@@ -604,7 +885,11 @@ func _occupied(exclude: String) -> Dictionary[Vector2i, bool]:
 func _refresh_vision() -> void:
 	current_vision.clear()
 	for id in active_units():
-		current_vision.merge(def.vision(units[id]["pos"], UNITS[units[id]["type"]][2]))
+		var u := units[id]
+		if u["silent"]:
+			current_vision[u["pos"]] = true  # en silence radio, ATHENA ne reçoit plus rien
+		else:
+			current_vision.merge(def.vision(u["pos"], UNITS[u["type"]][2]))
 	current_vision.merge(probed)
 	revealed.merge(current_vision)
 	for gid in guards:

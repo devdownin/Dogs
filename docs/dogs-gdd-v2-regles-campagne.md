@@ -3,7 +3,7 @@
 > **Version :** 2.0 — 12 novembre 2026
 > **Rôle :** complète `spexdogs_revised.md` (univers et récit, conservé tel quel) en arrêtant les règles laissées « à spécifier », et décline le mode campagne.
 > **Objectif de conception :** un jeu qu'on comprend en une mission, qu'on maîtrise en trente.
-> **Décisions validées (12 novembre 2026) :** rendu 2D peint ; combat sans hasard avec intentions visibles.
+> **Décisions validées :** rendu 2D peint ; combat sans hasard avec intentions visibles (12 novembre 2026) ; palette du décor « craie » (13 novembre 2026).
 > **Statut :** le reste est une **proposition chiffrée à valider par prototype**. Les valeurs sont volontairement petites pour être équilibrées vite.
 
 ## 1. Constats sur les documents et les pistes graphiques
@@ -20,6 +20,7 @@
 | 6 | Aucune animation squelettique prévue pour les unités. | Incompatible avec l'objectif de qualité : la démarche des quadrupèdes est l'identité du jeu. Animations exigées. |
 | 7 | Sept missions avant le premier combat, Mission 0 sans carte tactique. | Mission 0 ramenée à 3 minutes maximum et passable ; première décision tactique dans les 2 minutes ; cartes d'Acte I réduites (8×8 à 10×10). |
 | 8 | Quatre ressources sans rôle distinct chiffré. | Une capacité, deux stocks, une collection (§6). |
+| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie. L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
 
 ### 1.2 Lecture des deux pistes graphiques
 
@@ -29,7 +30,8 @@ Les deux images sont d'excellentes **planches de style**, pas encore des cartes 
 - **Problème de lecture :** les reliefs chevauchent plusieurs cases ; on ne peut pas dire si une case est franchissable. Règle à imposer : **un relief occupe des cases entières**, et le dessin d'une case suffit à identifier son type.
 - **Grille incrustée dans l'image :** elle doit être une surcouche du jeu (activable, masquée hors sélection), jamais peinte dans le décor.
 - **Image symétrique (n° 2) :** les ruines dupliquées en miroir trahissent la génération et contredisent « un monde trop ordonné » seulement par endroits. À réserver à un futur mode Escarmouche ; les cartes de campagne doivent être asymétriques, comme l'image n° 1.
-- **Conflit de couleurs :** le terrain consomme déjà l'orange, le rouge et le bleu. La signalétique doit donc vivre ailleurs : **turquoise lumineux pour la Meute, violet pour les Gardiens et la recoloration, ivoire pour la sélection**. La recoloration devient un motif géométrique violet qui « quadrille » le désert : troublant, artificiel, et impossible à confondre avec le canyon.
+- **Palette du décor (validée le 13 nov. 2026) :** les orangés des planches sont désaturés vers un ocre-gris crayeux, le canyon vire à la rouille sombre, les bassins au gris-bleu glacé ; grain de craie et trait d'encre. Les couleurs vives restent réservées à l'information de jeu.
+- **Conflit de couleurs :** le terrain consomme déjà l'ocre, la rouille et le gris-bleu. La signalétique doit donc vivre ailleurs : **turquoise lumineux pour la Meute, violet pour les Gardiens et la recoloration, ivoire pour la sélection**. La recoloration devient un motif géométrique violet qui « quadrille » le désert : troublant, artificiel, et impossible à confondre avec le canyon.
 - **Manques :** aucune unité, aucun état de brouillard ni de territoire sur les images. Une troisième planche montrant unités, brouillard et zone recoloriée est le prochain livrable graphique à produire.
 
 ## 2. Les trois règles qui portent tout le jeu
@@ -104,6 +106,17 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 - Interagir et *Interface* s'exercent sur une case adjacente. Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone (sinon, en Mission 1, les drones partiraient dès le premier tour puisqu'ils y commencent).
 - Fin de mission : quand plus aucun drone n'est actif sur la carte, c'est une victoire si l'objectif est rempli, un repli si au moins un drone a été rappelé, un échec sinon.
 
+**Combat (précisé pour le prototype, 13 novembre 2026).**
+
+- **Coups des drones :** *Frapper* consomme l'action. Protecteur : 1 dégât au contact ; Intercepteur : 2 dégâts à 1 ou 2 cases, ligne de vue requise. Un Gardien en rocaille ou en ruine subit −1 d'un coup à distance.
+- **Coups des Gardiens :** le Patrouilleur frappe un drone adjacent (2 dégâts) dès *Avertissement* ; la Sentinelle tire sur un drone de son cône à 3 cases au plus (1 dégât) dès *Interception*. Le cran pris en compte est celui du début de la phase.
+- **Cible choisie :** le drone le plus proche, puis le plus entamé, puis colonne et ligne. Les coups annoncés (trait violet et dégâts chiffrés) sont exactement ceux portés.
+- **Réductions :** −1 si tapi, −1 à couvert contre un tir, −1 à côté d'un Protecteur en *Rempart* ; elles se cumulent, mais **un coup porte toujours au moins 1 dégât**.
+- **Poursuite :** une détection lance les Patrouilleurs vers la case détectée la plus proche ; ils reprennent leur ronde une fois la case atteinte ou l'alerte retombée à *Veille*. Un script peut aussi les envoyer vers une case (`chase_cell`).
+- **Neutraliser un Gardien** l'ôte de la carte, fait monter l'alerte d'un cran et laisse des débris (découverte « Débris de Gardien »).
+- **Réparer** (Technicien, case adjacente) : +1 intégrité, ou relève un drone hors service à 1 point.
+- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue ; *Impulsion* et *Élan* arrivent avec l'Intercepteur (M6).
+
 **Crans d'alerte.**
 
 | Cran | Effet |
@@ -114,6 +127,10 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 | Verrouillage | Les sorties se ferment dans 3 tours ; le repli devient l'objectif |
 
 La jauge baisse d'un cran quand un nœud est capturé ou après 3 tours sans détection (sauf Héraut actif).
+
+**Silence radio (réalisé le 13 novembre 2026, débloqué par l'hypothèse OBS-5).**
+
+Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation.
 
 ### 3.6 Liaison (introduite à l'Acte II)
 
@@ -150,7 +167,7 @@ Chaque mission a **un objectif principal** et **deux relevés facultatifs** (exe
 
 - **Modules :** chaque drone a 2 emplacements. Une douzaine de modules au total (exemples : Capteur longue portée, Blindage ablatif, Relais embarqué qui porte la Liaison à 6, Chenilles de rocaille). Un module modifie une règle, jamais un simple pourcentage.
 - **Vétéran :** un drone qui termine 3 missions sans être mis hors service choisit un trait parmi deux. Pas de points d'expérience à gérer.
-- **Recherche :** trois branches de quatre paliers (Observation, Liaison, Projection), ouvertes par les étapes de restauration du vaisseau et payées en Données.
+- **Recherche :** arbre de découverte scientifique conduit par **ATHENA**, l'IA de bord de l'*Asterion* resté en orbite (équipage de six en stase). Les hypothèses n'apparaissent qu'avec les découvertes faites au sol (bases de connaissances des ruines, échantillons, observations) et demandent des Données et du temps d'étude. Détail : `arbre-decouverte.md`.
 
 ## 6. Économie
 
@@ -158,7 +175,7 @@ Chaque mission a **un objectif principal** et **deux relevés facultatifs** (exe
 |---|---|---|
 | **Énergie** | Capacité par mission, non stockée | Budget de déploiement : chaque drone et chaque module coûte de l'Énergie. Augmente avec la restauration du vaisseau. |
 | **Matériaux** | Stock | Réparer et reconstruire les drones, fabriquer les modules |
-| **Données** | Stock | Payer la recherche |
+| **Données** | Stock | Payer les études de l'IA de bord (le temps d'étude reste la vraie limite) |
 | **Fragments d'archives** | Collection | Compléter les chroniques ; trois fragments liés ouvrent une mission ou un choix narratif |
 
 Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (après M2), Liaison (après M5), Recherche (fin d'Acte I), Projection (fin d'Acte III), Navigation (fin d'Acte IV).
@@ -169,7 +186,7 @@ Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (apr
 
 - **Atlas planétaire :** une carte de secteurs reliés. Chaque secteur est une mission. À partir de l'Acte II, le joueur choisit l'ordre de certains secteurs.
 - **État persistant d'un secteur :** *libéré* (nœuds capturés), *préservé* (objectif atteint sans neutraliser le système local) ou *laissé aux Gardiens*. L'état se voit sur l'Atlas et modifie les missions voisines (renforts, Liaison de départ, ressources).
-- **Trois jauges de campagne**, jamais affichées comme un score mais racontées par l'équipage :
+- **Trois jauges de campagne**, jamais affichées comme un score mais racontées par ATHENA :
   - **Savoir** : chroniques complétées, relevés d'étude ;
   - **Emprise** : secteurs libérés ;
   - **Concorde** : secteurs préservés, missions réussies sans neutralisation.
@@ -233,7 +250,18 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | V-3 « Le seuil » | Finale 16×16 à trois objectifs exclusifs |
 | Épilogue | Conséquences secteur par secteur |
 
-**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. Conformément au document narratif, l'origine des Gardiens et le sort des bâtisseurs restent à décider : cette structure fonctionne quelle que soit la révélation retenue.
+**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
+
+**Réalisé dans le prototype (13 novembre 2026) :**
+- **Indices de l'Acte I :** en M1, ATHENA note que la balise d'atterrissage n'intéresse personne, mais que les drones sont observés ; en M3, le motif s'est mis en mouvement à l'instant où le relais s'est connecté à elle ; en M5, les Gardiens ne visaient pas le relais mais ce qui lui parlait (découverte « Ils traquent ce qui parle à ATHENA », qui ouvre *Silence radio*).
+- **Doute d'ATHENA** (0 à 3) : un cran par compréhension (traque du signal, *Silence radio* confirmé, chute expliquée). Ses rapports de cycle, sur l'écran d'ATHENA et au bilan de mission, deviennent hésitants ; à partir du cran 2, elle recommande de réveiller l'équipage.
+
+**Conséquences proposées (à valider) :**
+- **Pourquoi les Gardiens attaquent la Meute :** ils ne voient pas des drones scientifiques, mais des agents autonomes pilotés par une IA. Leur protocole contre les IA est toujours actif.
+- **Le miroir d'ATHENA :** un vaisseau où l'IA décide pendant que les humains dorment reproduit exactement ce que les Gardiens combattent. Le joueur le comprend avant l'équipage.
+- **Le réveil prend un sens :** réveiller la commandante rend la décision à un humain. La négociation avec l'Arbitre (XEN-4) **n'exige pas** la commandante (décidé le 13 novembre 2026) : ATHENA peut la mener seule.
+- **ATHENA reste loyale**, mais doit faire face à ce que ses découvertes révèlent sur elle-même ; c'est l'arc de la « voix du bord » du récit.
+- **Dénouements :** *la veille partagée* devient la preuve qu'une IA peut servir sans gouverner ; *la reconquête* donne raison, a posteriori, à la peur des Gardiens.
 
 ### 7.7 Fiche de mission (gabarit obligatoire)
 
@@ -261,5 +289,5 @@ Escarmouche sur cartes symétriques, défi quotidien, multijoueur. La campagne s
 
 1. ~~Combat sans hasard et intentions visibles (§2)~~ — **validé le 12 novembre 2026.**
 2. Règle de Liaison (§3.6) : à tester tôt, c'est la plus risquée pour le confort de jeu.
-3. Palette violet/turquoise (§1.2), à vérifier sur écran et en niveaux de gris.
+3. ~~Palette du décor et violet/turquoise (§1.2)~~ — **validée le 13 novembre 2026** ; reste à vérifier en niveaux de gris.
 4. Volume de 30 missions et trois jauges de campagne (§7).

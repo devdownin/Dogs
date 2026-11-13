@@ -30,3 +30,57 @@ SPEAKER_SYSTEMS,Systèmes,Systems
 UI_ACT_PROBE,Sonde,Probe
 UI_PROBE_TARGET,Touchez le centre de la zone à sonder (portée %d).,Tap the centre of the area to probe (range %d).
 UI_PROBE_CONFIRM,Touchez encore pour lancer la Sonde.,Tap again to launch the Probe.
+UI_ACT_ATTACK,Frapper,Strike
+UI_ACT_BRACE,Se tapir,Brace
+UI_ACT_RAMPART,Rempart,Rampart
+UI_ACT_REPAIR,Réparer,Repair
+UI_HIT,%s touché : −%d (%s).,%s hit: −%d (%s).
+UI_UNIT_DOWN,%s hors service.,%s disabled.
+UI_GUARD_DOWN,%s neutralisé.,%s neutralized.
+SPEAKER_ATHENA,ATHENA,ATHENA
+UI_ATHENA,ATHENA,ATHENA
+UI_BACK,Retour,Back
+UI_RESUMED,Partie reprise là où vous l'aviez laissée.,Game resumed where you left it.
+UI_GAINS,"Gains : +%d Données, +%d Matériaux.","Gains: +%d Data, +%d Materials."
+UI_NEW_DISCOVERIES,Découvertes : %s.,Discoveries: %s.
+UI_CONFIRMED,ATHENA a confirmé : %s.,ATHENA confirmed: %s.
+UI_NEW_STAGE,Vaisseau : étape %s atteinte.,Ship: %s stage reached.
+RES_HEADER,"Données : %d   ·   Études : %d/%d
+Vaisseau : %s   ·   Équipage : %d éveillé(s), %d en stase","Data: %d   ·   Studies: %d/%d
+Ship: %s   ·   Crew: %d awake, %d in stasis"
+RES_EMPTY,"Aucune piste pour l'instant. Rapportez des découvertes du sol : échantillons, observations, bases de connaissances.","No leads yet. Bring back discoveries from the ground: samples, observations, knowledge bases."
+RES_BRANCH_OBSERVATION,Observation,Observation
+RES_BRANCH_LINK,Liaison,Link
+RES_BRANCH_ENGINEERING,Ingénierie,Engineering
+RES_BRANCH_XENOLOGY,Xénologie,Xenology
+RES_BRANCH_CREW,Équipage,Crew
+RES_STATE_LEAD,piste,lead
+RES_STATE_AVAILABLE,étudiable,ready
+RES_STATE_STUDYING,à l'étude,in study
+RES_STATE_CONFIRMED,confirmée,confirmed
+RES_STATE_EXCLUDED,écartée,ruled out
+RES_MISSING,Il manque : %s.,Missing: %s.
+RES_PARENTS,Exige d'abord d'autres hypothèses ou une étape du vaisseau.,Requires other hypotheses or a ship stage first.
+RES_PROGRESS,Cycles : %d/%d (un cycle par mission jouée).,Cycles: %d/%d (one per mission played).
+RES_COST,%d Données · %d cycle(s),%d Data · %d cycle(s)
+RES_STUDY,Étudier,Study
+RES_ALREADY,Déjà lancée,Already started
+RES_EXCLUDED,Exclue par une autre conclusion,Ruled out by another conclusion
+RES_LOCKED,Conditions non remplies,Requirements not met
+RES_NO_LANE,ATHENA étudie déjà,ATHENA is already busy
+RES_NO_DATA,Données insuffisantes,Not enough Data
+STAGE_SURVIVAL,Survie,Survival
+STAGE_OBSERVATION,Observation,Observation
+STAGE_LINK,Liaison,Link
+STAGE_RESEARCH,Recherche,Research
+STAGE_PROJECTION,Projection,Projection
+STAGE_NAVIGATION,Navigation,Navigation
+UI_ACT_SILENCE,Silence radio,Radio silence
+UI_ACT_RECONNECT,Reconnecter,Reconnect
+UI_SILENCED,%s coupe sa liaison avec ATHENA.,%s cuts its link to ATHENA.
+UI_RECONNECTED,%s est de nouveau relié.,%s is linked again.
+RES_RECOMMENDED,recommandé par ATHENA,recommended by ATHENA
+ATHENA_NOTE_0,Rapport de cycle : systèmes stables. Mes conclusions sont fiables.,Cycle report: systems stable. My conclusions are reliable.
+ATHENA_NOTE_1,Rapport de cycle : ils traquent ce qui me parle. Je n'en tire aucune conclusion. Je préfère vous le signaler.,Cycle report: they hunt whatever talks to me. I draw no conclusion from it. I would rather tell you.
+ATHENA_NOTE_2,"Rapport de cycle : en silence, les drones passent. Ce que les Gardiens combattent, c'est moi. Je recommande de réveiller l'équipage dès que les caissons le permettront. Je ne devrais pas être seule à décider.","Cycle report: in silence, the drones get through. What the Guardians fight is me. I recommend waking the crew as soon as the pods allow. I should not be the only one deciding."
+ATHENA_NOTE_3,Rapport de cycle : je comprends la chute. Je comprends aussi pourquoi ils m'arrêteraient. Les décisions qui suivent ne devraient plus m'appartenir.,Cycle report: I understand the fall. I also understand why they would stop me. The decisions ahead should no longer be mine.
