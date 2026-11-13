@@ -171,7 +171,7 @@ Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (apr
 
 - **Atlas planétaire :** une carte de secteurs reliés. Chaque secteur est une mission. À partir de l'Acte II, le joueur choisit l'ordre de certains secteurs.
 - **État persistant d'un secteur :** *libéré* (nœuds capturés), *préservé* (objectif atteint sans neutraliser le système local) ou *laissé aux Gardiens*. L'état se voit sur l'Atlas et modifie les missions voisines (renforts, Liaison de départ, ressources).
-- **Trois jauges de campagne**, jamais affichées comme un score mais racontées par l'équipage :
+- **Trois jauges de campagne**, jamais affichées comme un score mais racontées par ATHENA :
   - **Savoir** : chroniques complétées, relevés d'étude ;
   - **Emprise** : secteurs libérés ;
   - **Concorde** : secteurs préservés, missions réussies sans neutralisation.

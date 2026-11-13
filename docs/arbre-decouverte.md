@@ -43,7 +43,6 @@ L'arbre se dessine donc au fil de l'exploration : il n'existe pas d'écran rempl
 ## 4. ATHENA
 
 - **Seule à bord :** c'est elle qui donne les ordres de mission, rend compte des pannes et commente les découvertes. Les voix de l'équipage n'existent au départ que sous forme de journaux enregistrés avant le transit.
-
 - **Voix :** elle parle en probabilités et distingue fait observé, hypothèse et inconnu (§6 du récit). Ses notes de résultat font 2 lignes au plus.
 - **Initiative :** à la fin d'une mission, elle propose l'hypothèse qu'elle juge la plus utile pour la suivante ; le joueur garde le choix.
 - **Abandon :** une étude interrompue garde ses cycles acquis.
