@@ -120,7 +120,8 @@
                   "node",
                   "boundary_marker",
                   "point_of_interest",
-                  "fragment_cache"
+                  "fragment_cache",
+                  "knowledge_base"
                 ]
               },
               "cell": {
@@ -128,6 +129,9 @@
               },
               "label_key": {
                 "$ref": "#/$defs/key"
+              },
+              "discovery": {
+                "$ref": "#/$defs/id"
               }
             }
           }
@@ -404,11 +408,18 @@
               "chronicle",
               "gauge",
               "codex",
-              "sector_state"
+              "sector_state",
+              "discoveries"
             ]
           },
           "if_record": {
             "$ref": "#/$defs/id"
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/id"
+            }
           }
         }
       }

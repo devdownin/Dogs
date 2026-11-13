@@ -1,0 +1,30 @@
+keys,fr,en
+DISC_OBS_SENTINEL_CYCLE,Cycle complet d'une Sentinelle,Full Sentinel cycle
+DISC_SAMPLE_RECOLORED_SOIL,Sol recolorié,Recolored soil
+DISC_SAMPLE_ROCK,Fragment de rocaille,Rock fragment
+DISC_SAMPLE_BASIN_CRYSTAL,Cristal de bassin,Basin crystal
+DISC_OBS_NODE_CAPTURED,Nœud capturé,Captured node
+DISC_DEBRIS_GUARDIAN,Débris de Gardien,Guardian debris
+DISC_CHRONICLE_FIRST,La première chronique,The First Chronicle
+DISC_KB_GEOMETRIC_GARDENS,Base des Jardins géométriques,Geometric Gardens archive
+DISC_KB_VOICE_WITHOUT_RECIPIENT,Base « Une voix sans destinataire »,"""A Voice Without Recipient"" archive"
+DISC_KB_THOSE_WHO_WATCH,Base « Ceux qui veillent »,"""Those Who Watch"" archive"
+DISC_CHRONICLE_TWO_VERSIONS_A,Deux versions — chronique A,Two Versions — chronicle A
+DISC_CHRONICLE_TWO_VERSIONS_B,Deux versions — chronique B,Two Versions — chronicle B
+DISC_KB_LAST_PROTOCOL,Base « Le dernier protocole »,"""The Last Protocol"" archive"
+DISC_KB_MASTER_RELAY,Base du relais maître,Master relay archive
+HYP_OBS_1,Relevé orbital,Orbital survey
+HYP_OBS_2,Rythme des veilleurs,Rhythm of the watchers
+HYP_OBS_3,Signature violette,Violet signature
+HYP_OBS_4,Sonde profonde,Deep probe
+HYP_LIA_1,Relais embarqué,Onboard relay
+HYP_LIA_2,Résonance cristalline,Crystal resonance
+HYP_LIA_3,Protocole des nœuds,Node protocol
+HYP_ING_1,Chenilles de rocaille,Rock tracks
+HYP_ING_2,Blindage ablatif,Ablative armor
+HYP_ING_3,Impulsion stabilisée,Stabilized impulse
+HYP_XEN_1,Grammaire des ruines,Grammar of the ruins
+HYP_XEN_2,Mémoire des jardins,Memory of the gardens
+HYP_XEN_3A,Les Gardiens protègent,The Guardians protect
+HYP_XEN_3B,Les Gardiens ont causé la chute,The Guardians caused the fall
+HYP_XEN_4,La langue de l'Arbitre,The Arbiter's language

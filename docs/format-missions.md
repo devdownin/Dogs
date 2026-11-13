@@ -48,7 +48,8 @@ Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases 
 | `objectives` | `main` (condition, `deadline_turn` facultatif), `records` (2 au plus), `failure`, `retreat_allowed` |
 | `triggers` | `id`, `when` (condition), `do` (actions), `once` (vrai par défaut) |
 | `rewards` | Matériaux, Données, Fragments, `per_record`, `ship_stage` |
-| `campaign_effects` | `open_sector`, `chronicle`, `codex`, `gauge`, `sector_state` ; `if_record` pour conditionner à un relevé |
+| `campaign_effects` | `open_sector`, `chronicle`, `codex`, `gauge`, `sector_state`, `discoveries` (`ids`) ; `if_record` pour conditionner à un relevé |
+| Point `knowledge_base` | Base de connaissances d'une ruine ; `discovery` = découverte accordée à l'ouverture (voir `arbre-decouverte.md`) |
 
 Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (tout drone) ; `signal_source`, `relay_point`, `beacon`, `node` (Technicien, *Interface*) ; `boundary_marker` (à observer seulement).
 

@@ -160,6 +160,71 @@ def static_checks(d, keys):
     return errs
 
 
+BRANCHES = {"observation", "link", "engineering", "xenology"}
+NATURES = {"knowledge_base", "sample", "observation", "chronicle"}
+STAGES = {"survival", "observation", "link", "research", "projection", "navigation"}
+
+
+def research_checks(root):
+    """Arbre de découverte : références, exclusivités, absence de cycle, traductions."""
+    errs = []
+    disc = json.loads((root / "research/discoveries.json").read_text(encoding="utf-8"))["discoveries"]
+    tree = json.loads((root / "research/tree.json").read_text(encoding="utf-8"))["hypotheses"]
+    with open(root / "i18n/research.csv", encoding="utf-8") as fh:
+        keys = {r["keys"] for r in csv.DictReader(fh) if r.get("fr") and r.get("en")}
+    dids = [d["id"] for d in disc]
+    hids = [h["id"] for h in tree]
+    for name, ids in (("découverte", dids), ("hypothèse", hids)):
+        errs += [f"{name} {i} en double" for i in {i for i in ids if ids.count(i) > 1}]
+    for d in disc:
+        if d["nature"] not in NATURES:
+            errs.append(f"découverte {d['id']} : nature {d['nature']} inconnue")
+        if d["title_key"] not in keys:
+            errs.append(f"découverte {d['id']} : clé {d['title_key']} non traduite")
+    used = set()
+    for h in tree:
+        req, w = h["requires"], f"hypothèse {h['id']}"
+        if h["branch"] not in BRANCHES:
+            errs.append(f"{w} : branche {h['branch']} inconnue")
+        if h["title_key"] not in keys:
+            errs.append(f"{w} : clé {h['title_key']} non traduite")
+        if not (req.get("discoveries") or req.get("ship_stage")):
+            errs.append(f"{w} : aucune découverte ni étape requise (elle ne se révélerait jamais)")
+        if req.get("ship_stage", "survival") not in STAGES:
+            errs.append(f"{w} : étape {req['ship_stage']} inconnue")
+        for d in req.get("discoveries", []):
+            used.add(d)
+            if d not in dids:
+                errs.append(f"{w} : découverte {d} inconnue")
+        for p in req.get("hypotheses", []) + req.get("any_hypothesis", []):
+            if p not in hids:
+                errs.append(f"{w} : hypothèse parente {p} inconnue")
+        ex = h.get("exclusive_with")
+        if ex and next((o.get("exclusive_with") for o in tree if o["id"] == ex), None) != h["id"]:
+            errs.append(f"{w} : exclusivité avec {ex} non réciproque")
+        if h["cycles"] < 1 or h["data_cost"] < 0:
+            errs.append(f"{w} : durée ou coût invalide")
+    errs += [f"découverte {d} : n'alimente aucune hypothèse" for d in dids if d not in used]
+    parents = {h["id"]: h["requires"].get("hypotheses", []) + h["requires"].get("any_hypothesis", []) for h in tree}
+    state = {}
+
+    def cyclic(n):
+        if state.get(n) == 1:
+            return True
+        if state.get(n) == 2:
+            return False
+        state[n] = 1
+        bad = any(cyclic(p) for p in parents.get(n, []) if p in parents)
+        state[n] = 2
+        return bad
+
+    errs += [f"hypothèse {h} : dépendance circulaire" for h in hids if cyclic(h)]
+    print(f"{'OK ' if not errs else 'KO '} arbre de découverte ({len(hids)} hypothèses, {len(dids)} découvertes)")
+    for e in errs:
+        print(f"     - {e}")
+    return bool(errs)
+
+
 def main(root):
     root = Path(root)
     schema = json.loads((root / "schema/mission.schema.json").read_text(encoding="utf-8"))
@@ -214,6 +279,8 @@ def main(root):
             for line in g.log:
                 print(f"       · {line}")
         failed |= bool(problems)
+    if (root / "research").exists():
+        failed |= research_checks(root)
     if missing_en:
         print(f"Note : {len(missing_en)} clés sans traduction anglaise.")
     return 1 if failed else 0

@@ -151,7 +151,7 @@ Chaque mission a **un objectif principal** et **deux relevés facultatifs** (exe
 
 - **Modules :** chaque drone a 2 emplacements. Une douzaine de modules au total (exemples : Capteur longue portée, Blindage ablatif, Relais embarqué qui porte la Liaison à 6, Chenilles de rocaille). Un module modifie une règle, jamais un simple pourcentage.
 - **Vétéran :** un drone qui termine 3 missions sans être mis hors service choisit un trait parmi deux. Pas de points d'expérience à gérer.
-- **Recherche :** trois branches de quatre paliers (Observation, Liaison, Projection), ouvertes par les étapes de restauration du vaisseau et payées en Données.
+- **Recherche :** arbre de découverte scientifique conduit par l'IA de bord de l'*Asterion*, resté en orbite. Les hypothèses n'apparaissent qu'avec les découvertes faites au sol (bases de connaissances des ruines, échantillons, observations) et demandent des Données et du temps d'étude. Détail : `arbre-decouverte.md`.
 
 ## 6. Économie
 
@@ -159,7 +159,7 @@ Chaque mission a **un objectif principal** et **deux relevés facultatifs** (exe
 |---|---|---|
 | **Énergie** | Capacité par mission, non stockée | Budget de déploiement : chaque drone et chaque module coûte de l'Énergie. Augmente avec la restauration du vaisseau. |
 | **Matériaux** | Stock | Réparer et reconstruire les drones, fabriquer les modules |
-| **Données** | Stock | Payer la recherche |
+| **Données** | Stock | Payer les études de l'IA de bord (le temps d'étude reste la vraie limite) |
 | **Fragments d'archives** | Collection | Compléter les chroniques ; trois fragments liés ouvrent une mission ou un choix narratif |
 
 Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (après M2), Liaison (après M5), Recherche (fin d'Acte I), Projection (fin d'Acte III), Navigation (fin d'Acte IV).
