@@ -34,6 +34,7 @@ var _countdown_labels: Dictionary[String, String] = {}
 var _applied := false  # issue de mission déjà reportée sur la campagne
 var _summary: Dictionary = {}
 var _research: ResearchView
+var _cinema: CinematicView
 var _rules: Array[String] = []  # règles débloquées, figées pour la durée de la mission
 
 var _box: VBoxContainer
@@ -55,6 +56,8 @@ func _ready() -> void:
 	_build_ui()
 	if not _resume():
 		load_mission(0)
+		if campaign.completed.is_empty():
+			play_cinematic(CinematicView.by_id("prologue"))
 
 
 func _notification(what: int) -> void:
@@ -181,7 +184,7 @@ func _build_ui() -> void:
 	var retry := _button("UI_RETRY", func() -> void: load_mission(_mission_index))
 	retry.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	end_buttons.add_child(retry)
-	_next = _button("UI_NEXT", func() -> void: load_mission(_mission_index + 1))
+	_next = _button("UI_NEXT", next_mission)
 	_next.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	end_buttons.add_child(_next)
 	var end_athena := _button("UI_ATHENA", open_research)
@@ -193,6 +196,22 @@ func _build_ui() -> void:
 	_research.closed.connect(func() -> void: _research.visible = false)
 	_research.study_started.connect(func(_id: String) -> void: SaveStore.save_campaign(campaign))
 	add_child(_research)
+
+	_cinema = CinematicView.new()
+	_cinema.visible = false
+	add_child(_cinema)
+
+
+## Mission suivante, précédée de la cinématique qui clôt celle qu'on vient de finir.
+func next_mission() -> void:
+	var done := MISSION_IDS[_mission_index]
+	load_mission(_mission_index + 1)
+	play_cinematic(CinematicView.for_mission(done))
+
+
+func play_cinematic(cinematic: Dictionary) -> void:
+	if not cinematic.is_empty():
+		_cinema.play(cinematic, campaign)
 
 
 func open_research() -> void:

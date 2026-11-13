@@ -183,6 +183,71 @@ def state_problems(g, state):
     return out
 
 
+MOTIONS = {"still", "push_in", "pull_out", "pan_left", "pan_right"}
+
+
+def cinematic_checks(root):
+    """Cinématiques : mission d'ancrage, images, textes, interlocuteurs et conditions."""
+    errs, keys = [], set()
+    for f in (root / "i18n").glob("*.csv"):
+        with open(f, encoding="utf-8") as fh:
+            keys |= {r["keys"] for r in csv.DictReader(fh) if r.get("fr") and r.get("en")}
+    missions = {}
+    for mf in (root / "missions").glob("*.json"):
+        md = json.loads(mf.read_text(encoding="utf-8"))
+        missions[md["id"]] = {r["id"] for r in md["objectives"]["records"]}
+    dids = {d["id"] for d in json.loads((root / "research/discoveries.json").read_text(encoding="utf-8"))["discoveries"]}
+    images = root.parent / "assets" / "cinematics"
+    seen_after = set()
+    files = sorted((root / "cinematics").glob("*.json"))
+    for f in files:
+        c, w = json.loads(f.read_text(encoding="utf-8")), f"cinématique {f.name}"
+        if c.get("format_version") != 1 or c.get("id") != f.stem:
+            errs.append(f"{w} : format_version ou id incohérent")
+        after = c.get("after_mission")
+        if after is not None:
+            if after not in missions:
+                errs.append(f"{w} : mission {after} inconnue")
+            if after in seen_after:
+                errs.append(f"{w} : deux cinématiques après {after}")
+            seen_after.add(after)
+
+        def cond_ok(cd, w=w):
+            if "not" in cd:
+                return cond_ok(cd["not"])
+            if "discovery" in cd:
+                return cd["discovery"] in dids or errs.append(f"{w} : découverte {cd['discovery']} inconnue")
+            if "doubt_at_least" in cd:
+                return True
+            if "record" in cd:
+                m, _, r = cd["record"].partition(".")
+                return r in missions.get(m, set()) or errs.append(f"{w} : relevé {cd['record']} inconnu")
+            errs.append(f"{w} : condition inconnue {cd}")
+            return False
+
+        for shot in c["shots"]:
+            if "card" in shot:
+                if shot["card"] not in keys:
+                    errs.append(f"{w} : clé {shot['card']} non traduite")
+            elif not (images / f"{shot['image']}.webp").exists():
+                errs.append(f"{w} : image {shot['image']} absente de assets/cinematics")
+            if shot.get("motion", "still") not in MOTIONS:
+                errs.append(f"{w} : mouvement {shot['motion']} inconnu")
+            for ln in shot.get("lines", []):
+                if ln["key"] not in keys:
+                    errs.append(f"{w} : clé {ln['key']} non traduite")
+                if ln["speaker"] != "card" and f"SPEAKER_{ln['speaker'].upper()}" not in keys:
+                    errs.append(f"{w} : interlocuteur {ln['speaker']} sans nom traduit")
+                if "if" in ln:
+                    cond_ok(ln["if"])
+    if not any(json.loads(f.read_text(encoding="utf-8")).get("id") == "prologue" for f in files):
+        errs.append("cinématique prologue absente")
+    print(f"{'OK ' if not errs else 'KO '} cinématiques ({len(files)} fichiers)")
+    for e in errs:
+        print(f"     - {e}")
+    return bool(errs)
+
+
 def research_checks(root):
     """Arbre de découverte : références, exclusivités, absence de cycle, traductions."""
     errs = []
@@ -305,6 +370,8 @@ def main(root):
         failed |= bool(problems)
     if (root / "research").exists():
         failed |= research_checks(root)
+    if (root / "cinematics").exists():
+        failed |= cinematic_checks(root)
     if missing_en:
         print(f"Note : {len(missing_en)} clés sans traduction anglaise.")
     return 1 if failed else 0

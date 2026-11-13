@@ -1,0 +1,51 @@
+{
+  "format_version": 1,
+  "id": "after_m5",
+  "after_mission": "m5_prix_signal",
+  "shots": [
+    {
+      "image": "relay_signal",
+      "motion": "pull_out",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_01"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_02"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_03",
+          "if": {
+            "not": {
+              "record": "m5_prix_signal.r_spare"
+            }
+          }
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_04",
+          "if": {
+            "doubt_at_least": 1
+          }
+        }
+      ]
+    },
+    {
+      "image": "ruins_archive",
+      "motion": "push_in",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_05"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M5_06"
+        }
+      ]
+    }
+  ]
+}

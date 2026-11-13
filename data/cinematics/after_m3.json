@@ -1,0 +1,31 @@
+{
+  "format_version": 1,
+  "id": "after_m3",
+  "after_mission": "m3_couleur_de_trop",
+  "shots": [
+    {
+      "image": "surface_grid",
+      "motion": "pan_left",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M3_01"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M3_02"
+        }
+      ]
+    },
+    {
+      "image": "descent",
+      "motion": "still",
+      "lines": [
+        {
+          "speaker": "operator_log",
+          "key": "CIN_M3_03"
+        }
+      ]
+    }
+  ]
+}

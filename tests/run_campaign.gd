@@ -92,6 +92,12 @@ func _test_athena() -> void:
 	_check(c.unlocked_rules() == ["radio_silence"], "silence radio débloqué pour les missions")
 	_check(c.athena_doubt() == 2 and int(s4["doubt"]) == 2, "second doute : ATHENA se sait visée")
 	_check(c.athena_recommends_waking(), "ATHENA recommande de réveiller l'équipage")
+	_check(c.check({"record": "m4_le_veilleur.r_quiet"}), "condition : relevé obtenu")
+	_check(not c.check({"record": "m5_prix_signal.r_intact"}) == false, "condition : relevé de M5")
+	_check(
+		c.check({"doubt_at_least": 2}) and not c.check({"doubt_at_least": 3}), "condition : doute"
+	)
+	_check(c.check({"not": {"discovery": "kb_master_relay"}}), "condition : négation")
 	c.confirmed["crew_commander"] = true
 	_check(
 		not c.athena_recommends_waking(), "plus de recommandation une fois la commandante éveillée"

@@ -22,6 +22,7 @@ func _run() -> void:
 	root.add_child(main)
 	await process_frame
 	await process_frame
+	await _test_prologue(main)
 
 	# Mission 4, solution de référence, entièrement par touchers.
 	main.load_mission(3)
@@ -63,6 +64,7 @@ func _run() -> void:
 	)
 	_check(main._end_panel.visible, "le bilan de mission s'affiche")
 	await _shot(main, "m4_bilan")
+	await _test_interlude(main)
 
 	# Mission 3 : le compte à rebours et l'avancée du territoire s'affichent.
 	main.load_mission(2)
@@ -446,6 +448,38 @@ func _test_m6(main: Control) -> void:
 	main.selected = "int"
 	main._refresh()
 	await _shot(main, "m6_elan")
+
+
+## Premier lancement : le prologue passe avant la Mission 1 ;
+## toucher fait avancer, puis rend la main.
+func _test_prologue(main: Control) -> void:
+	var cinema: CinematicView = main._cinema
+	_check(cinema.visible, "premier lancement : le prologue est joué")
+	await _shot(main, "cine_prologue_1")
+	cinema.advance()  # termine la réplique en cours
+	cinema.advance()  # réplique suivante
+	_check(cinema._line == 1, "toucher : réplique suivante")
+	var guard := 0
+	while cinema.visible and guard < 100:
+		cinema.advance()
+		guard += 1
+		if cinema._shot == 3 and cinema._line == 0:
+			await _shot(main, "cine_prologue_caissons")
+	_check(not cinema.visible, "le prologue se termine et rend la main à la Mission 1")
+
+
+## Après la Mission 4, la cinématique dit ce que le joueur a fait (Veille tenue ou non).
+func _test_interlude(main: Control) -> void:
+	main.next_mission()
+	var cinema: CinematicView = main._cinema
+	_check(cinema.visible and main._mission_index == 4, "« Mission suivante » : interlude, puis M5")
+	var keys: Array = cinema._shots[0]["lines"].map(func(l: Dictionary) -> String: return l["key"])
+	_check(
+		keys.has("CIN_M4_02") and not keys.has("CIN_M4_03"),
+		"l'interlude retient la variante « passés sans un bruit »"
+	)
+	await _shot(main, "cine_apres_m4")
+	cinema._end()
 
 
 func _tap(main: Control, cell: String) -> void:

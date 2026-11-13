@@ -150,6 +150,25 @@ func athena_recommends_waking() -> bool:
 	return athena_doubt() >= 2 and not confirmed.has("crew_commander")
 
 
+## Condition d'une réplique de cinématique : {discovery}, {doubt_at_least},
+## {record: "mission.relevé"}, {not: …}. Une réplique sans condition est toujours dite.
+func check(cond: Dictionary) -> bool:
+	if cond.is_empty():
+		return true
+	if cond.has("not"):
+		return not check(cond["not"])
+	if cond.has("discovery"):
+		return discoveries.has(cond["discovery"])
+	if cond.has("doubt_at_least"):
+		return athena_doubt() >= int(cond["doubt_at_least"])
+	if cond.has("record"):
+		var parts: PackedStringArray = (cond["record"] as String).split(".")
+		var done: Dictionary = completed.get(parts[0], {})
+		return bool(done.get("records", {}).get(parts[1], false))
+	push_error("Condition de cinématique inconnue : %s" % cond)
+	return false
+
+
 func crew_awake() -> int:
 	var n := 0
 	for id: String in confirmed:
