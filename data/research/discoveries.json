@@ -96,6 +96,12 @@
       "nature": "knowledge_base",
       "source_mission": "iv_2",
       "title_key": "DISC_KB_MASTER_RELAY"
+    },
+    {
+      "id": "chronicle_linked",
+      "nature": "chronicle",
+      "source_mission": "iii_1",
+      "title_key": "DISC_CHRONICLE_LINKED"
     }
   ]
 }

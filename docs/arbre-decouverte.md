@@ -83,6 +83,7 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer (ramen�
 | XEN-3a | Les Gardiens protègent | XEN-2 ; chronique A de « Deux versions » (III-3) | 3 | 8 | Ouvre une branche de dialogue dans IV-2 ; jauge Concorde +1 |
 | XEN-3b | Les Gardiens ont causé la chute | XEN-2 ; chronique B de « Deux versions » (III-3) | 3 | 8 | Ouvre une faiblesse de l'Arbitre (IV-5) ; jauge Emprise +1 |
 | XEN-3r | Révision : la chronique A était falsifiée | XEN-3a ; base du relais maître (IV-2) | 3 | 8 | ATHENA corrige sa conclusion ; ouvre la faiblesse de l'Arbitre ; Savoir +1 |
+| XEN-L | La clé des liés | *Chronique des liés* (III) ; Pia (CRW-2) et Xenon (CRW-3) éveillés | 2 | 8 | Les liés sont reconnus comme bâtisseurs : accès scellés ouverts, ordres donnés aux Gardiens (GDD §7.6) |
 | XEN-4 | La langue de l'Arbitre | XEN-3b ou XEN-3r ; base du relais maître (IV-2) | 3 | 10 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
 
 **Vérité du récit (décidée le 13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** La chronique B dit vrai ; la chronique A est une version réécrite par les Gardiens eux-mêmes.

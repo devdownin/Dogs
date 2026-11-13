@@ -63,3 +63,6 @@ DISC_OBS_SIGNAL_HUNT,Ils traquent ce qui parle à ATHENA,They hunt what speaks t
 HYP_OBS_5,Silence radio,Radio silence
 HYP_OBS_5_FX,"Un drone peut couper sa liaison avec ATHENA : les Gardiens ne le voient plus, mais il avance à l'aveugle et ne peut plus agir avant de se reconnecter.","A drone can cut its link to ATHENA: Guardians no longer see it, but it moves blind and cannot act until it reconnects."
 DISC_OBS_SILENCE_TRIAL,Essai de silence radio,Radio silence field trial
+DISC_CHRONICLE_LINKED,Chronique des liés,Chronicle of the Linked
+HYP_XEN_LINKED,La clé des liés,The Key of the Linked
+HYP_XEN_LINKED_FX,"Pia et Xenon, éveillés, sont reconnus par les Gardiens comme des bâtisseurs : leur liaison ouvre ce qui est scellé et peut donner des ordres que l'IA ne peut pas donner.","Awake, Pia and Xenon are recognized by the Guardians as builders: their link opens what is sealed and can give orders the AI cannot."

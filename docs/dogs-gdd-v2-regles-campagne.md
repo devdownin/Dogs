@@ -253,7 +253,21 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | V-3 « Le seuil » | Finale 16×16 à trois objectifs exclusifs |
 | Épilogue | Conséquences secteur par secteur |
 
-**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
+**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Les liés (décidé le 13 novembre 2026).** Les bâtisseurs avaient deux façons de se relier : par leurs IA, ou directement d'un esprit à l'autre, par des puces intriquées. Les Gardiens ont été faits pour abattre la première et ne reconnaissent que la seconde : un lien entre deux humains, sans machine pensante au milieu. Pia et Xenon, qui portent ce lien en secret, sont donc pour eux des **liés**, c'est-à-dire des bâtisseurs. Ils sont une **clé**.
+
+| Acte | Ce que le joueur apprend |
+|---|---|
+| I | Indices : Xenon « n'a pas besoin » que Pia parle ; activité cérébrale synchrone dans leurs caissons |
+| II | Quand Pia et Xenon rêvent ensemble, les Sentinelles proches pivotent vers le ciel. ATHENA ne comprend pas pourquoi |
+| III | Une base livre la *Chronique des liés* : les seuls bâtisseurs que les Gardiens ont épargnés |
+| IV | Pia et Xenon éveillés : l'hypothèse *La clé des liés* se confirme. Mission dédiée (proposée) : Pia descend dans une capsule, Xenon la guide depuis le bord ; les Gardiens ne la visent pas, les accès scellés s'ouvrent devant elle, mais un seul faux pas d'ATHENA dans la liaison la trahit |
+| IV-V | Face à l'Arbitre, les liés peuvent **ordonner** là où ATHENA ne peut que négocier |
+
+- **Coût en jeu :** il faut avoir réveillé les deux (Pia exige des débris de Gardien, Xenon l'étape « Liaison »), et chaque réveil pèse sur l'Énergie, sauf celui de Xenon qui se compense.
+- **Arc d'ATHENA :** elle découvre que des humains peuvent commander ce qu'elle-même ne peut qu'approcher. C'est le sommet de son doute, et la raison la plus forte de rendre la décision à l'équipage.
+- **Dénouements :** *la veille partagée* peut être portée par les liés, au nom des deux peuples ; *la reconquête* les place devant un choix : ordonner aux Gardiens de se soumettre, ce qui ferait d'eux les nouveaux maîtres que la chute devait empêcher.
+
+**Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
 
 **Réalisé dans le prototype (13 novembre 2026) :**
 - **Indices de l'Acte I :** en M1, ATHENA note que la balise d'atterrissage n'intéresse personne, mais que les drones sont observés ; en M3, le motif s'est mis en mouvement à l'instant où le relais s'est connecté à elle ; en M5, les Gardiens ne visaient pas le relais mais ce qui lui parlait (découverte « Ils traquent ce qui parle à ATHENA », qui ouvre *Silence radio*).

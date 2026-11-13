@@ -313,6 +313,26 @@
       }
     },
     {
+      "id": "xen_linked",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_LINKED",
+      "requires": {
+        "discoveries": [
+          "chronicle_linked"
+        ],
+        "hypotheses": [
+          "crew_operator",
+          "crew_systems"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "linked_key"
+      }
+    },
+    {
       "id": "crew_0",
       "branch": "crew",
       "title_key": "HYP_CREW_0",

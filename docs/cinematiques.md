@@ -76,6 +76,8 @@ Dix plans à commander, au format carré (affichés en 720 × 720 sur téléphon
 
 Pia et Xenon portent chacun une **puce intriquée greffée dans le cerveau**, qui leur permet de partager certaines pensées. Personne à bord ne le sait, pas même ATHENA. Le lien fonctionne aussi en stase.
 
+Pour les Gardiens, ce lien sans IA est celui des bâtisseurs : Pia et Xenon sont une **clé** (progression par acte dans le GDD §7.6).
+
 Indices de l'Acte I : le journal de Xenon (« Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire. », après M2) ; ATHENA relève une activité cérébrale synchrone dans leurs deux caissons, sans explication médicale (après M6).
 
 ## 7. Questions ouvertes
