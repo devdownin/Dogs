@@ -9,7 +9,12 @@ extends Control
 
 const MISSION_DIR := "res://data/missions/"
 const MISSION_IDS: Array[String] = [
-	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur", "m5_prix_signal"
+	"m1_sol_inconnu",
+	"m2_echos_poussiere",
+	"m3_couleur_de_trop",
+	"m4_le_veilleur",
+	"m5_prix_signal",
+	"m6_premiere_chronique"
 ]
 const NONE := Vector2i(-1, -1)
 
@@ -453,6 +458,8 @@ func _consume_events() -> void:
 				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
 			"unit_disabled":
 				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
+			"guardian_stunned":
+				lines.append(tr("UI_STUNNED") % e["guardian"])
 			"unit_silenced":
 				lines.append(tr("UI_SILENCED") % e["unit"])
 			"unit_reconnected":
@@ -500,7 +507,7 @@ func _refresh() -> void:
 	if selected != "" and game.units[selected]["status"] == "active":
 		for a in game.available_actions(selected):
 			var b := _button("UI_ACT_" + (a["kind"] as String).to_upper(), do_action.bind(a))
-			if a["kind"] in ["attack", "repair"]:
+			if a["kind"] in ["attack", "repair", "impulse"]:
 				b.text += " " + Cells.name_of(a["target"])
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			if a["kind"] == "probe":

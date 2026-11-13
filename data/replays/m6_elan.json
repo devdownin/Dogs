@@ -1,0 +1,32 @@
+{
+  "mission": "m6_premiere_chronique",
+  "description": "Élan : trois cases en ligne droite, puis une frappe à 2 cases (3 dégâts) neutralise le Patrouilleur d'un coup ; l'alerte monte.",
+  "turns": [
+    [],
+    [
+      {
+        "unit": "int",
+        "move": "D8",
+        "act": "attack",
+        "target": "E8"
+      }
+    ],
+    []
+  ],
+  "expect": {
+    "result": null,
+    "alert_max": "warning",
+    "state": {
+      "guardians": {
+        "pat1": "neutralized"
+      },
+      "units": {
+        "int": [
+          "D8",
+          3,
+          "active"
+        ]
+      }
+    }
+  }
+}

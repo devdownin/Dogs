@@ -211,6 +211,11 @@ func apply_mission(def: MissionDef, game: GameState) -> Dictionary:
 						_discover(id, summary)
 				"gauge":
 					gauges[e["gauge"]] = gauges.get(e["gauge"], 0) + int(e.get("delta", 1))
+	# Une base de connaissances ouverte est acquise, même en cas de repli.
+	for fid: String in game.interacted:
+		var f: Dictionary = def.features.get(fid, {})
+		if f.has("discovery"):
+			_discover(f["discovery"], summary)
 	# Un Gardien neutralisé laisse toujours des débris à analyser, même en cas de repli.
 	if not game.neutralized.is_empty():
 		_discover("debris_guardian", summary)

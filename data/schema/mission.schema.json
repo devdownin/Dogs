@@ -94,6 +94,9 @@
             },
             "linked": {
               "$ref": "#/$defs/cellList"
+            },
+            "except": {
+              "$ref": "#/$defs/cellList"
             }
           }
         },
@@ -422,6 +425,14 @@
             }
           }
         }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "radio_silence"
+        ]
       }
     }
   },

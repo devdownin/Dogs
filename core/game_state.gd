@@ -20,7 +20,9 @@ const UNITS := {
 const PATROLLER_MOVE := 4
 const PATROLLER_SIGHT := 2
 const ALERTS: Array[String] = ["watch", "warning", "interception", "lockdown"]
-const INTERFACE_KINDS: Array[String] = ["signal_source", "relay_point", "beacon", "node"]
+const INTERFACE_KINDS: Array[String] = [
+	"signal_source", "relay_point", "beacon", "node", "knowledge_base"
+]
 const PROBE_RANGE := 5  # distance maximale entre l'Éclaireur et le centre de la zone
 const PROBE_RADIUS := 1  # zone de 3 × 3
 const GUARD_HP := {"sentinel": 3, "patroller": 3, "regulator": 5, "herald": 2}
@@ -29,6 +31,8 @@ const PATROLLER_DAMAGE := 2
 const SENTINEL_DAMAGE := 1
 const SENTINEL_RANGE := 3
 const NO_CELL := Vector2i(-1, -1)
+const IMPULSE_RANGE := 2
+const IMPULSE_COOLDOWN := 3
 
 var def: MissionDef
 var rules: Dictionary[String, bool] = {}  # règles débloquées par la campagne (radio_silence…)
@@ -68,6 +72,8 @@ func _init(mission: MissionDef, unlocked: Array = []) -> void:
 	def = mission
 	for r: String in unlocked:
 		rules[r] = true
+	for r: String in mission.data.get("rules", []):
+		rules[r] = true  # essai de terrain accordé par la mission
 	var d := def.data
 	for u: Dictionary in d["deployment"]["units"]:
 		units[u["id"]] = {
@@ -79,7 +85,9 @@ func _init(mission: MissionDef, unlocked: Array = []) -> void:
 			"acted": false,
 			"braced": false,
 			"rampart": false,
-			"silent": false
+			"silent": false,
+			"elan": false,
+			"cooldown": 0
 		}
 	for g: Dictionary in d["guardians"]:
 		var route: Array[Vector2i] = []
@@ -95,10 +103,14 @@ func _init(mission: MissionDef, unlocked: Array = []) -> void:
 			"ri": 0,
 			"dirn": 1,
 			"hp": GUARD_HP[g["type"]],
-			"chase": NO_CELL
+			"chase": NO_CELL,
+			"stunned": false
 		}
-	for p in Cells.expand(d["map"].get("territory", {}).get("recolored", [])):
+	var terr: Dictionary = d["map"].get("territory", {})
+	for p in Cells.expand(terr.get("recolored", [])):
 		recolored[p] = true
+	for p in Cells.expand(terr.get("except", [])):
+		recolored.erase(p)
 	alert_enabled = d["alert"].get("enabled", true)
 	alert = ALERTS.find(d["alert"]["initial"])
 	alert_max = alert
@@ -174,6 +186,9 @@ func available_actions(uid: String) -> Array[Dictionary]:
 				out.append({"kind": "repair", "target": o["pos"], "feature": id})
 	if u["type"] == "protector":
 		out.append({"kind": "rampart", "target": NO_CELL, "feature": ""})
+	for gid in guards:
+		if can_impulse(uid, guards[gid]["pos"]):
+			out.append({"kind": "impulse", "target": guards[gid]["pos"], "feature": gid})
 	out.append({"kind": "brace", "target": NO_CELL, "feature": ""})
 	if rules.has("radio_silence"):
 		out.append({"kind": "silence", "target": NO_CELL, "feature": ""})
@@ -226,6 +241,21 @@ func intents() -> Dictionary:
 	return {"watched": watched, "routes": routes, "attacks": attacks}
 
 
+## Impulsion de l'Intercepteur : fige le Gardien en `t` pendant la prochaine phase.
+func can_impulse(uid: String, t: Vector2i) -> bool:
+	var u := units[uid]
+	return (
+		u["type"] == "interceptor"
+		and u["status"] == "active"
+		and not u["acted"]
+		and not u["silent"]
+		and u["cooldown"] == 0
+		and not _guard_at(t).is_empty()
+		and Cells.manhattan(u["pos"], t) <= IMPULSE_RANGE
+		and def.los(u["pos"], t, def.elevated.has(u["pos"]))
+	)
+
+
 ## Un drone peut-il frapper la case `t` (portée, ligne de vue) ?
 func can_attack(uid: String, t: Vector2i) -> bool:
 	var u := units[uid]
@@ -258,6 +288,8 @@ func start_turn() -> void:
 		units[id]["acted"] = false
 		units[id]["braced"] = false
 		units[id]["rampart"] = false
+		units[id]["elan"] = false
+		units[id]["cooldown"] = maxi(0, int(units[id]["cooldown"]) - 1)
 	_emit({"type": "turn_started", "turn": turn})
 	_check()
 
@@ -283,6 +315,15 @@ func move(uid: String, dest: Vector2i) -> bool:
 			territory_entered = true
 		if not u["silent"]:
 			revealed.merge(def.vision(p, UNITS[u["type"]][2]))
+	# Élan : au moins 3 cases dans une seule direction (+1 dégât à la frappe de l'Intercepteur).
+	var straight := path.size() >= 3
+	var step: Vector2i = path[0] - u["pos"] if not path.is_empty() else Vector2i.ZERO
+	var prev: Vector2i = u["pos"]
+	for p in path:
+		if p - prev != step:
+			straight = false
+		prev = p
+	u["elan"] = u["type"] == "interceptor" and straight
 	u["pos"] = dest
 	u["moved"] = true
 	_emit({"type": "unit_moved", "unit": uid, "path": path})
@@ -292,7 +333,7 @@ func move(uid: String, dest: Vector2i) -> bool:
 
 
 ## kind : "interact", "interface", "probe", "extract", "attack", "brace", "rampart", "repair",
-## "silence", "reconnect".
+## "silence", "reconnect", "impulse".
 ## `target` : case du point d'intérêt, centre de la Sonde, Gardien visé ou allié à réparer.
 func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 	if not _can_command(uid):
@@ -329,7 +370,7 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 			if gid.is_empty() or not can_attack(uid, target):
 				return _refuse("%s : attaque impossible en %s" % [uid, Cells.name_of(target)])
 			var g := guards[gid]
-			var dmg: int = ATTACK[u["type"]][0]
+			var dmg: int = ATTACK[u["type"]][0] + (1 if u["elan"] else 0)
 			if (
 				Cells.manhattan(u["pos"], target) > 1
 				and def.terrain(target) in MissionDef.BLOCKS_LOS
@@ -345,6 +386,12 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 				if alert_enabled:
 					quiet_phases = 0
 					_set_alert(alert + 1)
+		"impulse":
+			if not can_impulse(uid, target):
+				return _refuse("%s : Impulsion impossible en %s" % [uid, Cells.name_of(target)])
+			guards[_guard_at(target)]["stunned"] = true
+			u["cooldown"] = IMPULSE_COOLDOWN
+			_emit({"type": "guardian_stunned", "unit": uid, "guardian": _guard_at(target)})
 		"brace":
 			u["braced"] = true
 			_emit({"type": "unit_braced", "unit": uid})
@@ -430,9 +477,10 @@ func _guardian_phase() -> void:
 			elif g["pos"] == g["chase"]:
 				g["chase"] = NO_CELL
 			_emit({"type": "guardian_moved", "guardian": gid, "path": path})
-		elif g["type"] == "sentinel":
+		elif g["type"] == "sentinel" and not g["stunned"]:
 			g["facing"] = pl["facing"]
 			_emit({"type": "guardian_turned", "guardian": gid, "facing": g["facing"]})
+		g["stunned"] = false
 	for at: Dictionary in plan["attacks"]:
 		var u := units[at["unit"]]
 		u["hp"] -= int(at["damage"])
@@ -516,13 +564,17 @@ func _plan() -> Dictionary:
 		var path: Array[Vector2i] = []
 		var pl := {"facing": "", "ri": g["ri"], "dirn": g["dirn"]}
 		var seen: Dictionary[Vector2i, bool] = {}
-		if g["type"] == "patroller":
+		if g["stunned"]:
+			pass  # Impulsion : ni déplacement, ni regard, ni coup cette phase
+		elif g["type"] == "patroller":
 			var target: Vector2i = g["chase"]
 			if target == NO_CELL and not g["route"].is_empty():
-				var wp := _next_waypoint(g)
-				pl["ri"] = wp[0]
-				pl["dirn"] = wp[1]
-				target = g["route"][wp[0]]
+				# Le point de ronde suivant n'est visé qu'une fois le précédent atteint.
+				if g["pos"] == g["route"][g["ri"]]:
+					var wp := _next_waypoint(g)
+					pl["ri"] = wp[0]
+					pl["dirn"] = wp[1]
+				target = g["route"][pl["ri"]]
 			if target != NO_CELL and target != g["pos"]:
 				var others: Dictionary[Vector2i, bool] = {}
 				for k: String in gpos:
@@ -562,6 +614,8 @@ func _plan() -> Dictionary:
 		var cand: Array[String] = []
 		var base := 0
 		var ranged := false
+		if g["stunned"]:
+			continue
 		if g["type"] == "patroller" and alert >= 1:
 			base = PATROLLER_DAMAGE
 			for id: String in hp:

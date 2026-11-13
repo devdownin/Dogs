@@ -78,7 +78,8 @@
       "title_key": "HYP_OBS_5",
       "requires": {
         "discoveries": [
-          "obs_signal_hunt"
+          "obs_signal_hunt",
+          "obs_silence_trial"
         ]
       },
       "cycles": 1,

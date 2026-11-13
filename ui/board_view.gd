@@ -363,6 +363,11 @@ func _draw() -> void:
 			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
 		_sprite(g["type"], g["pos"], GUARD, Color.WHITE)
 		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
+		if g["stunned"]:  # figé par une Impulsion : croix ivoire sur la case
+			var gr := cell_rect(g["pos"]).grow(-s * 0.18)
+			var w := maxf(3.0, s * 0.05)
+			draw_line(gr.position, gr.end, IVORY, w)
+			draw_line(Vector2(gr.end.x, gr.position.y), Vector2(gr.position.x, gr.end.y), IVORY, w)
 
 	for uid: String in game.units:
 		var u: Dictionary = game.units[uid]
@@ -395,6 +400,14 @@ func _draw() -> void:
 				3.0
 			)
 		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], PACK)
+		if u["elan"] and not u["acted"]:  # Élan prêt : chevrons turquoise
+			var e := r.position + Vector2(r.size.x * 0.72, r.size.x * 0.12)
+			for i in 2:
+				var o := e + Vector2(0, i * s * 0.08)
+				var pts := PackedVector2Array(
+					[o, o + Vector2(s * 0.08, -s * 0.06), o + Vector2(s * 0.16, 0)]
+				)
+				draw_polyline(pts, PACK, 3.0)
 
 	# Coups annoncés : trait violet du Gardien vers sa cible, dégâts inscrits sur la cible.
 	var font := ThemeDB.fallback_font

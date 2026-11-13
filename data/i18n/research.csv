@@ -62,3 +62,4 @@ HYP_CREW_PILOT_FX,« Fenêtre de transit » : 2 tours de plus. Support vital : �
 DISC_OBS_SIGNAL_HUNT,Ils traquent ce qui parle à ATHENA,They hunt what speaks to ATHENA
 HYP_OBS_5,Silence radio,Radio silence
 HYP_OBS_5_FX,"Un drone peut couper sa liaison avec ATHENA : les Gardiens ne le voient plus, mais il avance à l'aveugle et ne peut plus agir avant de se reconnecter.","A drone can cut its link to ATHENA: Guardians no longer see it, but it moves blind and cannot act until it reconnects."
+DISC_OBS_SILENCE_TRIAL,Essai de silence radio,Radio silence field trial

@@ -119,6 +119,7 @@ func _run() -> void:
 	main = await _test_resume(main)
 	await _test_research(main)
 	await _test_silence(main)
+	await _test_m6(main)
 	SaveStore.erase(SaveStore.MISSION)
 	SaveStore.erase(SaveStore.CAMPAIGN)
 
@@ -414,6 +415,37 @@ func _test_silence(main: Control) -> void:
 	_check(
 		main.game.alert == 0, "en silence, attendre sous le regard de la Sentinelle ne trahit pas"
 	)
+
+
+## Mission 6 : essai de silence radio accordé par la mission, Impulsion de l'Intercepteur.
+func _test_m6(main: Control) -> void:
+	main.campaign.confirmed.erase("obs_5")
+	main.load_mission(5)
+	_check(main.game.rules.has("radio_silence"), "M6 accorde le silence radio pour la mission")
+	var rep: Dictionary = MissionLoader.load_json("res://data/replays/m6_reference.json")
+	var turns: Array = rep["turns"]
+	for t in 7:
+		for c: Dictionary in turns[t]:
+			if c.has("move"):
+				main._play({"t": "move", "unit": c["unit"], "dest": Cells.parse(c["move"])})
+			if c.has("act"):
+				var target := Cells.parse(c["target"]) if c.has("target") else Vector2i(-1, -1)
+				main._play({"t": "act", "unit": c["unit"], "kind": c["act"], "target": target})
+		if t < 6:
+			main._play({"t": "end"})
+	_check(main.game.guards["pat2"]["stunned"], "l'Impulsion fige le Patrouilleur")
+	_check(main.game.interacted.has("archive"), "la base est ouverte sous couvert de l'Impulsion")
+	main.reveal_all = true
+	main._refresh()
+	await _shot(main, "m6_impulsion")
+	main.reveal_all = false
+	main.load_mission(5)
+	main._play({"t": "end"})
+	main._play({"t": "move", "unit": "int", "dest": Cells.parse("D8")})
+	_check(main.game.units["int"]["elan"], "trois cases en ligne droite donnent l'Élan")
+	main.selected = "int"
+	main._refresh()
+	await _shot(main, "m6_elan")
 
 
 func _tap(main: Control, cell: String) -> void:

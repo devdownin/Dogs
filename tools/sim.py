@@ -6,6 +6,7 @@ volontairement réduite (pas de modules, pas de Liaison). Toute divergence doit 
 corrigée des deux côtés.
 """
 import heapq
+from itertools import pairwise
 
 UNITS = {  # mouvement, intégrité, vision
     "scout": (5, 2, 4), "technician": (3, 2, 2), "protector": (3, 4, 2), "interceptor": (4, 3, 3)}
@@ -15,11 +16,12 @@ BLOCKS_LOS = {"R", "X"}
 ALERTS = ["watch", "warning", "interception", "lockdown"]
 DIRS = {"N": (0, -1), "NE": (1, -1), "E": (1, 0), "SE": (1, 1), "S": (0, 1),
         "SW": (-1, 1), "W": (-1, 0), "NW": (-1, -1)}
-INTERFACE_KINDS = {"signal_source", "relay_point", "beacon", "node"}
+INTERFACE_KINDS = {"signal_source", "relay_point", "beacon", "node", "knowledge_base"}
 PROBE_RANGE, PROBE_RADIUS = 5, 1
 GUARD_HP = {"sentinel": 3, "patroller": 3, "regulator": 5, "herald": 2}
 ATTACK = {"protector": (1, 1, 1), "interceptor": (2, 1, 2)}  # dégâts, portée min, portée max
 PATROLLER_DAMAGE, SENTINEL_DAMAGE, SENTINEL_RANGE = 2, 1, 3
+IMPULSE_RANGE, IMPULSE_COOLDOWN = 2, 3
 
 
 def parse_cell(c):
@@ -145,20 +147,22 @@ class Game:
     def __init__(self, data, rules=()):
         self.m = Mission(data)
         self.d = data
-        self.rules = set(rules)  # règles débloquées par la campagne (ex. radio_silence)
+        # règles débloquées par la campagne, plus celles qu'accorde la mission (essai de terrain)
+        self.rules = set(rules) | set(data.get("rules", []))
         self.units = {u["id"]: {"type": u["type"], "pos": parse_cell(u["cell"]),
                                 "hp": UNITS[u["type"]][1], "status": "active",
-                                "braced": False, "rampart": False, "silent": False}
+                                "braced": False, "rampart": False, "silent": False,
+                                "elan": False, "cooldown": 0}
                       for u in data["deployment"]["units"]}
         self.guards = {}
         for g in data["guardians"]:
             st = {"type": g["type"], "pos": parse_cell(g["cell"]), "cycle": g.get("facing_cycle"),
                   "facing": g.get("facing"), "route": [parse_cell(c) for c in g.get("route", [])],
                   "mode": g.get("route_mode", "loop"), "ri": 0, "dirn": 1,
-                  "hp": GUARD_HP[g["type"]], "chase": None}
+                  "hp": GUARD_HP[g["type"]], "chase": None, "stunned": False}
             self.guards[g["id"]] = st
         terr = data["map"].get("territory", {})
-        self.recolored = set(expand(terr.get("recolored")))
+        self.recolored = set(expand(terr.get("recolored"))) - set(expand(terr.get("except")))
         self.alert_enabled = data["alert"].get("enabled", True)
         self.alert = ALERTS.index(data["alert"]["initial"])
         self.alert_max, self.quiet_phases = self.alert, 0
@@ -335,6 +339,9 @@ class Game:
                 self.territory_entered = True
             if not u["silent"]:
                 self.revealed |= self.m.vision(p, UNITS[u["type"]][2])
+        steps = list(reversed(path))
+        dirs = {(b[0] - a[0], b[1] - a[1]) for a, b in pairwise(steps)}
+        u["elan"] = u["type"] == "interceptor" and len(steps) - 1 >= 3 and len(dirs) == 1
         u["pos"], u["moved"] = d, True
         self.refresh_vision()
 
@@ -375,6 +382,15 @@ class Game:
                 self.neutralized.add(gid)
                 if self.alert_enabled:
                     self.set_alert(self.alert + 1); self.quiet_phases = 0
+        elif kind == "impulse":
+            t = parse_cell(target)
+            gid = next((k for k, g in self.guards.items() if g["pos"] == t), None)
+            if (u["type"] != "interceptor" or u["cooldown"] > 0 or gid is None
+                    or manhattan(u["pos"], t) > IMPULSE_RANGE
+                    or not self.m.los(u["pos"], t, u["pos"] in self.m.elevated)):
+                raise RuleError(f"{uid} : Impulsion impossible en {target}")
+            self.guards[gid]["stunned"] = True
+            u["cooldown"] = IMPULSE_COOLDOWN
         elif kind == "brace":
             u["braced"] = True
         elif kind == "rampart":
@@ -415,7 +431,7 @@ class Game:
 
     def attack_damage(self, uid, t):
         u = self.units[uid]
-        dmg = ATTACK[u["type"]][0]
+        dmg = ATTACK[u["type"]][0] + (1 if u["elan"] else 0)
         if manhattan(u["pos"], t) > 1 and self.m.terrain(t) in BLOCKS_LOS:
             dmg -= 1  # couvert contre les tirs à distance
         return max(1, dmg)
@@ -437,7 +453,8 @@ class Game:
         self.refresh_vision()
         for u in self.units.values():
             u["moved"] = u["acted"] = False
-            u["braced"] = u["rampart"] = False
+            u["braced"] = u["rampart"] = u["elan"] = False
+            u["cooldown"] = max(0, u["cooldown"] - 1)
         self.check()
 
     def end_player_turn(self):
@@ -468,10 +485,16 @@ class Game:
         plans, watched, blockers = {}, set(), set()
         for gid, g in self.guards.items():
             pl = {"path": [], "facing": None, "ri": g["ri"], "dirn": g["dirn"], "attack": None}
+            if g["stunned"]:  # Impulsion : ni déplacement, ni regard, ni coup cette phase
+                pl["ri"], pl["dirn"] = g["ri"], g["dirn"]
+                plans[gid] = pl
+                continue
             if g["type"] == "patroller":
                 target = g["chase"]
                 if target is None and g["route"]:
-                    pl["ri"], pl["dirn"] = self.next_waypoint(g)
+                    # Le point de ronde suivant n'est visé qu'une fois le précédent atteint.
+                    if g["pos"] == g["route"][g["ri"]]:
+                        pl["ri"], pl["dirn"] = self.next_waypoint(g)
                     target = g["route"][pl["ri"]]
                 if target is not None and target != g["pos"]:
                     others = frozenset(q for k, q in gpos.items() if k != gid)
@@ -500,6 +523,8 @@ class Game:
         cells = set(gpos.values())
         for gid, g in self.guards.items():
             pos, cand, base, ranged = gpos[gid], [], 0, False
+            if g["stunned"]:
+                continue
             if g["type"] == "patroller" and self.alert >= 1:
                 cand = [k for k in hp if hp[k] > 0 and manhattan(self.units[k]["pos"], pos) == 1]
                 base = PATROLLER_DAMAGE
@@ -534,6 +559,7 @@ class Game:
                 g["chase"] = None
             if p["facing"]:
                 g["facing"] = p["facing"]
+            g["stunned"] = False
         for gid, uid, dmg in pl["attacks"]:
             u = self.units[uid]
             u["hp"] -= dmg

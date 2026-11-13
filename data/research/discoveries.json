@@ -14,6 +14,12 @@
       "title_key": "DISC_OBS_SIGNAL_HUNT"
     },
     {
+      "id": "obs_silence_trial",
+      "nature": "observation",
+      "source_mission": "m6",
+      "title_key": "DISC_OBS_SILENCE_TRIAL"
+    },
+    {
       "id": "sample_recolored_soil",
       "nature": "sample",
       "source_mission": "m3",
