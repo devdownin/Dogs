@@ -90,6 +90,23 @@
       }
     },
     {
+      "id": "obs_6",
+      "branch": "observation",
+      "title_key": "HYP_OBS_6",
+      "requires": {
+        "discoveries": [
+          "obs_cavity"
+        ],
+        "ship_stage": "research"
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "campaign",
+        "open_sector": "hypogee"
+      }
+    },
+    {
       "id": "lia_1",
       "branch": "link",
       "title_key": "HYP_LIA_1",

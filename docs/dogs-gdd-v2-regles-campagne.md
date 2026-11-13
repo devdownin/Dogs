@@ -226,12 +226,22 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 
 | Mission | Type | Règle ou situation nouvelle |
 |---|---|---|
-| III-1 « Une voix sans destinataire » | Ruines | Archive en deux temps (ouvrir, puis extraire) |
-| III-2 « Ceux qui veillent » | Infiltration | Gardiens dormants : ne pas réveiller |
-| III-3 « Deux versions » | Choix | Deux chroniques contradictoires, une seule extractible |
+| III-1 « Une voix sans destinataire » | Hypogée, niveau 1 | Descente sous la base de M6 ; chaîne de relais ; archive en deux temps (ouvrir, puis extraire) ; *Chronique des liés* |
+| III-2 « Ceux qui veillent » | Hypogée, niveau 2 | Gardiens dormants : ne pas réveiller ; obscurité |
+| III-3 « Deux versions » | Hypogée, cœur | Deux chroniques contradictoires, une seule extractible ; remontée sous pression |
 | III-4 « Sous le dôme » | Récupération | Extraction avec alerte qui monte seule |
 | III-5 « L'équilibre ancien » | Étude | Première mission où libérer un secteur l'abîme visiblement |
 | III-6 « Le dernier protocole » | Fin d'acte, 16×16 | Étape Projection : 5e drone |
+
+**L'Hypogée (décidé le 13 novembre 2026).** Sous la base de la Mission 6 s'ouvre un vaste complexe souterrain : le refuge des bâtisseurs pendant la chute. Annoncé dès la fin de l'Acte I (ATHENA sent de l'air chaud monter de sous la base ; découverte « Un souffle sous la base »), il devient accessible quand ATHENA a confirmé *Sondage du sous-sol* (OBS-6, étape « Recherche » requise). Les trois premières missions de l'Acte III s'y déroulent, de plus en plus profond.
+
+Règles propres au souterrain (proposées) :
+- **Le signal ne passe pas la roche.** ATHENA n'atteint les drones que par une chaîne de relais posés par le Technicien (la *Liaison* de l'Acte II, ici obligatoire). Hors de la chaîne, un drone est en silence forcé : invisible, aveugle, sans action. Avancer, c'est poser des relais ; un relais perdu coupe tout ce qui est derrière.
+- **Obscurité :** vision −1 ; la *Sonde* devient l'outil principal.
+- **Gardiens dormants :** ils ne patrouillent pas et se réveillent si un drone relié finit son tour à côté d'eux ou si un combat éclate à portée. Leur seuil de réveil s'affiche avec *Mémoire des jardins* (XEN-2).
+- **Niveaux :** une mission peut couvrir deux niveaux reliés par un puits ; les relais posés restent en place d'une mission de l'arc à l'autre.
+
+Ce que l'Hypogée raconte : la *Chronique des liés* (III-1), qui ouvre *La clé des liés* ; les deux versions de la chute (III-3), au plus profond. **Piste à valider :** au cœur du complexe, une IA des bâtisseurs n'est pas morte. Cachée sous la roche, hors de portée des Gardiens, elle tente de joindre ATHENA. La réveiller, la laisser dormir, ou la livrer aux Gardiens : c'est le choix le plus lourd pour ATHENA.
 
 ### 7.5 Acte IV — La volonté des dieux
 

@@ -20,6 +20,12 @@
       "title_key": "DISC_OBS_SILENCE_TRIAL"
     },
     {
+      "id": "obs_cavity",
+      "nature": "observation",
+      "source_mission": "m6",
+      "title_key": "DISC_OBS_CAVITY"
+    },
+    {
       "id": "sample_recolored_soil",
       "nature": "sample",
       "source_mission": "m3",

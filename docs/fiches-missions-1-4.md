@@ -309,7 +309,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 
 - **Pièges rejoués :** finir un tour sur le sol violet sans couper la liaison (détection immédiate) ; à l'inverse, la force paie aussi : l'Intercepteur lancé en ligne droite (D11 → D8) frappe à 3 dégâts et neutralise un Patrouilleur d'un coup, au prix d'un cran d'alerte.
 - **Découverte vérifiable :** un registre de décisions dont aucune n'est signée par une personne (découverte « La première chronique », qui ouvre *Grammaire des ruines*).
-- **Effets :** essai de silence radio consigné (il faut ensuite étudier *Silence radio* pour en disposer dans les missions suivantes) ; Concorde +1 si *Veille* tenue.
+- **Effets :** essai de silence radio consigné ; « Un souffle sous la base », premier indice de l'Hypogée (Acte III) (il faut ensuite étudier *Silence radio* pour en disposer dans les missions suivantes) ; Concorde +1 si *Veille* tenue.
 - **Récompenses :** 4 Données, 1 Matériau, 1 Fragment ; +1 Donnée par relevé.
 
 ---

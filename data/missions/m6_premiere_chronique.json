@@ -75,7 +75,7 @@
   "rewards": { "data": 4, "materials": 1, "fragments": 1, "per_record": { "data": 1 } },
   "campaign_effects": [
     { "type": "chronicle", "entry": "premiere_chronique", "status": "observed" },
-    { "type": "discoveries", "ids": ["obs_silence_trial"] },
+    { "type": "discoveries", "ids": ["obs_silence_trial", "obs_cavity"] },
     { "type": "gauge", "gauge": "concord", "delta": 1, "if_record": "r_quiet" }
   ]
 }
