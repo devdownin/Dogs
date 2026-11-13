@@ -98,12 +98,12 @@ Les caissons ont souffert du transit : impossible de réveiller qui que ce soit 
 | Id | Réveil | Requiert | Cycles | Données | Avantage |
 |---|---|---|---:|---:|---|
 | CRW-0 | Diagnostic des caissons | Étape « Recherche » du vaisseau (fin d'Acte I) | 2 | 5 | Rend les réveils possibles |
-| CRW-1 | Médecin | CRW-0 | 2 | 4 | Les réveils suivants prennent 1 cycle de moins |
-| CRW-2 | Opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 5 | Un vétéran choisit entre trois traits au lieu de deux |
-| CRW-3 | Responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 5 | +1 Énergie par mission (annule son propre coût) |
-| CRW-4 | Xénologue | CRW-1 ; base des Jardins géométriques | 2 | 5 | Les hypothèses de Xénologie prennent 1 cycle de moins |
-| CRW-5 | Commandante | CRW-2, CRW-3 et CRW-4 | 3 | 8 | Ouvre des options de décision dans IV-2 et IV-4 |
-| CRW-6 | Pilote | CRW-1 ; étape « Navigation » | 2 | 8 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
+| CRW-1 | Paul, médecin | CRW-0 | 2 | 4 | Les réveils suivants prennent 1 cycle de moins |
+| CRW-2 | Pia, opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 5 | Un vétéran choisit entre trois traits au lieu de deux |
+| CRW-3 | Xenon, responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 5 | +1 Énergie par mission (annule son propre coût) |
+| CRW-4 | Moonji, xénologue | CRW-1 ; base des Jardins géométriques | 2 | 5 | Les hypothèses de Xénologie prennent 1 cycle de moins |
+| CRW-5 | Flores, commandante | CRW-2, CRW-3 et CRW-4 | 3 | 8 | Ouvre des options de décision dans IV-2 et IV-4 |
+| CRW-6 | Hermes, pilote | CRW-1 ; étape « Navigation » | 2 | 8 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
 
 Les rôles reprennent les personnages du récit (commandante, responsable des systèmes, xénologue, opératrice de la Meute) ; médecin et pilote complètent les six. La « voix du bord » du récit est ATHENA.
 

@@ -29,12 +29,12 @@ HYP_XEN_3A,Les Gardiens protègent,The Guardians protect
 HYP_XEN_3B,Les Gardiens ont causé la chute,The Guardians caused the fall
 HYP_XEN_4,La langue de l'Arbitre,The Arbiter's language
 HYP_CREW_0,Diagnostic des caissons,Stasis pod diagnostics
-HYP_CREW_MEDIC,Réveil : médecin,Wake: physician
-HYP_CREW_OPERATOR,Réveil : opératrice de la Meute,Wake: Pack operator
-HYP_CREW_SYSTEMS,Réveil : responsable des systèmes,Wake: systems officer
-HYP_CREW_XENOLOGIST,Réveil : xénologue,Wake: xenologist
-HYP_CREW_COMMANDER,Réveil : commandante,Wake: commander
-HYP_CREW_PILOT,Réveil : pilote,Wake: pilot
+HYP_CREW_MEDIC,"Réveil : Paul, médecin","Wake: Paul, physician"
+HYP_CREW_OPERATOR,"Réveil : Pia, opératrice de la Meute","Wake: Pia, Pack operator"
+HYP_CREW_SYSTEMS,"Réveil : Xenon, responsable des systèmes","Wake: Xenon, systems officer"
+HYP_CREW_XENOLOGIST,"Réveil : Moonji, xénologue","Wake: Moonji, xenologist"
+HYP_CREW_COMMANDER,"Réveil : Flores, commandante","Wake: Flores, commander"
+HYP_CREW_PILOT,"Réveil : Hermes, pilote","Wake: Hermes, pilot"
 HYP_XEN_3R,Révision : la chronique A était falsifiée,Revision: chronicle A was forged
 HYP_OBS_1_FX,"Avant chaque mission, une bande de la carte est déjà explorée.","Before each mission, a strip of the map is already explored."
 HYP_OBS_2_FX,Le prochain pivot de chaque Sentinelle observée est affiché.,The next turn of each observed Sentinel is shown.

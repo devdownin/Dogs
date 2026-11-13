@@ -26,6 +26,16 @@
           "key": "CIN_M3_03"
         }
       ]
+    },
+    {
+      "image": "transit",
+      "motion": "push_in",
+      "lines": [
+        {
+          "speaker": "pilot_log",
+          "key": "CIN_M3_04"
+        }
+      ]
     }
   ]
 }

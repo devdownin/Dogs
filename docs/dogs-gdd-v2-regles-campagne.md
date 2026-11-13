@@ -20,7 +20,7 @@
 | 6 | Aucune animation squelettique prévue pour les unités. | Incompatible avec l'objectif de qualité : la démarche des quadrupèdes est l'identité du jeu. Animations exigées. |
 | 7 | Sept missions avant le premier combat, Mission 0 sans carte tactique. | Mission 0 ramenée à 3 minutes maximum et passable ; première décision tactique dans les 2 minutes ; cartes d'Acte I réduites (8×8 à 10×10). |
 | 8 | Quatre ressources sans rôle distinct chiffré. | Une capacité, deux stocks, une collection (§6). |
-| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie. L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
+| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie : Flores (commandante), Moonji (xénologue), Pia (opératrice de la Meute), Xenon (responsable des systèmes), Paul (médecin), Hermes (pilote). L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
 
 ### 1.2 Lecture des deux pistes graphiques
 

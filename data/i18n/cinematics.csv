@@ -39,10 +39,14 @@ CIN_ACT1_SUB,La surface est surveillée. Elle l'a toujours été.,The surface is
 CIN_ACT1_END,Fin de l'Acte I — Survivants de l'autre côté,End of Act I — Survivors on the Other Side
 SPEAKER_LOG,Journal de bord,Ship's log
 SPEAKER_STATIC,Fragments,Fragments
-SPEAKER_COMMANDER_LOG,Commandante — enregistré avant le transit,Commander — recorded before transit
-SPEAKER_XENOLOGIST_LOG,Xénologue — enregistré avant le transit,Xenologist — recorded before transit
-SPEAKER_SYSTEMS_LOG,Responsable des systèmes — enregistré avant le transit,Systems officer — recorded before transit
-SPEAKER_OPERATOR_LOG,Opératrice de la Meute — enregistré avant le transit,Pack operator — recorded before transit
+SPEAKER_COMMANDER_LOG,"Flores, commandante — enregistré avant le transit","Flores, commander — recorded before transit"
+SPEAKER_XENOLOGIST_LOG,"Moonji, xénologue — enregistré avant le transit","Moonji, xenologist — recorded before transit"
+SPEAKER_SYSTEMS_LOG,"Xenon, responsable des systèmes — enregistré avant le transit","Xenon, systems officer — recorded before transit"
+SPEAKER_OPERATOR_LOG,"Pia, opératrice de la Meute — enregistré avant le transit","Pia, Pack operator — recorded before transit"
 UI_SKIP,Passer,Skip
 UI_TAP_CONTINUE,Toucher pour continuer,Tap to continue
 UI_REPLAY_CINEMATIC,Revoir,Replay
+SPEAKER_MEDIC_LOG,"Paul, médecin — enregistré avant le transit","Paul, physician — recorded before transit"
+SPEAKER_PILOT_LOG,"Hermes, pilote — enregistré avant le transit","Hermes, pilot — recorded before transit"
+CIN_M3_04,"Quatre secondes de passage, c'est le plan. Si ça dure plus, c'est que quelque chose aura décidé pour nous.","Four seconds of crossing, that's the plan. If it takes longer, something will have decided for us."
+CIN_M4_05,"Si la stase dure plus que prévu, ne nous réveillez pas dans la précipitation. Un réveil raté ne se rattrape pas.","If stasis lasts longer than planned, don't wake us in a hurry. A botched waking can't be undone."

@@ -30,6 +30,16 @@
       ]
     },
     {
+      "image": "pods",
+      "motion": "still",
+      "lines": [
+        {
+          "speaker": "medic_log",
+          "key": "CIN_M4_05"
+        }
+      ]
+    },
+    {
       "image": "relay_signal",
       "motion": "push_in",
       "lines": [
