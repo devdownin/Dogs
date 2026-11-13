@@ -254,6 +254,28 @@
       "exclusive_with": "xen_3a"
     },
     {
+      "id": "xen_3r",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_3R",
+      "requires": {
+        "discoveries": [
+          "kb_master_relay"
+        ],
+        "hypotheses": [
+          "xen_3a"
+        ]
+      },
+      "cycles": 3,
+      "data_cost": 30,
+      "effect": {
+        "type": "campaign",
+        "revise": "xen_3a",
+        "unlock_weakness": "arbiter",
+        "gauge": "knowledge",
+        "value": 1
+      }
+    },
+    {
       "id": "xen_4",
       "branch": "xenology",
       "title_key": "HYP_XEN_4",
@@ -262,8 +284,8 @@
           "kb_master_relay"
         ],
         "any_hypothesis": [
-          "xen_3a",
-          "xen_3b"
+          "xen_3b",
+          "xen_3r"
         ]
       },
       "cycles": 3,

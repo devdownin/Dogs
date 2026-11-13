@@ -235,7 +235,7 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | V-3 « Le seuil » | Finale 16×16 à trois objectifs exclusifs |
 | Épilogue | Conséquences secteur par secteur |
 
-**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. Conformément au document narratif, l'origine des Gardiens et le sort des bâtisseurs restent à décider : cette structure fonctionne quelle que soit la révélation retenue.
+**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. Leur motif reste à écrire.
 
 ### 7.7 Fiche de mission (gabarit obligatoire)
 

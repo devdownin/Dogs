@@ -80,9 +80,12 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer.
 | XEN-2 | Mémoire des jardins | XEN-1 ; base des Jardins géométriques (II-2) | 2 | 20 | Les Gardiens dormants (III-2) affichent leur seuil de réveil |
 | XEN-3a | Les Gardiens protègent | XEN-2 ; chronique A de « Deux versions » (III-3) | 3 | 30 | Ouvre une branche de dialogue dans IV-2 ; jauge Concorde +1 |
 | XEN-3b | Les Gardiens ont causé la chute | XEN-2 ; chronique B de « Deux versions » (III-3) | 3 | 30 | Ouvre une faiblesse de l'Arbitre (IV-5) ; jauge Emprise +1 |
-| XEN-4 | La langue de l'Arbitre | XEN-3a ou XEN-3b ; base du relais maître (IV-2) | 3 | 40 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
+| XEN-3r | Révision : la chronique A était falsifiée | XEN-3a ; base du relais maître (IV-2) | 3 | 30 | ATHENA corrige sa conclusion ; ouvre la faiblesse de l'Arbitre ; Savoir +1 |
+| XEN-4 | La langue de l'Arbitre | XEN-3b ou XEN-3r ; base du relais maître (IV-2) | 3 | 40 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
 
-XEN-3a et XEN-3b sont **exclusives**. Le quatrième dénouement (Savoir complet, GDD §7.6) exige XEN-1, XEN-2, l'une des XEN-3 et XEN-4.
+**Vérité du récit (décidée le 13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** La chronique B dit vrai ; la chronique A est une version réécrite par les Gardiens eux-mêmes.
+
+XEN-3a et XEN-3b restent **exclusives** : le joueur choisit quelle chronique extraire dans « Deux versions », et ATHENA conclut sur ce qu'elle a. Choisir A n'est pas une impasse mais une **fausse piste** : la base du relais maître (IV-2) contredit la chronique A, et XEN-3r permet de réviser la conclusion. Le prix est le temps (3 cycles d'étude en plus, en fin de campagne) et les effets de XEN-3a, qui restent acquis. Le quatrième dénouement (Savoir complet, GDD §7.6) exige XEN-1, XEN-2, XEN-3b ou XEN-3r, et XEN-4.
 
 ## 6 bis. Équipage : réveiller les dormeurs (validé le 13 novembre 2026)
 
@@ -114,4 +117,4 @@ Les rôles reprennent les personnages du récit (commandante, responsable des sy
 
 ## 8. Questions ouvertes
 
-1. **Exclusivité XEN-3 :** choix définitif, ou ATHENA peut-elle revenir sur sa conclusion en fin d'Acte IV contre un coût élevé ?
+1. **Pourquoi les Gardiens ont-ils causé la chute ?** Ordre mal compris, protocole poussé à l'extrême, prise de contrôle délibérée : la réponse fixe le ton de l'Acte IV et des dénouements.
