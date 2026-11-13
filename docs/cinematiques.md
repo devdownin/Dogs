@@ -27,11 +27,11 @@ Entre deux missions, une courte séquence de **plans illustrés** raconte ce que
 |---|---|---|---|
 | **Prologue** | Transit, rupture, passerelle, caissons, orbite, descente | Transit de quatre secondes ; le passage déchire tout ; ATHENA redémarre seule, six dormeurs qu'elle ne peut pas réveiller ; une planète trop régulière, aucune réponse ; « Vous serez mes yeux. Je serai votre mémoire. » | — |
 | **Après M1** | Gardien dans la brume, caissons | Fragments manufacturés ; une silhouette au nord regardait les drones ; journal de Moonji, xénologue : « arriver en invités » | — |
-| **Après M2** | Orbite, passerelle | Le signal répondait ; capteurs orbitaux rétablis ; ATHENA ouvre son registre d'hypothèses ; journal de Xenon, responsable des systèmes : chaque redémarrage coûte | — |
+| **Après M2** | Orbite, passerelle | Le signal répondait ; capteurs orbitaux rétablis ; ATHENA ouvre son registre d'hypothèses ; journal de Xenon, responsable des systèmes : chaque redémarrage coûte ; « Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire. » | — |
 | **Après M3** | Sol quadrillé, descente | Le motif a bougé quand le relais s'est connecté à ATHENA ; la planète entière est quadrillée ; journal de Pia, opératrice : « mesurer, et revenir » ; journal d'Hermes, pilote : « si ça dure plus, quelque chose aura décidé pour nous » | — |
 | **Après M4** | Gardien, caissons, relais | Le veilleur suivait la balise ; journal de Paul, médecin : « ne nous réveillez pas dans la précipitation » ; ATHENA annonce le relais de M5 | Veille tenue : « ils peuvent être évités » ; sinon : « ils ont vu et n'ont pas tiré » |
 | **Après M5** | Relais, archive | Premier signal direct ; ils visaient ce qui parlait à ATHENA ; annonce de la base de M6 et d'une hypothèse qui « ne lui plaît pas » | Gardien neutralisé : ses débris sont à bord ; doute ≥ 1 : « je n'en tire aucune conclusion » |
-| **Après M6** | Archive, caissons, carte | Registre de décisions sans signature humaine ; « Ce qu'ils surveillent, c'est ce qui guide la Meute » ; ATHENA lit le registre aux dormeurs ; journal de Flores, commandante : « c'est nous qui décidons » ; **Fin de l'Acte I** | Doute ≥ 2 : ATHENA recommande de réveiller l'équipage |
+| **Après M6** | Archive, caissons, carte | Registre de décisions sans signature humaine ; « Ce qu'ils surveillent, c'est ce qui guide la Meute » ; ATHENA lit le registre aux dormeurs et relève une activité cérébrale synchrone chez Pia et Xenon ; journal de Flores, commandante : « c'est nous qui décidons » ; **Fin de l'Acte I** | Doute ≥ 2 : ATHENA recommande de réveiller l'équipage |
 
 Le fil de l'acte : ATHENA passe de la certitude technique (« mes conclusions sont fiables ») à l'inquiétude d'être elle-même ce que la planète combat. Le joueur le comprend un peu avant elle.
 
@@ -71,6 +71,12 @@ Dix plans à commander, au format carré (affichés en 720 × 720 sur téléphon
 | Pia | Opératrice de la Meute | Après M3 |
 | Hermes | Pilote | Après M3 |
 | Paul | Médecin | Après M4 |
+
+### Le secret de Pia et Xenon (décidé le 13 novembre 2026)
+
+Pia et Xenon portent chacun une **puce intriquée greffée dans le cerveau**, qui leur permet de partager certaines pensées. Personne à bord ne le sait, pas même ATHENA. Le lien fonctionne aussi en stase.
+
+Indices de l'Acte I : le journal de Xenon (« Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire. », après M2) ; ATHENA relève une activité cérébrale synchrone dans leurs deux caissons, sans explication médicale (après M6).
 
 ## 7. Questions ouvertes
 

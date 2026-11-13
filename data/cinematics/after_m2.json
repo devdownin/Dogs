@@ -28,6 +28,10 @@
         {
           "speaker": "systems_log",
           "key": "CIN_M2_04"
+        },
+        {
+          "speaker": "systems_log",
+          "key": "CIN_M2_05"
         }
       ]
     }

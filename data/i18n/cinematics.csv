@@ -50,3 +50,5 @@ SPEAKER_MEDIC_LOG,"Paul, médecin — enregistré avant le transit","Paul, physi
 SPEAKER_PILOT_LOG,"Hermes, pilote — enregistré avant le transit","Hermes, pilot — recorded before transit"
 CIN_M3_04,"Quatre secondes de passage, c'est le plan. Si ça dure plus, c'est que quelque chose aura décidé pour nous.","Four seconds of crossing, that's the plan. If it takes longer, something will have decided for us."
 CIN_M4_05,"Si la stase dure plus que prévu, ne nous réveillez pas dans la précipitation. Un réveil raté ne se rattrape pas.","If stasis lasts longer than planned, don't wake us in a hurry. A botched waking can't be undone."
+CIN_M2_05,Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire.,Pia would say I worry too much. She doesn't need to say it.
+CIN_M6_06,"Caissons de Pia et de Xenon : activité cérébrale synchrone, à la milliseconde près. Aucune explication médicale. Je le consigne. Je n'ai personne à qui le dire.","Pia's and Xenon's pods: synchronous brain activity, to the millisecond. No medical explanation. I am logging it. I have no one to tell."
