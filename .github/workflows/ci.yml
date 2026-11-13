@@ -78,6 +78,8 @@ jobs:
           ~/godot/godot --headless --path . --import
       - name: Rejouer les replays dans le cœur GDScript
         run: ~/godot/godot --headless --path . -s tests/run_replays.gd
+      - name: Campagne, arbre de découverte et sauvegardes
+        run: ~/godot/godot --headless --path . -s tests/run_campaign.gd
       - name: Jouer la scène par touchers simulés
         run: ~/godot/godot --headless --path . -s tests/run_ui.gd
 

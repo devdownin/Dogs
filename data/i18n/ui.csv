@@ -38,3 +38,40 @@ UI_HIT,%s touché : −%d (%s).,%s hit: −%d (%s).
 UI_UNIT_DOWN,%s hors service.,%s disabled.
 UI_GUARD_DOWN,%s neutralisé.,%s neutralized.
 SPEAKER_ATHENA,ATHENA,ATHENA
+UI_ATHENA,ATHENA,ATHENA
+UI_BACK,Retour,Back
+UI_RESUMED,Partie reprise là où vous l'aviez laissée.,Game resumed where you left it.
+UI_GAINS,"Gains : +%d Données, +%d Matériaux.","Gains: +%d Data, +%d Materials."
+UI_NEW_DISCOVERIES,Découvertes : %s.,Discoveries: %s.
+UI_CONFIRMED,ATHENA a confirmé : %s.,ATHENA confirmed: %s.
+UI_NEW_STAGE,Vaisseau : étape %s atteinte.,Ship: %s stage reached.
+RES_HEADER,"Données : %d   ·   Études : %d/%d
+Vaisseau : %s   ·   Équipage : %d éveillé(s), %d en stase","Data: %d   ·   Studies: %d/%d
+Ship: %s   ·   Crew: %d awake, %d in stasis"
+RES_EMPTY,"Aucune piste pour l'instant. Rapportez des découvertes du sol : échantillons, observations, bases de connaissances.","No leads yet. Bring back discoveries from the ground: samples, observations, knowledge bases."
+RES_BRANCH_OBSERVATION,Observation,Observation
+RES_BRANCH_LINK,Liaison,Link
+RES_BRANCH_ENGINEERING,Ingénierie,Engineering
+RES_BRANCH_XENOLOGY,Xénologie,Xenology
+RES_BRANCH_CREW,Équipage,Crew
+RES_STATE_LEAD,piste,lead
+RES_STATE_AVAILABLE,étudiable,ready
+RES_STATE_STUDYING,à l'étude,in study
+RES_STATE_CONFIRMED,confirmée,confirmed
+RES_STATE_EXCLUDED,écartée,ruled out
+RES_MISSING,Il manque : %s.,Missing: %s.
+RES_PARENTS,Exige d'abord d'autres hypothèses ou une étape du vaisseau.,Requires other hypotheses or a ship stage first.
+RES_PROGRESS,Cycles : %d/%d (un cycle par mission jouée).,Cycles: %d/%d (one per mission played).
+RES_COST,%d Données · %d cycle(s),%d Data · %d cycle(s)
+RES_STUDY,Étudier,Study
+RES_ALREADY,Déjà lancée,Already started
+RES_EXCLUDED,Exclue par une autre conclusion,Ruled out by another conclusion
+RES_LOCKED,Conditions non remplies,Requirements not met
+RES_NO_LANE,ATHENA étudie déjà,ATHENA is already busy
+RES_NO_DATA,Données insuffisantes,Not enough Data
+STAGE_SURVIVAL,Survie,Survival
+STAGE_OBSERVATION,Observation,Observation
+STAGE_LINK,Liaison,Link
+STAGE_RESEARCH,Recherche,Research
+STAGE_PROJECTION,Projection,Projection
+STAGE_NAVIGATION,Navigation,Navigation

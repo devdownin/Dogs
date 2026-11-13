@@ -36,3 +36,26 @@ HYP_CREW_XENOLOGIST,Réveil : xénologue,Wake: xenologist
 HYP_CREW_COMMANDER,Réveil : commandante,Wake: commander
 HYP_CREW_PILOT,Réveil : pilote,Wake: pilot
 HYP_XEN_3R,Révision : la chronique A était falsifiée,Revision: chronicle A was forged
+HYP_OBS_1_FX,"Avant chaque mission, une bande de la carte est déjà explorée.","Before each mission, a strip of the map is already explored."
+HYP_OBS_2_FX,Le prochain pivot de chaque Sentinelle observée est affiché.,The next turn of each observed Sentinel is shown.
+HYP_OBS_3_FX,Le territoire recolorié reste visible dans le brouillard.,Recolored territory stays visible through the fog.
+HYP_OBS_4_FX,La Sonde révèle une croix de rayon 2.,The Probe reveals a cross of radius 2.
+HYP_LIA_1_FX,Module Relais embarqué : portée de Liaison 6.,Onboard relay module: Link range 6.
+HYP_LIA_2_FX,"En bordure de bassin, Liaison +2.","Next to a basin, Link +2."
+HYP_LIA_3_FX,"Un nœud capturé résiste 2 tours à la recoloration, même isolé.","A captured node resists recoloring for 2 turns, even when cut off."
+HYP_ING_1_FX,Module Chenilles : la rocaille ne coûte plus que 1.,Tracks module: rocky ground costs only 1.
+HYP_ING_2_FX,Module Blindage ablatif : ignore le premier coup de chaque mission.,Ablative armor module: ignores the first hit of each mission.
+HYP_ING_3_FX,Impulsion : recharge en 2 tours.,Impulse: recharges in 2 turns.
+HYP_XEN_1_FX,Le contenu d'une base de connaissances est annoncé avant son ouverture.,A knowledge base's contents are announced before opening.
+HYP_XEN_2_FX,Les Gardiens dormants affichent leur seuil de réveil.,Dormant Guardians show their wake threshold.
+HYP_XEN_3A_FX,ATHENA conclut que les Gardiens protègent. Concorde +1.,ATHENA concludes the Guardians protect. Concord +1.
+HYP_XEN_3B_FX,ATHENA conclut que les Gardiens ont causé la chute. Emprise +1.,ATHENA concludes the Guardians caused the fall. Dominion +1.
+HYP_XEN_3R_FX,ATHENA corrige sa conclusion : la chronique A était falsifiée.,ATHENA revises her conclusion: chronicle A was forged.
+HYP_XEN_4_FX,Une phase de l'Arbitre peut être négociée.,One phase of the Arbiter can be negotiated.
+HYP_CREW_0_FX,Rend possibles les réveils de l'équipage.,Makes waking the crew possible.
+HYP_CREW_MEDIC_FX,Réveils suivants : 1 cycle de moins. Support vital : −1 Énergie.,Further wakings take 1 cycle less. Life support: −1 Energy.
+HYP_CREW_OPERATOR_FX,Un vétéran choisit parmi 3 traits. Support vital : −1 Énergie.,Veterans choose among 3 traits. Life support: −1 Energy.
+HYP_CREW_SYSTEMS_FX,"+1 Énergie par mission, ce qui compense son support vital.","+1 Energy per mission, offsetting their life support."
+HYP_CREW_XENOLOGIST_FX,Xénologie : 1 cycle de moins. Support vital : −1 Énergie.,Xenology: 1 cycle less. Life support: −1 Energy.
+HYP_CREW_COMMANDER_FX,Ouvre des options de décision à l'Acte IV. Support vital : −1 Énergie.,Unlocks decision options in Act IV. Life support: −1 Energy.
+HYP_CREW_PILOT_FX,« Fenêtre de transit » : 2 tours de plus. Support vital : −1 Énergie.,"""Transit Window"": 2 more turns. Life support: −1 Energy."

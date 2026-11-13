@@ -2,6 +2,7 @@ extends SceneTree
 ## Joue la scène principale par touchers simulés, comme le ferait un joueur.
 ## Usage : godot --headless --path . -s tests/run_ui.gd [-- --shots dossier]
 
+var main_scene: PackedScene = load("res://ui/main.tscn")
 var _failed := 0
 var _shots := ""
 
@@ -15,7 +16,9 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	var main: Control = (load("res://ui/main.tscn") as PackedScene).instantiate()
+	SaveStore.erase(SaveStore.MISSION)
+	SaveStore.erase(SaveStore.CAMPAIGN)
+	var main: Control = (main_scene as PackedScene).instantiate()
 	root.add_child(main)
 	await process_frame
 	await process_frame
@@ -113,6 +116,10 @@ func _run() -> void:
 	await _test_zoom(main)
 	await _test_probe(main)
 	await _test_combat(main)
+	main = await _test_resume(main)
+	await _test_research(main)
+	SaveStore.erase(SaveStore.MISSION)
+	SaveStore.erase(SaveStore.CAMPAIGN)
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
@@ -323,6 +330,55 @@ func _test_combat(main: Control) -> void:
 			expected -= int(at["damage"])
 	main.end_turn()
 	_check(main.game.units["pro"]["hp"] == expected, "les coups portés sont ceux annoncés")
+
+
+## Quitter l'application en pleine mission puis la relancer restitue la partie exacte.
+func _test_resume(main: Control) -> Control:
+	main.load_mission(3)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	main.end_turn()
+	_tap(main, "C10")
+	_tap(main, "C8")
+	_tap(main, "C8")
+	var before := JSON.stringify(
+		[main.game.turn, main.game.units, main.game.guards, main.game.revealed.keys()]
+	)
+	var could_undo: bool = not main._undo.disabled
+	main.queue_free()
+	await process_frame
+	var again: Control = (main_scene as PackedScene).instantiate()
+	root.add_child(again)
+	await process_frame
+	var after := JSON.stringify(
+		[again.game.turn, again.game.units, again.game.guards, again.game.revealed.keys()]
+	)
+	_check(
+		again._mission_index == 3 and after == before, "relance : la mission reprend à l'identique"
+	)
+	_check((not again._undo.disabled) == could_undo, "relance : le droit d'annuler est conservé")
+	return again
+
+
+## Écran d'ATHENA après deux missions : pistes visibles, étude lancée et sauvegardée.
+func _test_research(main: Control) -> void:
+	var c: Campaign = main.campaign
+	c.discoveries["sample_rock"] = true
+	c.discoveries["sample_recolored_soil"] = true
+	c.discoveries["obs_sentinel_cycle"] = true
+	c.ship_stage = "observation"
+	c.data = 9
+	main.open_research()
+	await _shot(main, "athena")
+	_check(main._research.visible, "l'écran d'ATHENA s'ouvre")
+	main._research._study("ing_1")
+	_check(c.studying.has("ing_1") and c.data == 6, "étudier depuis l'écran coûte les Données")
+	var saved := SaveStore.load_campaign()
+	_check(saved.studying.has("ing_1"), "l'étude lancée est sauvegardée")
+	await _shot(main, "athena_etude")
+	main._research.closed.emit()
+	_check(not main._research.visible, "retour à la carte")
 
 
 func _tap(main: Control, cell: String) -> void:

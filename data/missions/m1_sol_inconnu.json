@@ -56,7 +56,7 @@
     { "id": "t_summit", "when": { "type": "unit_in", "unit": "any", "cells": ["H1"] },
       "do": [
         { "type": "highlight", "feature": "fragments" },
-        { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M1_DLG_FRAGMENTS" } ] },
+        { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M1_DLG_FRAGMENTS" } ] },
         { "type": "show_tip", "key": "TIP_EXTRACT" }
       ] },
     { "id": "t_outro", "when": { "type": "all_units_extracted" },

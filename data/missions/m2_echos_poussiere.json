@@ -57,16 +57,17 @@
   },
   "triggers": [
     { "id": "t_intro", "when": { "type": "turn_start", "turn": 1 },
-      "do": [ { "type": "dialogue", "lines": [ { "speaker": "operator", "key": "M2_DLG_TECH" } ] } ] },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M2_DLG_TECH" } ] } ] },
     { "id": "t_interact", "when": { "type": "turn_start", "turn": 2 },
       "do": [ { "type": "show_tip", "key": "TIP_INTERACT" } ] },
     { "id": "t_signal", "when": { "type": "interacted", "feature": "source" },
-      "do": [ { "type": "dialogue", "lines": [ { "speaker": "xenologist", "key": "M2_DLG_SIGNAL" } ] } ] },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M2_DLG_SIGNAL" } ] } ] },
     { "id": "t_window", "when": { "type": "turn_start", "turn": 10 },
       "do": [ { "type": "show_tip", "key": "TIP_WINDOW_CLOSING" } ] }
   ],
   "rewards": { "data": 3, "materials": 1, "ship_stage": "observation" },
   "campaign_effects": [
+    { "type": "discoveries", "ids": ["sample_rock"] },
     { "type": "chronicle", "entry": "premieres_structures", "status": "hypothesis" }
   ]
 }

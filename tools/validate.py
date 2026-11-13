@@ -204,8 +204,9 @@ def research_checks(root):
         req, w = h["requires"], f"hypothèse {h['id']}"
         if h["branch"] not in BRANCHES:
             errs.append(f"{w} : branche {h['branch']} inconnue")
-        if h["title_key"] not in keys:
-            errs.append(f"{w} : clé {h['title_key']} non traduite")
+        for k in (h["title_key"], h["title_key"] + "_FX"):
+            if k not in keys:
+                errs.append(f"{w} : clé {k} non traduite")
         if not any(req.get(k) for k in ("discoveries", "ship_stage", "hypotheses", "any_hypothesis")):
             errs.append(f"{w} : rien ne la révèle (ni découverte, ni étape, ni hypothèse parente)")
         if req.get("ship_stage", "survival") not in STAGES:
@@ -223,6 +224,10 @@ def research_checks(root):
         if h["cycles"] < 1 or h["data_cost"] < 0:
             errs.append(f"{w} : durée ou coût invalide")
     errs += [f"découverte {d} : n'alimente aucune hypothèse" for d in dids if d not in used]
+    for mf in sorted((root / "missions").glob("*.json")):
+        md = json.loads(mf.read_text(encoding="utf-8"))
+        for e in md.get("campaign_effects", []):
+            errs += [f"{mf.name} : découverte {i} inconnue" for i in e.get("ids", []) if e["type"] == "discoveries" and i not in dids]
     parents = {h["id"]: h["requires"].get("hypotheses", []) + h["requires"].get("any_hypothesis", []) for h in tree}
     state = {}
 

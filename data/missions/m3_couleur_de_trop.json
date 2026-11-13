@@ -78,13 +78,14 @@
       "do": [
         { "type": "territory_advance", "territory": "recolored", "direction": "S", "rows_per_phase": 1, "damage": 1 },
         { "type": "start_countdown", "id": "closure", "turns": 5, "label_key": "M3_COUNTDOWN" },
-        { "type": "dialogue", "lines": [ { "speaker": "systems", "key": "M3_DLG_REACTION" } ] }
+        { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M3_DLG_REACTION" } ] }
       ] },
     { "id": "t_close", "when": { "type": "countdown_expired", "countdown": "closure" },
       "do": [ { "type": "close_extraction" } ] }
   ],
   "rewards": { "data": 3, "fragments": 1 },
   "campaign_effects": [
+    { "type": "discoveries", "ids": ["sample_recolored_soil"] },
     { "type": "chronicle", "entry": "recoloration", "status": "observed" },
     { "type": "sector_state", "persist": "recolored_front" }
   ]
