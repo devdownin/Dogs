@@ -193,12 +193,13 @@ Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (apr
   - **Emprise** : secteurs libérés ;
   - **Concorde** : secteurs préservés, missions réussies sans neutralisation.
 - **Volume :** environ 30 missions, 8 à 10 heures, plus les relevés.
+- **Cinématiques :** un interlude de plans illustrés après chaque mission, dont les répliques varient selon ce que le joueur a fait (`cinematiques.md`).
 
 ### 7.2 Acte I — Survivants de l'autre côté (existant, ajusté)
 
 | Mission | Carte | Règle introduite | Drones |
 |---|---|---|---|
-| 0 « Réveil en aveugle » | Aucune (3 min, passable) | Choix de priorité du vaisseau | — |
+| 0 « Réveil en aveugle » | Aucune : devenue le prologue en cinématique (voir `cinematiques.md`) | — | — |
 | 1 « Sol inconnu » | 8×8 | Déplacement, brouillard, terrains | 2 Éclaireurs |
 | 2 « Échos dans la poussière » | 8×8 | Interagir, Technicien | + Technicien |
 | 3 « Une couleur de trop » | 10×10 | Territoire recolorié, repli sous compte à rebours | idem |

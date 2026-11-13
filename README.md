@@ -12,6 +12,7 @@ de portée sont assombries), toucher encore pour lancer.
 **Combat (M5, M6) :** les coups que les Gardiens porteront sont annoncés (trait violet, dégâts chiffrés).
 *Se tapir*, *Rempart* et *Réparer* les réduisent ou les compensent ; *Frapper* vise un Gardien à portée.
 **ATHENA :** l'IA de bord étudie les hypothèses ouvertes par les découvertes (un cycle par mission jouée).
+Des cinématiques (prologue, interludes) racontent l'histoire entre les missions ; toucher pour avancer.
 *Silence radio* (une fois étudié) rend un drone invisible aux Gardiens, mais aveugle jusqu'à sa reconnexion.
 Les boutons d'action apparaissent selon la position du drone. « Danger » affiche les cases que les
 Gardiens déjà observés surveilleront ; « Tout voir » lève le brouillard pour les essais.
@@ -31,6 +32,7 @@ data/schema/             Schéma JSON des missions
 ui/main.tscn, main.gd    Scène jouable : touchers → commandes, événements → affichage
 ui/board_view.gd         Dessin de la carte (tuiles et sprites de assets/, générés par tools/gen_art.py)
 ui/research_view.gd      Écran d'ATHENA
+ui/cinematic_view.gd     Lecteur de cinématiques (data/cinematics, assets/cinematics)
 tests/run_replays.gd     Rejoue tout data/replays dans le cœur GDScript
 tests/run_campaign.gd    Campagne, arbre et sauvegardes
 tests/run_ui.gd          Joue la scène par touchers simulés
