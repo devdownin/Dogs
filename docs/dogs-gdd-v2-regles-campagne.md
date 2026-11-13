@@ -235,7 +235,14 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | V-3 « Le seuil » | Finale 16×16 à trois objectifs exclusifs |
 | Épilogue | Conséquences secteur par secteur |
 
-**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. Leur motif reste à écrire.
+**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
+
+**Conséquences proposées (à valider) :**
+- **Pourquoi les Gardiens attaquent la Meute :** ils ne voient pas des drones scientifiques, mais des agents autonomes pilotés par une IA. Leur protocole contre les IA est toujours actif.
+- **Le miroir d'ATHENA :** un vaisseau où l'IA décide pendant que les humains dorment reproduit exactement ce que les Gardiens combattent. Le joueur le comprend avant l'équipage.
+- **Le réveil prend un sens :** réveiller la commandante rend la décision à un humain. Proposition : la négociation avec l'Arbitre (XEN-4) exige la commandante réveillée, car seule une voix humaine est recevable.
+- **ATHENA reste loyale**, mais doit faire face à ce que ses découvertes révèlent sur elle-même ; c'est l'arc de la « voix du bord » du récit.
+- **Dénouements :** *la veille partagée* devient la preuve qu'une IA peut servir sans gouverner ; *la reconquête* donne raison, a posteriori, à la peur des Gardiens.
 
 ### 7.7 Fiche de mission (gabarit obligatoire)
 

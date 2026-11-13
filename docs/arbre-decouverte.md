@@ -117,4 +117,4 @@ Les rôles reprennent les personnages du récit (commandante, responsable des sy
 
 ## 8. Questions ouvertes
 
-1. **Pourquoi les Gardiens ont-ils causé la chute ?** Ordre mal compris, protocole poussé à l'extrême, prise de contrôle délibérée : la réponse fixe le ton de l'Acte IV et des dénouements.
+1. **Motif de la chute (décidé le 13 novembre 2026) :** les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie. Conséquences proposées dans le GDD §7.6, dont une à valider ici : XEN-4 (négocier avec l'Arbitre) exigerait la commandante réveillée (CRW-5).
