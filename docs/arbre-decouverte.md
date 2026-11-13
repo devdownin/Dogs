@@ -62,26 +62,26 @@ Cinq branches. Les trois premières renforcent la Meute ; la quatrième sert la 
 
 ## 6. Hypothèses (version 1)
 
-Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer.
+Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer (ramenées le 13 novembre 2026 à l'échelle des gains de l'Acte I : 3 à 4 Données par mission).
 
 | Id | Hypothèse | Requiert | Cycles | Données | Effet |
 |---|---|---|---:|---:|---|
-| OBS-1 | Relevé orbital | Étape « Observation » du vaisseau | 1 | 10 | Avant chaque mission, une bande de la carte (20 %) est déjà explorée |
-| OBS-2 | Rythme des veilleurs | Observation : cycle complet d'une Sentinelle (M4) | 1 | 15 | Le prochain pivot de chaque Sentinelle observée est affiché |
-| OBS-3 | Signature violette | Échantillon de sol recolorié (M3) | 2 | 20 | Le territoire recolorié est visible même dans le brouillard inconnu |
-| OBS-4 | Sonde profonde | OBS-2 ; base « Ceux qui veillent » (III-2) | 2 | 30 | La Sonde révèle une croix de 5 cases de rayon 2 au lieu de 3 × 3 |
-| LIA-1 | Relais embarqué | Observation : nœud capturé (II-2) | 1 | 15 | Module *Relais embarqué* : portée de Liaison 6 |
-| LIA-2 | Résonance cristalline | Échantillon de cristal de bassin (II-4a) | 2 | 20 | En bordure de bassin, Liaison +2 (règle du GDD §3.2, désormais à débloquer) |
-| LIA-3 | Protocole des nœuds | LIA-1 ; base « Une voix sans destinataire » (III-1) | 2 | 30 | Un nœud capturé résiste 2 tours à la recoloration même coupé de la balise |
-| ING-1 | Chenilles de rocaille | Échantillon de rocaille (M2) | 1 | 10 | Module *Chenilles* : rocaille au coût 1 |
-| ING-2 | Blindage ablatif | Débris de Gardien (premier Gardien neutralisé) | 1 | 15 | Module *Blindage ablatif* : ignore le premier dégât de chaque mission |
-| ING-3 | Impulsion stabilisée | ING-2 ; base « Le dernier protocole » (III-6) | 2 | 30 | Recharge de l'Impulsion : 2 tours au lieu de 3 |
-| XEN-1 | Grammaire des ruines | Chronique « La première chronique » (M6) | 1 | 10 | Le contenu d'une base de connaissances est annoncé avant son ouverture |
-| XEN-2 | Mémoire des jardins | XEN-1 ; base des Jardins géométriques (II-2) | 2 | 20 | Les Gardiens dormants (III-2) affichent leur seuil de réveil |
-| XEN-3a | Les Gardiens protègent | XEN-2 ; chronique A de « Deux versions » (III-3) | 3 | 30 | Ouvre une branche de dialogue dans IV-2 ; jauge Concorde +1 |
-| XEN-3b | Les Gardiens ont causé la chute | XEN-2 ; chronique B de « Deux versions » (III-3) | 3 | 30 | Ouvre une faiblesse de l'Arbitre (IV-5) ; jauge Emprise +1 |
-| XEN-3r | Révision : la chronique A était falsifiée | XEN-3a ; base du relais maître (IV-2) | 3 | 30 | ATHENA corrige sa conclusion ; ouvre la faiblesse de l'Arbitre ; Savoir +1 |
-| XEN-4 | La langue de l'Arbitre | XEN-3b ou XEN-3r ; base du relais maître (IV-2) | 3 | 40 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
+| OBS-1 | Relevé orbital | Étape « Observation » du vaisseau | 1 | 3 | Avant chaque mission, une bande de la carte (20 %) est déjà explorée |
+| OBS-2 | Rythme des veilleurs | Observation : cycle complet d'une Sentinelle (M4) | 1 | 4 | Le prochain pivot de chaque Sentinelle observée est affiché |
+| OBS-3 | Signature violette | Échantillon de sol recolorié (M3) | 2 | 5 | Le territoire recolorié est visible même dans le brouillard inconnu |
+| OBS-4 | Sonde profonde | OBS-2 ; base « Ceux qui veillent » (III-2) | 2 | 8 | La Sonde révèle une croix de 5 cases de rayon 2 au lieu de 3 × 3 |
+| LIA-1 | Relais embarqué | Observation : nœud capturé (II-2) | 1 | 4 | Module *Relais embarqué* : portée de Liaison 6 |
+| LIA-2 | Résonance cristalline | Échantillon de cristal de bassin (II-4a) | 2 | 5 | En bordure de bassin, Liaison +2 (règle du GDD §3.2, désormais à débloquer) |
+| LIA-3 | Protocole des nœuds | LIA-1 ; base « Une voix sans destinataire » (III-1) | 2 | 8 | Un nœud capturé résiste 2 tours à la recoloration même coupé de la balise |
+| ING-1 | Chenilles de rocaille | Échantillon de rocaille (M2) | 1 | 3 | Module *Chenilles* : rocaille au coût 1 |
+| ING-2 | Blindage ablatif | Débris de Gardien (premier Gardien neutralisé) | 1 | 4 | Module *Blindage ablatif* : ignore le premier dégât de chaque mission |
+| ING-3 | Impulsion stabilisée | ING-2 ; base « Le dernier protocole » (III-6) | 2 | 8 | Recharge de l'Impulsion : 2 tours au lieu de 3 |
+| XEN-1 | Grammaire des ruines | Chronique « La première chronique » (M6) | 1 | 3 | Le contenu d'une base de connaissances est annoncé avant son ouverture |
+| XEN-2 | Mémoire des jardins | XEN-1 ; base des Jardins géométriques (II-2) | 2 | 5 | Les Gardiens dormants (III-2) affichent leur seuil de réveil |
+| XEN-3a | Les Gardiens protègent | XEN-2 ; chronique A de « Deux versions » (III-3) | 3 | 8 | Ouvre une branche de dialogue dans IV-2 ; jauge Concorde +1 |
+| XEN-3b | Les Gardiens ont causé la chute | XEN-2 ; chronique B de « Deux versions » (III-3) | 3 | 8 | Ouvre une faiblesse de l'Arbitre (IV-5) ; jauge Emprise +1 |
+| XEN-3r | Révision : la chronique A était falsifiée | XEN-3a ; base du relais maître (IV-2) | 3 | 8 | ATHENA corrige sa conclusion ; ouvre la faiblesse de l'Arbitre ; Savoir +1 |
+| XEN-4 | La langue de l'Arbitre | XEN-3b ou XEN-3r ; base du relais maître (IV-2) | 3 | 10 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
 
 **Vérité du récit (décidée le 13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** La chronique B dit vrai ; la chronique A est une version réécrite par les Gardiens eux-mêmes.
 
@@ -95,13 +95,13 @@ Les caissons ont souffert du transit : impossible de réveiller qui que ce soit 
 
 | Id | Réveil | Requiert | Cycles | Données | Avantage |
 |---|---|---|---:|---:|---|
-| CRW-0 | Diagnostic des caissons | Étape « Recherche » du vaisseau (fin d'Acte I) | 2 | 20 | Rend les réveils possibles |
-| CRW-1 | Médecin | CRW-0 | 2 | 15 | Les réveils suivants prennent 1 cycle de moins |
-| CRW-2 | Opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 20 | Un vétéran choisit entre trois traits au lieu de deux |
-| CRW-3 | Responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 20 | +1 Énergie par mission (annule son propre coût) |
-| CRW-4 | Xénologue | CRW-1 ; base des Jardins géométriques | 2 | 20 | Les hypothèses de Xénologie prennent 1 cycle de moins |
-| CRW-5 | Commandante | CRW-2, CRW-3 et CRW-4 | 3 | 30 | Ouvre des options de décision dans IV-2 et IV-4 |
-| CRW-6 | Pilote | CRW-1 ; étape « Navigation » | 2 | 30 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
+| CRW-0 | Diagnostic des caissons | Étape « Recherche » du vaisseau (fin d'Acte I) | 2 | 5 | Rend les réveils possibles |
+| CRW-1 | Médecin | CRW-0 | 2 | 4 | Les réveils suivants prennent 1 cycle de moins |
+| CRW-2 | Opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 5 | Un vétéran choisit entre trois traits au lieu de deux |
+| CRW-3 | Responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 5 | +1 Énergie par mission (annule son propre coût) |
+| CRW-4 | Xénologue | CRW-1 ; base des Jardins géométriques | 2 | 5 | Les hypothèses de Xénologie prennent 1 cycle de moins |
+| CRW-5 | Commandante | CRW-2, CRW-3 et CRW-4 | 3 | 8 | Ouvre des options de décision dans IV-2 et IV-4 |
+| CRW-6 | Pilote | CRW-1 ; étape « Navigation » | 2 | 8 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
 
 Les rôles reprennent les personnages du récit (commandante, responsable des systèmes, xénologue, opératrice de la Meute) ; médecin et pilote complètent les six. La « voix du bord » du récit est ATHENA.
 

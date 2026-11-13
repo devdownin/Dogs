@@ -106,6 +106,17 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 - Interagir et *Interface* s'exercent sur une case adjacente. Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone (sinon, en Mission 1, les drones partiraient dès le premier tour puisqu'ils y commencent).
 - Fin de mission : quand plus aucun drone n'est actif sur la carte, c'est une victoire si l'objectif est rempli, un repli si au moins un drone a été rappelé, un échec sinon.
 
+**Combat (précisé pour le prototype, 13 novembre 2026).**
+
+- **Coups des drones :** *Frapper* consomme l'action. Protecteur : 1 dégât au contact ; Intercepteur : 2 dégâts à 1 ou 2 cases, ligne de vue requise. Un Gardien en rocaille ou en ruine subit −1 d'un coup à distance.
+- **Coups des Gardiens :** le Patrouilleur frappe un drone adjacent (2 dégâts) dès *Avertissement* ; la Sentinelle tire sur un drone de son cône à 3 cases au plus (1 dégât) dès *Interception*. Le cran pris en compte est celui du début de la phase.
+- **Cible choisie :** le drone le plus proche, puis le plus entamé, puis colonne et ligne. Les coups annoncés (trait violet et dégâts chiffrés) sont exactement ceux portés.
+- **Réductions :** −1 si tapi, −1 à couvert contre un tir, −1 à côté d'un Protecteur en *Rempart* ; elles se cumulent, mais **un coup porte toujours au moins 1 dégât**.
+- **Poursuite :** une détection lance les Patrouilleurs vers la case détectée la plus proche ; ils reprennent leur ronde une fois la case atteinte ou l'alerte retombée à *Veille*. Un script peut aussi les envoyer vers une case (`chase_cell`).
+- **Neutraliser un Gardien** l'ôte de la carte, fait monter l'alerte d'un cran et laisse des débris (découverte « Débris de Gardien »).
+- **Réparer** (Technicien, case adjacente) : +1 intégrité, ou relève un drone hors service à 1 point.
+- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue ; *Impulsion* et *Élan* arrivent avec l'Intercepteur (M6).
+
 **Crans d'alerte.**
 
 | Cran | Effet |

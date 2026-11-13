@@ -1,13 +1,17 @@
-# Dogs of Gods — jalon 1 : prototype en aplats
+# Dogs of Gods — prototype jouable
 
 Projet Godot 4.7 (GDScript typé, moteur de rendu Compatibility). Ouvrir le projet et lancer (F5) :
-les missions 1 à 4 sont jouables en couleurs unies, en portrait, à la souris ou au doigt.
+les missions 1 à 5 sont jouables, en portrait, à la souris ou au doigt. La partie est sauvegardée
+après chaque commande et reprend à l'identique au lancement suivant.
 
 **Jouer :** toucher un drone, toucher une case (aperçu du trajet), toucher encore pour confirmer.
 **Carte :** glisser un doigt pour la déplacer, pincer pour zoomer (molette à la souris). Un toucher n'est
 compté qu'au relâchement, et jamais après un glissement.
 **Sonde :** sélectionner un Éclaireur, bouton « Sonde », toucher le centre de la zone (les cases hors
 de portée sont assombries), toucher encore pour lancer.
+**Combat (M5) :** les coups que les Gardiens porteront sont annoncés (trait violet, dégâts chiffrés).
+*Se tapir*, *Rempart* et *Réparer* les réduisent ou les compensent ; *Frapper* vise un Gardien à portée.
+**ATHENA :** l'IA de bord étudie les hypothèses ouvertes par les découvertes (un cycle par mission jouée).
 Les boutons d'action apparaissent selon la position du drone. « Danger » affiche les cases que les
 Gardiens déjà observés surveilleront ; « Tout voir » lève le brouillard pour les essais.
 
@@ -15,14 +19,19 @@ Gardiens déjà observés surveilleront ; « Tout voir » lève le brouillard po
 core/cells.gd            Notation des cases ("D7", "A1:J3")
 core/mission_def.gd      Carte d'une mission : trajets, ligne de vue, vision, cônes
 core/mission_loader.gd   Lecture et contrôle d'un fichier de mission
-core/game_state.gd       État de partie, commandes du joueur, phase des Gardiens, objectifs
-data/missions/           Missions 1 à 4
+core/game_state.gd       État de partie, commandes du joueur, phase des Gardiens, combat, objectifs
+core/campaign.gd         Campagne : ressources, découvertes, études d'ATHENA
+core/save_store.gd       Sauvegardes locales (écriture atomique, copie de secours)
+data/missions/           Missions 1 à 5
+data/research/           Arbre de découverte et découvertes
 data/replays/            Solutions de référence et pièges
 data/i18n/missions.csv   Textes fr/en
 data/schema/             Schéma JSON des missions
 ui/main.tscn, main.gd    Scène jouable : touchers → commandes, événements → affichage
-ui/board_view.gd         Dessin de la carte en aplats
+ui/board_view.gd         Dessin de la carte (tuiles et sprites de assets/, générés par tools/gen_art.py)
+ui/research_view.gd      Écran d'ATHENA
 tests/run_replays.gd     Rejoue tout data/replays dans le cœur GDScript
+tests/run_campaign.gd    Campagne, arbre et sauvegardes
 tests/run_ui.gd          Joue la scène par touchers simulés
 tools/                   Validateur et simulateur de référence (Python)
 ```
@@ -33,6 +42,7 @@ tools/                   Validateur et simulateur de référence (Python)
 python3 -I tools/validate.py data
 godot --headless --path . --import
 godot --headless --path . -s tests/run_replays.gd
+godot --headless --path . -s tests/run_campaign.gd
 godot --headless --path . -s tests/run_ui.gd
 ```
 

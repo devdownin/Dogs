@@ -75,6 +75,8 @@ Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (
 | `alert_at_least` / `alert_never_above` | `level` | Cran actuel / cran maximal atteint |
 | `countdown_expired` | `countdown` | — |
 | `flag` | `name` | Drapeau posé par `set_flag` |
+| `guardian_neutralized` | `guardian` (ou `any`) | Gardien neutralisé |
+| `no_guardian_neutralized` | — | Aucun Gardien neutralisé (relevés) |
 
 `unit` accepte un identifiant (`tec`), un type (`technician`) ou `any`.
 
@@ -91,7 +93,7 @@ Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (
 | `territory_advance` | `territory`, `direction`, `rows_per_phase`, `damage` | Le territoire avance à chaque phase ; dégâts aux drones atteints |
 | `close_extraction` | — | Les drones encore actifs passent hors service |
 | `set_alert` | `level` | Force un cran |
-| `guardian_order` | `guardian`, paramètres | Ordre scénarisé (exemple : `face_cell`) |
+| `guardian_order` | `guardian` (ou `all`), paramètres | Ordre scénarisé : `face_cell` (présentation), `chase_cell` (les Patrouilleurs foncent vers la case) |
 | `end_mission` | `result` | Fin forcée |
 
 ## 6. Ordre d'évaluation
@@ -121,7 +123,9 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 }
 ```
 
-`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone) ou `extract`. `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
+`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` (`target` = Gardien), `brace`, `rampart` ou `repair` (`target` = allié). `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
+
+`expect.state` (facultatif) fixe l'état final : `units` → `[case, intégrité, statut]`, `guardians` → `[case, intégrité]` ou `"neutralized"`. Il est vérifié des deux côtés, comme l'égalité entre coups annoncés et coups portés à chaque phase.
 
 ## 8. État actuel
 
@@ -133,6 +137,9 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 | M4 piège « arrêt sur le gué » | Détection à la phase 3 |
 | M4 avec Sonde | Victoire au tour 4, alerte maximale *Veille* |
 | M4 piège « rester après la Sonde » | Détection de l'Éclaireur en E6 à la phase 3 |
+| M5 référence | Victoire au tour 4, les deux relevés |
+| M5 « frapper au lieu de se tapir » | Victoire au tour 4, Protecteur hors service |
+| M5 piège « émettre sans couverture » | Échec à la phase 2 |
 
 Test de non-régression : décaler d'un cran le regard de la Sentinelle fait échouer la référence M4. Les solutions de référence ne remportent pas tous les relevés (M2 ruines, M3 ruine, M4 carte), qui restent donc des défis.
 
@@ -159,6 +166,6 @@ Le projet Godot 4.7 (GDScript typé) de ce dépôt contient le chargeur et le c�
 
 ## 10. Limites actuelles
 
-- Ni le simulateur ni le cœur GDScript ne gèrent le combat, ni les modules, ni l'*Impulsion* : ils seront ajoutés avec les missions qui les utilisent (M5 et suivantes).
+- Le combat est en place des deux côtés (M5). Modules, *Impulsion* et *Élan* arriveront avec l'Intercepteur (M6).
 - La Liaison (Acte II) n'est pas encore dans le format.
 - Les règles exactes de vision (distance de Manhattan, ligne de vue centre à centre, rocaille et ruines bloquantes, +1 depuis la mésa) sont celles du code actuel ; elles doivent être confirmées en jeu.
