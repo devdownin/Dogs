@@ -20,6 +20,7 @@
 | 6 | Aucune animation squelettique prévue pour les unités. | Incompatible avec l'objectif de qualité : la démarche des quadrupèdes est l'identité du jeu. Animations exigées. |
 | 7 | Sept missions avant le premier combat, Mission 0 sans carte tactique. | Mission 0 ramenée à 3 minutes maximum et passable ; première décision tactique dans les 2 minutes ; cartes d'Acte I réduites (8×8 à 10×10). |
 | 8 | Quatre ressources sans rôle distinct chiffré. | Une capacité, deux stocks, une collection (§6). |
+| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie. L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
 
 ### 1.2 Lecture des deux pistes graphiques
 
@@ -151,7 +152,7 @@ Chaque mission a **un objectif principal** et **deux relevés facultatifs** (exe
 
 - **Modules :** chaque drone a 2 emplacements. Une douzaine de modules au total (exemples : Capteur longue portée, Blindage ablatif, Relais embarqué qui porte la Liaison à 6, Chenilles de rocaille). Un module modifie une règle, jamais un simple pourcentage.
 - **Vétéran :** un drone qui termine 3 missions sans être mis hors service choisit un trait parmi deux. Pas de points d'expérience à gérer.
-- **Recherche :** arbre de découverte scientifique conduit par l'IA de bord de l'*Asterion*, resté en orbite. Les hypothèses n'apparaissent qu'avec les découvertes faites au sol (bases de connaissances des ruines, échantillons, observations) et demandent des Données et du temps d'étude. Détail : `arbre-decouverte.md`.
+- **Recherche :** arbre de découverte scientifique conduit par **ATHENA**, l'IA de bord de l'*Asterion* resté en orbite (équipage de six en stase). Les hypothèses n'apparaissent qu'avec les découvertes faites au sol (bases de connaissances des ruines, échantillons, observations) et demandent des Données et du temps d'étude. Détail : `arbre-decouverte.md`.
 
 ## 6. Économie
 

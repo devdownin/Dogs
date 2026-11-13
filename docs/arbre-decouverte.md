@@ -1,17 +1,17 @@
 # Dogs of Gods — Arbre de découverte scientifique
 
-> **Version :** 1.0 — 13 novembre 2026
+> **Version :** 1.1 — 13 novembre 2026 (équipage en stase, IA nommée ATHENA)
 > **Remplace :** la « Recherche » de `dogs-gdd-v2-regles-campagne.md` §5 (trois branches de quatre paliers payées en Données).
 > **Données :** `data/research/discoveries.json`, `data/research/tree.json` (vérifiés par `tools/validate.py`).
 
 ## 1. Principe
 
-L'*Asterion* est resté **en orbite**, sous le contrôle de son **IA de bord** (nom provisoire : **HYPATIE**). La Meute rapporte des découvertes depuis le sol ; HYPATIE en tire des **hypothèses** et les étudie entre deux missions. Le joueur choisit quoi étudier, pas ce qui se découvre.
+L'*Asterion* est resté **en orbite**, sous le contrôle de son **IA de bord, ATHENA**. Les **six membres d'équipage sont en stase** et ne peuvent pas être réveillés en début de partie : ATHENA est la seule voix active du vaisseau. La Meute rapporte des découvertes depuis le sol ; ATHENA en tire des **hypothèses** et les étudie entre deux missions. Le joueur choisit quoi étudier, pas ce qui se découvre.
 
 Trois règles :
 
 1. **On ne recherche que ce qu'on a vu.** Chaque hypothèse exige des découvertes précises faites sur le terrain. Sans elles, elle reste cachée.
-2. **L'IA prend du temps.** Une hypothèse demande des Données et un nombre de **cycles** (un cycle = une mission jouée). HYPATIE étudie une hypothèse à la fois, deux après l'étape « Recherche » du vaisseau.
+2. **L'IA prend du temps.** Une hypothèse demande des Données et un nombre de **cycles** (un cycle = une mission jouée). ATHENA étudie une hypothèse à la fois, deux après l'étape « Recherche » du vaisseau.
 3. **Un résultat change une règle.** Jamais un pourcentage : un module, une capacité, une information affichée, un accès narratif.
 
 C'est la traduction directe du récit (§13 de `spexdogs_revised.md`) : la recherche avance par hypothèses que les découvertes confirment, nuancent ou invalident.
@@ -36,16 +36,18 @@ Chaque hypothèse a quatre états :
 | **Inconnue** | Aucune découverte requise acquise | Absente de l'écran |
 | **Piste** | Au moins une découverte requise acquise | Silhouette grisée ; liste des découvertes manquantes, décrites sans gâcher (« une base de connaissances au-delà du canyon ») |
 | **Étudiable** | Toutes les découvertes et hypothèses parentes acquises | Coût en Données, durée en cycles, effet annoncé |
-| **Confirmée** | Étude terminée | Effet actif ; courte note d'HYPATIE |
+| **Confirmée** | Étude terminée | Effet actif ; courte note d'ATHENA |
 
 L'arbre se dessine donc au fil de l'exploration : il n'existe pas d'écran rempli de cases verrouillées dès le départ. Une piste est aussi un **objectif d'exploration** : l'Atlas marque les secteurs où une découverte manquante est probable.
 
-## 4. HYPATIE
+## 4. ATHENA
 
-- **Voix :** elle parle en probabilités et distingue fait observé, hypothèse et inconnu, comme l'équipage (§6 du récit). Ses notes de résultat font 2 lignes au plus.
+- **Seule à bord :** c'est elle qui donne les ordres de mission, rend compte des pannes et commente les découvertes. Les voix de l'équipage n'existent au départ que sous forme de journaux enregistrés avant le transit.
+
+- **Voix :** elle parle en probabilités et distingue fait observé, hypothèse et inconnu (§6 du récit). Ses notes de résultat font 2 lignes au plus.
 - **Initiative :** à la fin d'une mission, elle propose l'hypothèse qu'elle juge la plus utile pour la suivante ; le joueur garde le choix.
 - **Abandon :** une étude interrompue garde ses cycles acquis.
-- **Hypothèses exclusives :** certaines découvertes se contredisent (Acte III, « Deux versions »). HYPATIE ne peut en confirmer qu'une : le choix du joueur oriente les dénouements.
+- **Hypothèses exclusives :** certaines découvertes se contredisent (Acte III, « Deux versions »). ATHENA ne peut en confirmer qu'une : le choix du joueur oriente les dénouements.
 - **Atout d'orbite :** comme le vaisseau survole la planète, certains résultats agissent avant la mission (relevé orbital d'une partie de la carte).
 
 ## 5. Les branches
@@ -85,7 +87,7 @@ XEN-3a et XEN-3b sont **exclusives**. Le quatrième dénouement (Savoir complet,
 
 ## 7. Effets sur le reste du jeu
 
-- **Économie :** les Données servent désormais d'abord à la recherche ; la contrainte réelle devient le **temps** d'HYPATIE (une seule étude à la fois jusqu'à la fin de l'Acte I).
+- **Économie :** les Données servent désormais d'abord à la recherche ; la contrainte réelle devient le **temps** d'ATHENA (une seule étude à la fois jusqu'à la fin de l'Acte I).
 - **Missions :** une ruine majeure contient au plus une base de connaissances. Les relevés « ouvrir la base sans dépasser *Avertissement* » deviennent naturels.
 - **Atlas :** chaque piste ouverte signale les secteurs où chercher. Rejouer un secteur pour une découverte manquée est permis.
 - **Jauge Savoir :** comptée en hypothèses de Xénologie confirmées et chroniques complétées.
@@ -93,6 +95,5 @@ XEN-3a et XEN-3b sont **exclusives**. Le quatrième dénouement (Savoir complet,
 
 ## 8. Questions ouvertes
 
-1. **Équipage :** le récit fait parler un équipage (commandant, responsable des systèmes…). Est-il en stase, réduit, ou remplacé par HYPATIE ? La réponse change le ton des comptes rendus.
-2. **Nom de l'IA :** HYPATIE est provisoire.
-3. **Exclusivité XEN-3 :** choix définitif, ou HYPATIE peut-elle revenir sur sa conclusion en fin d'Acte IV contre un coût élevé ?
+1. **Réveil de l'équipage :** impossible en début de partie. Proposition : le réveil devient un objectif de campagne (une hypothèse d'Ingénierie par dormeur, ou une étape du vaisseau), chaque membre réveillé apportant une voix et un avantage. À valider.
+2. **Exclusivité XEN-3 :** choix définitif, ou ATHENA peut-elle revenir sur sa conclusion en fin d'Acte IV contre un coût élevé ?
