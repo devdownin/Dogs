@@ -59,6 +59,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 |---|---|
 | Tour 1 | Bulle : toucher un drone, toucher une case, confirmer |
 | Première entrée en rocaille | Bulle : coût 2, la rocaille masque la vue |
+| Tour 3 | ATHENA : la balise d'atterrissage n'intéresse personne ; ce sont les drones que quelque chose observe (premier indice) |
 | Éclaireur en H1 | La vision depuis la mésa dévoile un large secteur ; des fragments manufacturés brillent en D2. Réplique d'ATHENA. |
 | Retour des deux drones | Fin. Dernier plan : une silhouette immobile hors carte, au nord. |
 
@@ -152,7 +153,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 | Déclencheur | Événement |
 |---|---|
 | Première case `v` révélée | Bulle : sur ce sol, vous êtes vus |
-| Relais posé | Le motif pulse et commence à avancer. Compteur de 5 tours affiché. |
+| Relais posé | Le motif pulse et commence à avancer. Compteur de 5 tours affiché. ATHENA : il s'est mis en mouvement quand le relais s'est connecté à elle. |
 | Chaque avancée | La ligne qui sera recouverte au tour suivant est annoncée |
 | Dernier drone extrait | Fin. Le motif s'arrête à la ligne atteinte. |
 
@@ -265,7 +266,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 **Solution de référence (4 tours, les deux relevés).** Tour 1 : approche (Technicien E8, Protecteur E7). Tour 2 : le Protecteur monte sur le relais E5 et se tapit ; le Technicien passe en E6 et active le relais. Tours 3 et 4 : le Protecteur se tapit, le Technicien le répare. Les Patrouilleurs s'arrêtent contre le Protecteur (*Ancrage*) et ne frappent que lui : 1 dégât chacun, compensé en partie par la réparation. Le Protecteur finit à 1 point.
 
 - **Pièges rejoués :** émettre sans couverture (le Patrouilleur met le Technicien hors service dès la phase 2) ; frapper au lieu de se tapir (le Protecteur tombe ; le Technicien peut le relever).
-- **Découverte vérifiable :** les Gardiens ne visent pas le relais mais ce qui l'a activé.
+- **Découverte vérifiable :** les Gardiens ne visent pas le relais mais ce qui parlait à ATHENA (découverte « Ils traquent ce qui parle à ATHENA » ; ouvre l'hypothèse *Silence radio*).
 - **Récompenses :** 4 Données, 2 Matériaux ; +1 Donnée par relevé ; étape « Liaison » du vaisseau.
 
 ---

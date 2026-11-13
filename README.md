@@ -12,6 +12,7 @@ de portée sont assombries), toucher encore pour lancer.
 **Combat (M5) :** les coups que les Gardiens porteront sont annoncés (trait violet, dégâts chiffrés).
 *Se tapir*, *Rempart* et *Réparer* les réduisent ou les compensent ; *Frapper* vise un Gardien à portée.
 **ATHENA :** l'IA de bord étudie les hypothèses ouvertes par les découvertes (un cycle par mission jouée).
+*Silence radio* (une fois étudié) rend un drone invisible aux Gardiens, mais aveugle jusqu'à sa reconnexion.
 Les boutons d'action apparaissent selon la position du drone. « Danger » affiche les cases que les
 Gardiens déjà observés surveilleront ; « Tout voir » lève le brouillard pour les essais.
 

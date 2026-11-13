@@ -125,6 +125,8 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 
 `move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` (`target` = Gardien), `brace`, `rampart` ou `repair` (`target` = allié). `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
 
+`rules` (facultatif) liste les règles débloquées par la campagne pour ce rejeu (ex. `["radio_silence"]`, qui permet `silence` et `reconnect`).
+
 `expect.state` (facultatif) fixe l'état final : `units` → `[case, intégrité, statut]`, `guardians` → `[case, intégrité]` ou `"neutralized"`. Il est vérifié des deux côtés, comme l'égalité entre coups annoncés et coups portés à chaque phase.
 
 ## 8. État actuel
@@ -140,6 +142,8 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 | M5 référence | Victoire au tour 4, les deux relevés |
 | M5 « frapper au lieu de se tapir » | Victoire au tour 4, Protecteur hors service |
 | M5 piège « émettre sans couverture » | Échec à la phase 2 |
+| M4 en silence radio | Victoire au tour 6, alerte *Veille* malgré l'attente sous le regard de la Sentinelle |
+| M4 piège « se reconnecter sous le regard » | Détection en D6 à la phase 3 |
 
 Test de non-régression : décaler d'un cran le regard de la Sentinelle fait échouer la référence M4. Les solutions de référence ne remportent pas tous les relevés (M2 ruines, M3 ruine, M4 carte), qui restent donc des défis.
 

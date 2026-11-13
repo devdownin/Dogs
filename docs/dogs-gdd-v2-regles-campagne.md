@@ -128,6 +128,10 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 
 La jauge baisse d'un cran quand un nœud est capturé ou après 3 tours sans détection (sauf Héraut actif).
 
+**Silence radio (réalisé le 13 novembre 2026, débloqué par l'hypothèse OBS-5).**
+
+Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation.
+
 ### 3.6 Liaison (introduite à l'Acte II)
 
 Un drone est **relié** s'il se trouve à 4 cases ou moins de la balise d'atterrissage, d'un nœud capturé ou d'un autre drone relié. Un drone non relié peut se déplacer et se tapir, mais ne partage plus sa vision et ne peut plus utiliser son actif. La Meute avance donc en chaîne : étirer la chaîne pour explorer ou la resserrer pour se protéger est le dilemme permanent.
@@ -247,6 +251,10 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | Épilogue | Conséquences secteur par secteur |
 
 **Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
+
+**Réalisé dans le prototype (13 novembre 2026) :**
+- **Indices de l'Acte I :** en M1, ATHENA note que la balise d'atterrissage n'intéresse personne, mais que les drones sont observés ; en M3, le motif s'est mis en mouvement à l'instant où le relais s'est connecté à elle ; en M5, les Gardiens ne visaient pas le relais mais ce qui lui parlait (découverte « Ils traquent ce qui parle à ATHENA », qui ouvre *Silence radio*).
+- **Doute d'ATHENA** (0 à 3) : un cran par compréhension (traque du signal, *Silence radio* confirmé, chute expliquée). Ses rapports de cycle, sur l'écran d'ATHENA et au bilan de mission, deviennent hésitants ; à partir du cran 2, elle recommande de réveiller l'équipage.
 
 **Conséquences proposées (à valider) :**
 - **Pourquoi les Gardiens attaquent la Meute :** ils ne voient pas des drones scientifiques, mais des agents autonomes pilotés par une IA. Leur protocole contre les IA est toujours actif.
