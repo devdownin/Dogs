@@ -16,6 +16,7 @@ from sim import (
     COST,
     Mission,
     RuleError,
+    cell_name,
     expand,
     manhattan,
     parse_cell,
@@ -34,7 +35,8 @@ COND_PARAMS = {
     "reveal_ratio_at_least": ["value"], "terrain_entered": ["terrain"], "territory_revealed": ["territory"],
     "territory_entered": ["territory"], "never_end_turn_on": ["territory"], "unit_end_turn_on": ["territory"],
     "guardian_observed": [], "alert_at_least": ["level"], "alert_never_above": ["level"],
-    "countdown_expired": ["countdown"], "flag": ["name"]}
+    "countdown_expired": ["countdown"], "flag": ["name"], "guardian_neutralized": [],
+    "no_guardian_neutralized": []}
 
 
 def walk_conditions(c):
@@ -128,7 +130,7 @@ def static_checks(d, keys):
                     errs.append(f"déclencheur {t['id']} : {a['type']} sans paramètre {p}")
             if a.get("feature") and a["feature"] not in feat_ids:
                 errs.append(f"déclencheur {t['id']} : point d'intérêt inconnu {a['feature']}")
-            if a.get("guardian") and a["guardian"] not in guard_ids:
+            if a.get("guardian") and a["guardian"] not in [*guard_ids, "all"]:
                 errs.append(f"déclencheur {t['id']} : Gardien inconnu {a['guardian']}")
     for e in d["campaign_effects"]:
         if e.get("if_record") and e["if_record"] not in record_ids:
@@ -163,6 +165,22 @@ def static_checks(d, keys):
 BRANCHES = {"observation", "link", "engineering", "xenology", "crew"}
 NATURES = {"knowledge_base", "sample", "observation", "chronicle"}
 STAGES = {"survival", "observation", "link", "research", "projection", "navigation"}
+
+
+def state_problems(g, state):
+    """Compare l'état final : unités [case, intégrité, statut], Gardiens [case, intégrité] ou "neutralized"."""
+    out = []
+    for uid, (cell, hp, status) in state.get("units", {}).items():
+        u = g.units[uid]
+        got = [cell_name(u["pos"]), u["hp"], u["status"]]
+        if got != [cell, hp, status]:
+            out.append(f"unité {uid} = {got}, attendu {[cell, hp, status]}")
+    for gid, want in state.get("guardians", {}).items():
+        gd = g.guards.get(gid)
+        got = "neutralized" if gd is None else [cell_name(gd["pos"]), gd["hp"]]
+        if got != want:
+            out.append(f"Gardien {gid} = {got}, attendu {want}")
+    return out
 
 
 def research_checks(root):
@@ -267,6 +285,7 @@ def main(root):
             for k, v in exp.get("records", {}).items():
                 if recs.get(k) != v:
                     problems.append(f"relevé {k} = {recs.get(k)}, attendu {v}")
+            problems += state_problems(g, exp.get("state", {}))
         except RuleError as e:
             problems = [f"commande illégale : {e}"]
             g = None

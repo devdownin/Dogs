@@ -50,11 +50,9 @@ func _run() -> void:
 	_tap(main, "E2")
 	_tap(main, "E2")
 	var acts: Array = main.game.available_actions("tec")
-	_check(
-		acts.size() == 1 and acts[0]["kind"] == "interface",
-		"le bouton Interface est proposé près de la balise"
-	)
-	_check(main._actions.get_child_count() == 1, "un seul bouton d'action affiché")
+	var kinds: Array = acts.map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds == ["interface", "brace"], "Interface et Se tapir proposés près de la balise")
+	_check(main._actions.get_child_count() == acts.size(), "un bouton par action possible")
 	main.do_action(acts[0])
 	_check(
 		main.game.result == "victory" and main.game.alert_max == 0,
@@ -114,6 +112,7 @@ func _run() -> void:
 
 	await _test_zoom(main)
 	await _test_probe(main)
+	await _test_combat(main)
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
@@ -283,6 +282,47 @@ func _drag(board: BoardView, index: int, pos: Vector2) -> void:
 	e.index = index
 	e.position = pos
 	board._gui_input(e)
+
+
+## Mission 5 : le Protecteur tient le relais, les coups annoncés sont ceux portés.
+func _test_combat(main: Control) -> void:
+	main.load_mission(4)
+	main.reveal_all = false
+	for cmd: Dictionary in [
+		{"t": "move", "unit": "tec", "dest": "E8"},
+		{"t": "move", "unit": "pro", "dest": "E7"},
+		{"t": "move", "unit": "sc1", "dest": "C6"},
+		{"t": "move", "unit": "sc2", "dest": "G7"},
+		{"t": "end"},
+		{"t": "move", "unit": "pro", "dest": "E5"},
+		{"t": "act", "unit": "pro", "kind": "brace", "target": "-"},
+		{"t": "move", "unit": "tec", "dest": "E6"},
+		{"t": "act", "unit": "tec", "kind": "interface", "target": "E5"},
+		{"t": "end"}
+	]:
+		var c := cmd.duplicate()
+		if c.has("dest"):
+			c["dest"] = Cells.parse(c["dest"])
+		if c.has("target"):
+			c["target"] = Vector2i(-1, -1) if c["target"] == "-" else Cells.parse(c["target"])
+		main._play(c)
+	main.selected = "tec"
+	main._refresh()
+	var acts: Array = main.game.available_actions("tec")
+	var kinds: Array = acts.map(func(a: Dictionary) -> String: return a["kind"])
+	_check(kinds.has("repair"), "le Technicien peut réparer le Protecteur blessé")
+	var announced: Array = main.game.intents()["attacks"]
+	_check(announced.size() == 2, "deux coups annoncés contre le relais")
+	await _shot(main, "m5_coups_annonces")
+	var before: int = main.game.units["pro"]["hp"]
+	main.do_action(acts[kinds.find("repair")])
+	_check(main.game.units["pro"]["hp"] == before + 1, "réparer rend 1 point d'intégrité")
+	var expected: int = before + 1
+	for at: Dictionary in main.game.intents()["attacks"]:
+		if at["unit"] == "pro":
+			expected -= int(at["damage"])
+	main.end_turn()
+	_check(main.game.units["pro"]["hp"] == expected, "les coups portés sont ceux annoncés")
 
 
 func _tap(main: Control, cell: String) -> void:

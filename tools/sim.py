@@ -2,7 +2,7 @@
 
 Sert uniquement à valider les données de mission et les rejeux en intégration continue.
 Le cœur de règles du jeu reste celui de Godot ; ce module en est une transcription
-volontairement réduite (pas de combat, pas de modules). Toute divergence doit être
+volontairement réduite (pas de modules, pas de Liaison). Toute divergence doit être
 corrigée des deux côtés.
 """
 import heapq
@@ -17,6 +17,9 @@ DIRS = {"N": (0, -1), "NE": (1, -1), "E": (1, 0), "SE": (1, 1), "S": (0, 1),
         "SW": (-1, 1), "W": (-1, 0), "NW": (-1, -1)}
 INTERFACE_KINDS = {"signal_source", "relay_point", "beacon", "node"}
 PROBE_RANGE, PROBE_RADIUS = 5, 1
+GUARD_HP = {"sentinel": 3, "patroller": 3, "regulator": 5, "herald": 2}
+ATTACK = {"protector": (1, 1, 1), "interceptor": (2, 1, 2)}  # dégâts, portée min, portée max
+PATROLLER_DAMAGE, SENTINEL_DAMAGE, SENTINEL_RANGE = 2, 1, 3
 
 
 def parse_cell(c):
@@ -143,13 +146,15 @@ class Game:
         self.m = Mission(data)
         self.d = data
         self.units = {u["id"]: {"type": u["type"], "pos": parse_cell(u["cell"]),
-                                "hp": UNITS[u["type"]][1], "status": "active"}
+                                "hp": UNITS[u["type"]][1], "status": "active",
+                                "braced": False, "rampart": False}
                       for u in data["deployment"]["units"]}
         self.guards = {}
         for g in data["guardians"]:
             st = {"type": g["type"], "pos": parse_cell(g["cell"]), "cycle": g.get("facing_cycle"),
                   "facing": g.get("facing"), "route": [parse_cell(c) for c in g.get("route", [])],
-                  "mode": g.get("route_mode", "loop"), "ri": 0, "dirn": 1}
+                  "mode": g.get("route_mode", "loop"), "ri": 0, "dirn": 1,
+                  "hp": GUARD_HP[g["type"]], "chase": None}
             self.guards[g["id"]] = st
         terr = data["map"].get("territory", {})
         self.recolored = set(expand(terr.get("recolored")))
@@ -166,6 +171,7 @@ class Game:
         self.advance, self.extraction_open = None, True
         self.fired, self.seq_progress = set(), {}
         self.result, self.result_turn, self.log = None, None, []
+        self.neutralized = set()
         self.refresh_vision()
 
     # ---------- état dérivé
@@ -250,6 +256,10 @@ class Game:
             return c["countdown"] in self.expired
         if t == "flag":
             return c["name"] in self.flags
+        if t == "guardian_neutralized":
+            return bool(self.neutralized) if c.get("guardian", "any") == "any" else c["guardian"] in self.neutralized
+        if t == "no_guardian_neutralized":
+            return not self.neutralized
         raise RuleError(f"condition inconnue {t}")
 
     # ---------- déclencheurs et fin
@@ -291,6 +301,10 @@ class Game:
             self.set_alert(ALERTS.index(a["level"]))
         elif t == "end_mission":
             self.finish(a["result"])
+        elif t == "guardian_order" and "chase_cell" in a:
+            for gid, g in self.guards.items():
+                if a["guardian"] in ("all", gid) and g["type"] == "patroller":
+                    g["chase"] = parse_cell(a["chase_cell"])
         # show_tip, dialogue, highlight, camera_focus, cinematic, guardian_order : présentation
 
     def set_alert(self, lvl):
@@ -337,6 +351,36 @@ class Game:
             self.probed |= {(t[0] + dx, t[1] + dy) for dx in range(-PROBE_RADIUS, PROBE_RADIUS + 1)
                             for dy in range(-PROBE_RADIUS, PROBE_RADIUS + 1)
                             if self.m.inside((t[0] + dx, t[1] + dy))}
+        elif kind == "attack":
+            t = parse_cell(target)
+            gid = next((k for k, g in self.guards.items() if g["pos"] == t), None)
+            if gid is None or not self.can_attack(uid, t):
+                raise RuleError(f"{uid} : attaque impossible en {target}")
+            g = self.guards[gid]
+            g["hp"] -= self.attack_damage(uid, t)
+            if g["hp"] <= 0:
+                del self.guards[gid]
+                self.neutralized.add(gid)
+                if self.alert_enabled:
+                    self.set_alert(self.alert + 1); self.quiet_phases = 0
+        elif kind == "brace":
+            u["braced"] = True
+        elif kind == "rampart":
+            if u["type"] != "protector":
+                raise RuleError(f"{uid} : Rempart réservé au Protecteur")
+            u["rampart"] = True
+        elif kind == "repair":
+            t = parse_cell(target)
+            ally = next((k for k, o in self.units.items() if o["pos"] == t and o["status"] in ("active", "disabled")), None)
+            if u["type"] != "technician" or ally is None or ally == uid or manhattan(t, u["pos"]) != 1:
+                raise RuleError(f"{uid} : réparation impossible en {target}")
+            o = self.units[ally]
+            if o["status"] == "disabled":
+                o["status"], o["hp"] = "active", 1
+            elif o["hp"] < UNITS[o["type"]][1]:
+                o["hp"] += 1
+            else:
+                raise RuleError(f"{uid} : {ally} est intact")
         elif kind in ("interact", "interface"):
             f = next((f for f in self.m.features.values() if f["cell"] == target), None)
             if not f or manhattan(f["pos"], u["pos"]) != 1:
@@ -349,6 +393,31 @@ class Game:
         u["acted"] = True
         self.refresh_vision()
 
+    def can_attack(self, uid, t):
+        u = self.units[uid]
+        if u["type"] not in ATTACK:
+            return False
+        _dmg, rmin, rmax = ATTACK[u["type"]]
+        d = manhattan(u["pos"], t)
+        return rmin <= d <= rmax and self.m.los(u["pos"], t, u["pos"] in self.m.elevated)
+
+    def attack_damage(self, uid, t):
+        u = self.units[uid]
+        dmg = ATTACK[u["type"]][0]
+        if manhattan(u["pos"], t) > 1 and self.m.terrain(t) in BLOCKS_LOS:
+            dmg -= 1  # couvert contre les tirs à distance
+        return max(1, dmg)
+
+    def damage_to(self, uid, base, ranged, hp_view=None):
+        u = self.units[uid]
+        dmg = base - (1 if u["braced"] else 0)
+        if ranged and self.m.terrain(u["pos"]) in BLOCKS_LOS:
+            dmg -= 1
+        if any(k != uid and o["status"] == "active" and o["rampart"] and manhattan(o["pos"], u["pos"]) == 1
+               for k, o in self.units.items()):
+            dmg -= 1
+        return max(1, dmg)  # un coup porte toujours au moins 1 dégât
+
     # ---------- déroulé d'un tour
     def start_turn(self):
         self.turn += 1
@@ -356,6 +425,7 @@ class Game:
         self.refresh_vision()
         for u in self.units.values():
             u["moved"] = u["acted"] = False
+            u["braced"] = u["rampart"] = False
         self.check()
 
     def end_player_turn(self):
@@ -372,46 +442,105 @@ class Game:
             self.finish("failure")
         self.check()
 
+    def hidden(self, uid, guard_cells):
+        u = self.units[uid]
+        near = any(manhattan(u["pos"], q) == 1 for q in guard_cells)
+        return u["type"] == "scout" and self.m.terrain(u["pos"]) in BLOCKS_LOS and not near
+
+    def plan(self):
+        """Phase des Gardiens simulée sans modifier l'état : ce que les intentions affichent."""
+        unit_at = {u["pos"]: k for k, u in self.active().items()}
+        protectors = [u["pos"] for u in self.active().values() if u["type"] == "protector"]
+        gpos = {gid: g["pos"] for gid, g in self.guards.items()}
+        plans, watched, blockers = {}, set(), set()
+        for gid, g in self.guards.items():
+            pl = {"path": [], "facing": None, "ri": g["ri"], "dirn": g["dirn"], "attack": None}
+            if g["type"] == "patroller":
+                target = g["chase"]
+                if target is None and g["route"]:
+                    pl["ri"], pl["dirn"] = self.next_waypoint(g)
+                    target = g["route"][pl["ri"]]
+                if target is not None and target != g["pos"]:
+                    others = frozenset(q for k, q in gpos.items() if k != gid)
+                    dist, prev = self.m.paths(g["pos"], others)
+                    if target in dist:
+                        path, p = [target], target
+                        while p != g["pos"]:
+                            p = prev[p]; path.append(p)
+                        for p in list(reversed(path))[1:GUARD_MOVE["patroller"] + 1]:
+                            if p in unit_at:
+                                blockers.add(p)
+                                break
+                            pl["path"].append(p)
+                            if any(manhattan(p, q) == 1 for q in protectors):
+                                break  # Ancrage
+                end = pl["path"][-1] if pl["path"] else g["pos"]
+                gpos[gid] = end
+                watched |= self.m.vision(end, 2)
+            elif g["type"] == "sentinel":
+                pl["facing"] = g["cycle"][(self.turn - 1) % len(g["cycle"])] if g["cycle"] else g["facing"]
+                watched |= self.m.cone(g["pos"], pl["facing"])
+            plans[gid] = pl
+        hp = {k: u["hp"] for k, u in self.active().items()}
+        attacks = []
+        cells = set(gpos.values())
+        for gid, g in self.guards.items():
+            pos, cand, base, ranged = gpos[gid], [], 0, False
+            if g["type"] == "patroller" and self.alert >= 1:
+                cand = [k for k in hp if hp[k] > 0 and manhattan(self.units[k]["pos"], pos) == 1]
+                base = PATROLLER_DAMAGE
+            elif g["type"] == "sentinel" and self.alert >= 2:
+                cone = self.m.cone(pos, plans[gid]["facing"])
+                cand = [k for k in hp if hp[k] > 0 and self.units[k]["pos"] in cone
+                        and manhattan(self.units[k]["pos"], pos) <= SENTINEL_RANGE and not self.hidden(k, cells)]
+                base, ranged = SENTINEL_DAMAGE, True
+            if cand:
+                k = min(cand, key=lambda k: (manhattan(self.units[k]["pos"], pos), hp[k], self.units[k]["pos"]))
+                dmg = self.damage_to(k, base, ranged)
+                hp[k] -= dmg
+                attacks.append((gid, k, dmg))
+        detected = set(blockers)
+        for p, uid in unit_at.items():
+            if hp[uid] <= 0:
+                continue
+            if (p in watched and not self.hidden(uid, cells)) or (p in self.recolored and self.guards):
+                detected.add(p)
+        return {"plans": plans, "watched": watched, "attacks": attacks, "detected": detected}
+
     def guardian_phase(self):
         k = self.turn
-        watched, blockers = set(), set()
-        units_pos = {u["pos"]: k2 for k2, u in self.active().items()}
-        for g in self.guards.values():
-            if g["type"] == "patroller" and g["route"]:
-                g["ri"], g["dirn"] = self.next_waypoint(g)
-                target = g["route"][g["ri"]]
-                _dist, prev = self.m.paths(g["pos"])
-                path, p = [target], target
-                while p != g["pos"]:
-                    p = prev[p]; path.append(p)
-                path = list(reversed(path))[1:]
-                steps = 0
-                for p in path:
-                    if steps >= GUARD_MOVE["patroller"]:
-                        break
-                    if p in units_pos:
-                        blockers.add(p)
-                        break
-                    g["pos"] = p; steps += 1
-                watched |= {q for q in self.m.vision(g["pos"], 2)}
-            if g["type"] == "sentinel":
-                facing = g["cycle"][(k - 1) % len(g["cycle"])] if g["cycle"] else g["facing"]
-                watched |= self.m.cone(g["pos"], facing)
-        detected = set(blockers)
-        for p, uid in units_pos.items():
+        pl = self.plan()
+        for gid, p in pl["plans"].items():
+            g = self.guards[gid]
+            if p["path"]:
+                g["pos"] = p["path"][-1]
+            if g["chase"] is None:
+                g["ri"], g["dirn"] = p["ri"], p["dirn"]
+            elif g["pos"] == g["chase"]:
+                g["chase"] = None
+            if p["facing"]:
+                g["facing"] = p["facing"]
+        for gid, uid, dmg in pl["attacks"]:
             u = self.units[uid]
-            near_guard = any(manhattan(p, g["pos"]) == 1 for g in self.guards.values())
-            hidden = u["type"] == "scout" and self.m.terrain(p) in BLOCKS_LOS and not near_guard
-            if (p in watched and not hidden) or (p in self.recolored and self.guards):
-                detected.add(p)
+            u["hp"] -= dmg
+            self.log.append(f"phase {k} : {gid} frappe {uid} ({dmg})")
+            if u["hp"] <= 0:
+                u["status"] = "disabled"
+        detected = pl["detected"]
         if self.alert_enabled and self.guards:
             if detected:
                 self.set_alert(self.alert + 1); self.quiet_phases = 0
                 self.log.append(f"phase {k} : détection en {', '.join(sorted(cell_name(p) for p in detected))}")
+                for g in self.guards.values():
+                    if g["type"] == "patroller":
+                        g["chase"] = min(detected, key=lambda p: (manhattan(p, g["pos"]), p))
             else:
                 self.quiet_phases += 1
                 if self.quiet_phases >= 3 and self.alert > 0:
                     self.alert -= 1; self.quiet_phases = 0
+                    if self.alert == 0:
+                        for g in self.guards.values():
+                            g["chase"] = None
         if self.advance:
             front = max((p[1] for p in self.recolored), default=-1) + 1
             if self.advance["direction"] == "S" and front < self.m.h:

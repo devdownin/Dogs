@@ -39,3 +39,12 @@ TIP_WINDOW_CLOSING,"La fenêtre de transmission se ferme dans 2 tours.","The tra
 TIP_RECOLORED,"Sur ce sol, vous êtes toujours vus.","On this ground, you are always seen."
 TIP_INTENTS,"Les hachures violettes montrent ce qu'il surveillera au prochain tour.","Violet hatching shows what it will watch next turn."
 TIP_PROBE,"Sonde : révèle une zone de 3 × 3 à distance.","Probe: reveals a 3 × 3 area at range."
+M5_TITLE,Le prix d'un signal,The Price of a Signal
+M5_RELAY,Relais,Relay
+M5_OBJ_MAIN,Activer le relais avec le Technicien et le garder à côté jusqu'à la fin de l'émission.,Activate the relay with the Technician and keep it beside the relay until the transmission ends.
+M5_REC_INTACT,Aucun drone hors service.,No drone disabled.
+M5_REC_SPARE,Ne neutraliser aucun Gardien.,Neutralize no Guardian.
+M5_COUNTDOWN,Émission,Transmission
+M5_DLG_SIGNAL,Émission en cours. Trois cycles. Ils vont converger vers le relais : probabilité élevée.,Transmission under way. Three cycles. They will converge on the relay: high probability.
+M5_DLG_SENT,Signal reçu à bord. C'est la première fois que vous me parlez depuis le sol.,Signal received aboard. This is the first time you have spoken to me from the ground.
+TIP_COMBAT,Les Gardiens annoncent leurs coups. Se tapir : −1 dégât. Un coup porte toujours au moins 1.,Guardians announce their strikes. Brace: −1 damage. A hit always deals at least 1.

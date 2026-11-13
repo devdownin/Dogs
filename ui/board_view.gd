@@ -274,7 +274,9 @@ func _draw() -> void:
 	var def: MissionDef = main.def
 	var s := cell_size()
 	var all: bool = main.reveal_all
-	var intents: Dictionary = game.intents() if main.show_danger else {"watched": {}, "routes": {}}
+	var intents: Dictionary = (
+		game.intents() if main.show_danger else {"watched": {}, "routes": {}, "attacks": []}
+	)
 	var probing: bool = main.mode == "probe" and main.selected != ""
 	var reach: Dictionary = {}
 	if probing:
@@ -360,6 +362,7 @@ func _draw() -> void:
 			var dir := Vector2(MissionDef.DIRS[g["facing"]]).normalized()
 			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
 		_sprite(g["type"], g["pos"], GUARD, Color.WHITE)
+		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
 
 	for uid: String in game.units:
 		var u: Dictionary = game.units[uid]
@@ -377,6 +380,48 @@ func _draw() -> void:
 			draw_arc(Vector2.ZERO, s * 0.5, 0, TAU, 40, IVORY, maxf(4.0, s * 0.07))
 			draw_set_transform(Vector2.ZERO)
 		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint)
+		var r := cell_rect(u["pos"])
+		if u["rampart"]:
+			draw_rect(r.grow(-s * 0.04), PACK, false, maxf(3.0, s * 0.05))
+		if u["braced"]:
+			var b := r.position + Vector2(s * 0.12, s * 0.12)
+			draw_polyline(
+				PackedVector2Array([b, b + Vector2(s * 0.08, s * 0.08), b + Vector2(s * 0.16, 0)]),
+				IVORY,
+				3.0
+			)
+		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], PACK)
+
+	# Coups annoncés : trait violet du Gardien vers sa cible, dégâts inscrits sur la cible.
+	var font := ThemeDB.fallback_font
+	for at: Dictionary in intents["attacks"]:
+		var from := cell_rect(at["from"]).get_center()
+		var to := cell_rect(game.units[at["unit"]]["pos"]).get_center()
+		draw_line(from, to, GUARD, maxf(4.0, s * 0.06))
+		var tip := to - (to - from).normalized() * s * 0.32
+		draw_circle(tip, s * 0.16, GUARD)
+		var txt := "-%d" % at["damage"]
+		var fs := int(s * 0.22)
+		var w := font.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		draw_string(
+			font, tip + Vector2(-w / 2.0, fs * 0.35), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs
+		)
+
+
+## Intégrité sous l'unité : une encoche par point, pleine ou vide.
+func _pips(p: Vector2i, hp: int, max_hp: int, col: Color) -> void:
+	var r := cell_rect(p)
+	var w := r.size.x * 0.12
+	var gap := w * 0.35
+	var total := max_hp * w + (max_hp - 1) * gap
+	var x := r.get_center().x - total / 2.0
+	var y := r.end.y - r.size.x * 0.1
+	for i in max_hp:
+		var box := Rect2(x + i * (w + gap), y, w, r.size.x * 0.06)
+		draw_rect(box, Color(0, 0, 0, 0.6))
+		if i < hp:
+			draw_rect(box.grow(-1), col)
+	return
 
 
 func _area_rect(cells: Array[Vector2i]) -> Rect2:

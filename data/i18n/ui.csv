@@ -30,3 +30,11 @@ SPEAKER_SYSTEMS,Systèmes,Systems
 UI_ACT_PROBE,Sonde,Probe
 UI_PROBE_TARGET,Touchez le centre de la zone à sonder (portée %d).,Tap the centre of the area to probe (range %d).
 UI_PROBE_CONFIRM,Touchez encore pour lancer la Sonde.,Tap again to launch the Probe.
+UI_ACT_ATTACK,Frapper,Strike
+UI_ACT_BRACE,Se tapir,Brace
+UI_ACT_RAMPART,Rempart,Rampart
+UI_ACT_REPAIR,Réparer,Repair
+UI_HIT,%s touché : −%d (%s).,%s hit: −%d (%s).
+UI_UNIT_DOWN,%s hors service.,%s disabled.
+UI_GUARD_DOWN,%s neutralisé.,%s neutralized.
+SPEAKER_ATHENA,ATHENA,ATHENA

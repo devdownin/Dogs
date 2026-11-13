@@ -1,0 +1,87 @@
+{
+  "mission": "m5_prix_signal",
+  "description": "Le Protecteur frappe au lieu de se tapir : il tombe, le Technicien le relève.",
+  "turns": [
+    [
+      {
+        "unit": "tec",
+        "move": "E8"
+      },
+      {
+        "unit": "pro",
+        "move": "E7"
+      },
+      {
+        "unit": "sc1",
+        "move": "C6"
+      },
+      {
+        "unit": "sc2",
+        "move": "G7"
+      }
+    ],
+    [
+      {
+        "unit": "pro",
+        "move": "E5",
+        "act": "brace"
+      },
+      {
+        "unit": "tec",
+        "move": "E6",
+        "act": "interface",
+        "target": "E5"
+      }
+    ],
+    [
+      {
+        "unit": "pro",
+        "act": "attack",
+        "target": "E4"
+      },
+      {
+        "unit": "tec",
+        "act": "repair",
+        "target": "E5"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "act": "repair",
+        "target": "E5"
+      },
+      {
+        "unit": "pro",
+        "act": "brace"
+      }
+    ]
+  ],
+  "expect": {
+    "result": "victory",
+    "turn": 4,
+    "records": {
+      "r_intact": false,
+      "r_spare": true
+    },
+    "state": {
+      "units": {
+        "pro": [
+          "E5",
+          0,
+          "disabled"
+        ]
+      },
+      "guardians": {
+        "pat1": [
+          "E4",
+          2
+        ],
+        "pat2": [
+          "F5",
+          3
+        ]
+      }
+    }
+  }
+}

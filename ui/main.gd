@@ -5,7 +5,7 @@ extends Control
 
 const MISSION_DIR := "res://data/missions/"
 const MISSION_IDS: Array[String] = [
-	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur"
+	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur", "m5_prix_signal"
 ]
 const NONE := Vector2i(-1, -1)
 
@@ -28,7 +28,7 @@ var _picker: OptionButton
 var _status: Label
 var _objective: Label
 var _message: Label
-var _actions: HBoxContainer
+var _actions: HFlowContainer
 var _undo: Button
 var _end_turn: Button
 var _end_panel: PanelContainer
@@ -85,9 +85,10 @@ func _build_ui() -> void:
 	_message.add_theme_color_override("font_color", BoardView.IVORY)
 	box.add_child(_message)
 
-	_actions = HBoxContainer.new()
+	_actions = HFlowContainer.new()
 	_actions.custom_minimum_size.y = 96
-	_actions.add_theme_constant_override("separation", 10)
+	_actions.add_theme_constant_override("h_separation", 10)
+	_actions.add_theme_constant_override("v_separation", 10)
 	box.add_child(_actions)
 
 	var bottom := HBoxContainer.new()
@@ -353,6 +354,12 @@ func _consume_events() -> void:
 				for c: Vector2i in e["cells"]:
 					names.append(Cells.name_of(c))
 				lines.append(tr("UI_DETECTED") % ", ".join(names))
+			"unit_attacked":
+				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
+			"unit_disabled":
+				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
+			"guardian_neutralized":
+				lines.append(tr("UI_GUARD_DOWN") % e["guardian"])
 			"alert_changed":
 				lines.append(tr("UI_ALERT_NOW") % tr("ALERT_" + (e["level"] as String).to_upper()))
 			"script_action":
@@ -394,6 +401,8 @@ func _refresh() -> void:
 	if selected != "" and game.units[selected]["status"] == "active":
 		for a in game.available_actions(selected):
 			var b := _button("UI_ACT_" + (a["kind"] as String).to_upper(), do_action.bind(a))
+			if a["kind"] in ["attack", "repair"]:
+				b.text += " " + Cells.name_of(a["target"])
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			if a["kind"] == "probe":
 				b.toggle_mode = true

@@ -562,7 +562,9 @@
                 "countdown_expired",
                 "flag",
                 "no_unit_disabled",
-                "unit_end_turn_on"
+                "unit_end_turn_on",
+                "guardian_neutralized",
+                "no_guardian_neutralized"
               ]
             }
           }
