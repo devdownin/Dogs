@@ -6,6 +6,7 @@
   "title_key": "M4_TITLE",
   "type": "infiltration",
   "rule_introduced": "intents_alert_probe",
+  "tileset": "surface",
   "map": {
     "width": 10,
     "height": 10,

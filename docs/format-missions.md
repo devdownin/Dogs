@@ -186,3 +186,9 @@ Le projet Godot 4.7 (GDScript typé) de ce dépôt contient le chargeur et le c�
 - Le combat est en place des deux côtés (M5). Modules, *Impulsion* et *Élan* arriveront avec l'Intercepteur (M6).
 - La Liaison (Acte II) n'est pas encore dans le format.
 - Les règles exactes de vision (distance de Manhattan, ligne de vue centre à centre, rocaille et ruines bloquantes, +1 depuis la mésa) sont celles du code actuel ; elles doivent être confirmées en jeu.
+
+### Jeu de tuiles de Surface
+
+Le champ optionnel `tileset: "surface"` sélectionne le manifeste
+`assets/terrain/surface/manifest.json`. La disposition et les règles viennent de
+`map.rows` et `map.elevated`. Le champ est activé sur M1 et M4 pour la revue.

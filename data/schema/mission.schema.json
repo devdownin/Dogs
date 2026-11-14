@@ -56,6 +56,9 @@
     "rule_introduced": {
       "type": "string"
     },
+    "tileset": {
+      "enum": ["surface"]
+    },
     "map": {
       "type": "object",
       "additionalProperties": false,

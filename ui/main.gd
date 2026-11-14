@@ -59,6 +59,7 @@ func _ready() -> void:
 		load_mission(0)
 		if campaign.completed.is_empty():
 			play_cinematic(CinematicView.by_id("prologue"))
+		load_mission(MISSION_IDS.find("m4_le_veilleur") if OS.has_feature("m4_preview") else 0)
 
 
 func _notification(what: int) -> void:
