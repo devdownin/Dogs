@@ -80,8 +80,12 @@ Pour les Gardiens, ce lien sans IA est celui des bâtisseurs : Pia et Xenon sont
 
 Indices de l'Acte I : le journal de Xenon (« Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire. », après M2) ; ATHENA relève une activité cérébrale synchrone dans leurs deux caissons, sans explication médicale (après M6).
 
+### La Voix (décidé le 14 novembre 2026)
+
+Elle parle à l'inverse d'ATHENA : affirmations sans nuance, jamais de probabilité, jamais de doute, phrases courtes au présent, et un « nous » qui inclut ATHENA sans le lui demander. Là où ATHENA dit « hypothèse, confiance moyenne », la Voix dit « c'est ainsi ».
+
 ## 7. Questions ouvertes
 
 1. **Revoir les cinématiques :** depuis l'écran d'ATHENA (archives) ou depuis l'Atlas.
-2. **La Voix** (Acte III) : timbre et façon de parler à définir, en écho inversé d'ATHENA (aucun doute, aucune probabilité).
+2. **Nom définitif de la Voix** (Acte III).
 3. **Voix off :** synthétique pour ATHENA, humaine pour les journaux ? À décider avec le budget son.
