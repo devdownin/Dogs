@@ -62,6 +62,7 @@ var _tiles: Dictionary[String, Array] = {}
 var _sprites: Dictionary[String, Texture2D] = {}
 var _painted_ground: Texture2D
 var _surface: SurfaceTiles
+var _motion: M4Motion
 var _painted_sprites: Dictionary[String, Texture2D] = {}
 var _cs := 0.0  # taille d'une case
 var _cam := Vector2.ZERO  # point de la carte (en cases) au centre de la vue
@@ -103,15 +104,43 @@ func _load_painted_art(def: MissionDef) -> void:
 			_painted_sprites[sprite_name] = sprite
 
 
+func reset_motion() -> void:
+	if _motion != null:
+		_motion.reset()
+
+
+func reduce_motion(enabled: bool) -> void:
+	if _motion != null:
+		_motion.set_reduced(enabled)
+		queue_redraw()
+
+
+func present_event(event: Dictionary, before: Dictionary) -> void:
+	if _motion != null:
+		_motion.consume(event, main.game, before)
+
+
+func _process(delta: float) -> void:
+	if _motion != null and visible and _motion.advance(delta):
+		queue_redraw()
+
+
 func _tile(tile_name: String, p: Vector2i) -> Texture2D:
 	var list: Array = _tiles[tile_name]
 	return list[posmod(p.x * 7 + p.y * 13 + p.x * p.y * 3, list.size())]
 
 
 ## Sprite posé sur une case : un peu plus haut que la case, pieds en bas, socle de faction.
-func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color, painted: bool) -> void:
+func _sprite(
+	sprite_name: String,
+	r: Rect2,
+	faction: Color,
+	tint: Color,
+	painted: bool,
+	actor_id := "",
+	disabled := false
+) -> void:
 	painted = painted and _painted_sprites.has(sprite_name)
-	var r := cell_rect(p)
 	var s := r.size.x
 	var base := r.get_center() + Vector2(0, s * 0.3)
 	draw_set_transform(base, 0.0, Vector2(1.0, 0.42))
@@ -132,7 +161,18 @@ func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color, pain
 		var frame := Vector2(1.0, 1.5) if sprite_name == "beacon" else Vector2(1.5, 1.5)
 		frame *= s
 		var anchor := base - frame * Vector2(0.5, 0.78)
-		draw_texture_rect(_painted_sprites[sprite_name], Rect2(anchor, frame), false, tint)
+		var texture := _painted_sprites[sprite_name]
+		var flip := false
+		if _motion != null and not actor_id.is_empty():
+			var animated := _motion.frame_for(actor_id, sprite_name, disabled)
+			if animated != null:
+				texture = animated
+				flip = _motion.mirrored(actor_id, sprite_name)
+		if flip:
+			draw_set_transform(Vector2(base.x * 2.0, 0.0), 0.0, Vector2(-1.0, 1.0))
+		draw_texture_rect(texture, Rect2(anchor, frame), false, tint)
+		if flip:
+			draw_set_transform(Vector2.ZERO)
 		return
 	var size := s * 1.12
 	var at := Vector2(r.get_center().x - size / 2.0, r.end.y - size * 0.98)
@@ -144,6 +184,12 @@ func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color, pain
 
 ## Recadre au zoom initial, centré sur `focus` (en cases). Différé si la taille est encore nulle.
 func reset_view(focus: Vector2) -> void:
+	if main.def.id == ART_MISSION:
+		_motion = M4Motion.new()
+		_motion.load_sheets()
+		_motion.set_reduced(main.animations_reduced)
+	else:
+		_motion = null
 	_load_painted_art(main.def)
 	if main.def.data.get("tileset", "") == "surface":
 		if _surface == null:
@@ -175,6 +221,13 @@ func cell_rect(p: Vector2i) -> Rect2:
 	var a := (origin() + Vector2(p) * _cs).floor()
 	var b := (origin() + Vector2(p + Vector2i.ONE) * _cs).floor()
 	return Rect2(a, b - a)
+
+
+func _actor_rect(id: String, cell: Vector2i) -> Rect2:
+	var r := cell_rect(cell)
+	if _motion != null:
+		r.position += (_motion.position(id, cell) - Vector2(cell)) * _cs
+	return r
 
 
 func cell_at(pos: Vector2) -> Vector2i:
@@ -409,7 +462,11 @@ func _draw() -> void:
 			draw_arc(c, s * 0.42, 0, TAU, 32, Color(IVORY, 0.3 if done else 0.9), 3.0)
 		else:
 			_sprite(
-				kind, f["pos"], PACK if done else Color(IVORY, 0.7), Color.WHITE, refined_ground
+				kind,
+				cell_rect(f["pos"]),
+				PACK if done else Color(IVORY, 0.7),
+				Color.WHITE,
+				refined_ground
 			)
 
 	for gid: String in intents["routes"]:
@@ -439,14 +496,15 @@ func _draw() -> void:
 		var g: Dictionary = game.guards[gid]
 		if not (all or game.current_vision.has(g["pos"])):
 			continue
-		var gc := cell_rect(g["pos"]).get_center()
+		var r := _actor_rect(gid, g["pos"])
+		var gc := r.get_center()
 		if g["type"] == "sentinel":
 			var dir := Vector2(MissionDef.DIRS[g["facing"]]).normalized()
 			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
-		_sprite(g["type"], g["pos"], GUARD, Color.WHITE, refined_ground)
-		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
+		_sprite(g["type"], r, GUARD, Color.WHITE, refined_ground, gid)
+		_pips(r, g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
 		if g["stunned"]:  # figé par une Impulsion : croix ivoire sur la case
-			var gr := cell_rect(g["pos"]).grow(-s * 0.18)
+			var gr := r.grow(-s * 0.18)
 			var w := maxf(3.0, s * 0.05)
 			draw_line(gr.position, gr.end, IVORY, w)
 			draw_line(Vector2(gr.end.x, gr.position.y), Vector2(gr.position.x, gr.end.y), IVORY, w)
@@ -461,17 +519,24 @@ func _draw() -> void:
 			tint = Color(0.45, 0.45, 0.5)
 		elif spent:
 			tint = Color(0.68, 0.7, 0.74)
+		var r := _actor_rect(uid, u["pos"])
 		if uid == main.selected:
-			var c := cell_rect(u["pos"]).get_center() + Vector2(0, s * 0.3)
+			var c := r.get_center() + Vector2(0, s * 0.3)
 			draw_set_transform(c, 0.0, Vector2(1.0, 0.42))
 			draw_arc(Vector2.ZERO, s * 0.5, 0, TAU, 40, IVORY, maxf(4.0, s * 0.07))
 			draw_set_transform(Vector2.ZERO)
 		if u["silent"]:
 			tint.a = 0.45  # en silence radio : invisible pour les Gardiens, aveugle pour ATHENA
 		var faction := LINKED if u["type"] == "capsule" else PACK
-		_sprite(u["type"], u["pos"], faction.darkened(0.35) if spent else faction, tint)
-		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint, refined_ground)
-		var r := cell_rect(u["pos"])
+		_sprite(
+			u["type"],
+			r,
+			faction.darkened(0.35) if spent else faction,
+			tint,
+			refined_ground,
+			uid,
+			u["status"] == "disabled"
+		)
 		if u.get("exposed", false):  # trahie : les Gardiens la voient
 			draw_rect(r.grow(-s * 0.04), GUARD, false, maxf(3.0, s * 0.05))
 		if u["silent"]:
@@ -485,7 +550,7 @@ func _draw() -> void:
 				IVORY,
 				3.0
 			)
-		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], faction)
+		_pips(r, maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], faction)
 		if u["elan"] and not u["acted"]:  # Élan prêt : chevrons turquoise
 			var e := r.position + Vector2(r.size.x * 0.72, r.size.x * 0.12)
 			for i in 2:
@@ -523,8 +588,7 @@ func _draw() -> void:
 
 
 ## Intégrité sous l'unité : une encoche par point, pleine ou vide.
-func _pips(p: Vector2i, hp: int, max_hp: int, col: Color) -> void:
-	var r := cell_rect(p)
+func _pips(r: Rect2, hp: int, max_hp: int, col: Color) -> void:
 	var w := r.size.x * 0.12
 	var gap := w * 0.35
 	var total := max_hp * w + (max_hp - 1) * gap
