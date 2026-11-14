@@ -49,7 +49,7 @@ func _ready() -> void:
 	campaign = SaveStore.load_campaign()
 	_build_ui()
 	if not _resume():
-		load_mission(0)
+		load_mission(MISSION_IDS.find("m4_le_veilleur") if OS.has_feature("m4_preview") else 0)
 
 
 func _notification(what: int) -> void:

@@ -1,6 +1,6 @@
 class_name BoardView
 extends Control
-## Carte en aplats du prototype. Ne fait que dessiner l'état fourni par `main`
+## Rendu de la carte. Ne fait que dessiner l'état fourni par `main`
 ## et signaler la case touchée ; aucune règle ici.
 
 signal cell_tapped(cell: Vector2i)
@@ -29,6 +29,10 @@ const TILE_VARIANTS := {
 const SPRITES := [
 	"scout", "technician", "protector", "interceptor", "sentinel", "patroller", "regulator"
 ]
+const ART_MISSION := "m4_le_veilleur"
+const ART_CELL := 192
+const ART_DIR := "res://assets/maps/m4_le_veilleur/"
+const ART_SPRITES := ["scout", "technician", "sentinel", "patroller", "beacon"]
 const CLIFF := Color("3a3038")
 const PACK := Color("2fe0c8")
 const GUARD := Color("a85af0")
@@ -46,6 +50,9 @@ var main: Node  # fournit def, game, selected, preview, mode, show_danger, revea
 
 var _tiles: Dictionary[String, Array] = {}
 var _sprites: Dictionary[String, Texture2D] = {}
+var _painted_ground: Texture2D
+var _surface: SurfaceTiles
+var _painted_sprites: Dictionary[String, Texture2D] = {}
 var _cs := 0.0  # taille d'une case
 var _cam := Vector2.ZERO  # point de la carte (en cases) au centre de la vue
 var _pending_focus := Vector2(-1, -1)
@@ -73,19 +80,50 @@ func _ready() -> void:
 		_sprites[feature_name] = load("res://assets/features/%s.png" % feature_name)
 
 
+func _load_painted_art(def: MissionDef) -> void:
+	if def.id == ART_MISSION and _painted_ground == null and not def.data.has("tileset"):
+		var ground: Texture2D = load(ART_DIR + "ground.png")
+		if ground != null and ground.get_size() == Vector2(def.width, def.height) * ART_CELL:
+			_painted_ground = ground
+	if not _painted_sprites.is_empty():
+		return
+	for sprite_name: String in ART_SPRITES:
+		var sprite: Texture2D = load(ART_DIR + sprite_name + ".png")
+		if sprite != null:
+			_painted_sprites[sprite_name] = sprite
+
+
 func _tile(tile_name: String, p: Vector2i) -> Texture2D:
 	var list: Array = _tiles[tile_name]
 	return list[posmod(p.x * 7 + p.y * 13 + p.x * p.y * 3, list.size())]
 
 
 ## Sprite posé sur une case : un peu plus haut que la case, pieds en bas, socle de faction.
-func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color) -> void:
+func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color, painted: bool) -> void:
+	painted = painted and _painted_sprites.has(sprite_name)
 	var r := cell_rect(p)
 	var s := r.size.x
 	var base := r.get_center() + Vector2(0, s * 0.3)
 	draw_set_transform(base, 0.0, Vector2(1.0, 0.42))
-	draw_arc(Vector2.ZERO, s * 0.4, 0, TAU, 40, faction, maxf(3.0, s * 0.05))
+	if painted:
+		draw_circle(Vector2(s * 0.06, s * 0.11), s * 0.32, Color(0.055, 0.063, 0.094, 0.45))
+	draw_arc(
+		Vector2.ZERO,
+		s * 0.4,
+		0,
+		TAU,
+		40,
+		faction,
+		maxf(2.0, s * 0.035) if painted else maxf(3.0, s * 0.05),
+		painted
+	)
 	draw_set_transform(Vector2.ZERO)
+	if painted:
+		var frame := Vector2(1.0, 1.5) if sprite_name == "beacon" else Vector2(1.5, 1.5)
+		frame *= s
+		var anchor := base - frame * Vector2(0.5, 0.78)
+		draw_texture_rect(_painted_sprites[sprite_name], Rect2(anchor, frame), false, tint)
+		return
 	var size := s * 1.12
 	var at := Vector2(r.get_center().x - size / 2.0, r.end.y - size * 0.98)
 	draw_texture_rect(_sprites[sprite_name], Rect2(at, Vector2(size, size)), false, tint)
@@ -96,6 +134,12 @@ func _sprite(sprite_name: String, p: Vector2i, faction: Color, tint: Color) -> v
 
 ## Recadre au zoom initial, centré sur `focus` (en cases). Différé si la taille est encore nulle.
 func reset_view(focus: Vector2) -> void:
+	_load_painted_art(main.def)
+	if main.def.data.get("tileset", "") == "surface":
+		if _surface == null:
+			var surface := SurfaceTiles.new()
+			if surface.load_manifest():
+				_surface = surface
 	_pending_focus = focus
 	if size.x > 0.0 and size.y > 0.0:
 		_apply_pending()
@@ -274,6 +318,9 @@ func _draw() -> void:
 	var def: MissionDef = main.def
 	var s := cell_size()
 	var all: bool = main.reveal_all
+	var use_surface: bool = def.data.get("tileset", "") == "surface" and _surface != null
+	var full_paint := def.id == ART_MISSION and _painted_ground != null and not use_surface
+	var refined_ground := use_surface or full_paint
 	var intents: Dictionary = (
 		game.intents() if main.show_danger else {"watched": {}, "routes": {}, "attacks": []}
 	)
@@ -288,14 +335,35 @@ func _draw() -> void:
 		for x in def.width:
 			var p := Vector2i(x, y)
 			var r := cell_rect(p)
+			if not r.intersects(Rect2(Vector2.ZERO, size)):
+				continue
 			var known: bool = all or game.revealed.has(p)
 			if not known:
 				draw_texture_rect(_tile("fog", p), r, false)
+				if refined_ground:
+					draw_rect(r, Color(FOG, 0.65))
 				draw_rect(r, Color(0, 0, 0, 0.35), false, 1.0)
 				continue
-			draw_texture_rect(_tile(TILE_NAME[def.terrain(p)], p), r, false)
+			if use_surface:
+				draw_texture_rect(_surface.base(def, p), r, false)
+				var border := _surface.border(def, p)
+				if border != null:
+					draw_texture_rect(border, r, false)
+				var ruin := _surface.ruin_high(def, p)
+				if ruin != null:
+					draw_texture_rect(ruin, r, false)
+			elif full_paint:
+				var source := Rect2(Vector2(p) * ART_CELL, Vector2.ONE * ART_CELL)
+				draw_texture_rect_region(_painted_ground, r, source, Color.WHITE, false, false)
+			else:
+				draw_texture_rect(_tile(TILE_NAME[def.terrain(p)], p), r, false)
 			var below := p + Vector2i(0, 1)
-			if def.elevated.has(p) and def.terrain(p) != "r" and not def.elevated.has(below):
+			if (
+				not refined_ground
+				and def.elevated.has(p)
+				and def.terrain(p) != "r"
+				and not def.elevated.has(below)
+			):
 				draw_rect(Rect2(r.position.x, r.end.y - s * 0.14, s, s * 0.14), CLIFF)
 				draw_line(
 					Vector2(r.position.x, r.end.y - s * 0.14),
@@ -304,19 +372,21 @@ func _draw() -> void:
 					2.0
 				)
 			if game.recolored.has(p):
-				draw_rect(r, Color(GUARD, 0.38))
+				draw_rect(r, Color(GUARD, 0.19 if refined_ground else 0.38))
 				draw_rect(r.grow(-s * 0.22), Color(GUARD, 0.7), false, 1.5)
+				if refined_ground:
+					draw_rect(r.grow(-s * 0.34), Color(GUARD, 0.45), false, 1.0)
 			if def.extraction.has(p):
 				draw_rect(r.grow(-2), Color(PACK, 0.9), false, 3.0)
 			if probing and not reach.has(p):
 				draw_rect(r, Color(0, 0, 0, 0.45))  # hors de portée de la Sonde
 			elif not probing and reach.has(p):
-				draw_rect(r, Color(IVORY, 0.28))
+				draw_rect(r, Color(IVORY, 0.12 if refined_ground else 0.28))
 			if intents["watched"].has(p):
 				_hatch(r, Color(GUARD.darkened(0.35), 0.95))
 			if not (all or game.current_vision.has(p)):
 				draw_rect(r, Color(FOG, 0.5))
-			draw_rect(r, Color(0, 0, 0, 0.25), false, 1.0)
+			draw_rect(r, Color(0, 0, 0, 0.20 if refined_ground else 0.25), false, 1.0)
 
 	for fid: String in def.features:
 		var f: Dictionary = def.features[fid]
@@ -328,7 +398,9 @@ func _draw() -> void:
 			var c := cell_rect(f["pos"]).get_center()
 			draw_arc(c, s * 0.42, 0, TAU, 32, Color(IVORY, 0.3 if done else 0.9), 3.0)
 		else:
-			_sprite(kind, f["pos"], PACK if done else Color(IVORY, 0.7), Color.WHITE)
+			_sprite(
+				kind, f["pos"], PACK if done else Color(IVORY, 0.7), Color.WHITE, refined_ground
+			)
 
 	for gid: String in intents["routes"]:
 		var route: Array = intents["routes"][gid]
@@ -361,7 +433,7 @@ func _draw() -> void:
 		if g["type"] == "sentinel":
 			var dir := Vector2(MissionDef.DIRS[g["facing"]]).normalized()
 			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
-		_sprite(g["type"], g["pos"], GUARD, Color.WHITE)
+		_sprite(g["type"], g["pos"], GUARD, Color.WHITE, refined_ground)
 		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
 
 	for uid: String in game.units:
@@ -381,7 +453,7 @@ func _draw() -> void:
 			draw_set_transform(Vector2.ZERO)
 		if u["silent"]:
 			tint.a = 0.45  # en silence radio : invisible pour les Gardiens, aveugle pour ATHENA
-		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint)
+		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint, refined_ground)
 		var r := cell_rect(u["pos"])
 		if u["silent"]:
 			_dashed_rect(r.grow(-s * 0.06), IVORY, s)
