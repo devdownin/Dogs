@@ -1,6 +1,6 @@
 # Dogs of Gods — Fiches des missions 1 à 6 et aperçu de l'Acte IV (prototype)
 
-> **Version :** 1.2 — 13 novembre 2026 (Missions 5 et 6 : combat, Intercepteur, silence radio)
+> **Version :** 1.3 — 14 novembre 2026 (aperçu de l'Acte IV : *Liaison*, la capsule des liés)
 > **Rôle :** contenu jouable du prototype : six missions, sans graphisme définitif.
 > **Documents liés :** `dogs-gdd-v2-regles-campagne.md` (règles), `dogs-spec-technique-v2.md` (architecture), `brief-planche-style-3.md` (la carte de la Mission 4 reprend celle de la planche).
 > **Vérification :** les coûts de trajet cités ont été calculés par script sur les grilles ci-dessous. Les durées et l'intérêt de jeu restent à confirmer manette en main.
@@ -349,7 +349,7 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 - **La contrainte :** la mission commence en *Vigilance* : un Patrouilleur frappe tout drone relié qu'il touche. Pia ne craint rien tant qu'elle n'est pas trahie ; ses alliés, eux, doivent entrer dans la crypte qu'elle ouvre, sans jamais finir un tour à côté d'elle. La Sentinelle de la crypte ne regarde la chronique qu'une phase sur deux.
 - **Le faux pas :** si un drone relié finit son tour à côté de la capsule, elle est trahie pour le reste de la mission : l'alerte monte d'un cran et les Patrouilleurs fondent sur elle. Les intentions l'annoncent avant la fin du tour (trait violet en pointillé entre les deux, coup annoncé sur la capsule). Un drone en silence radio ne la trahit pas.
 
-**Solution de référence (7 tours, Vigilance tenue, aucun Gardien abattu).** Pia ouvre le sceau nord (le Patrouilleur de la ronde bute sur elle sans la voir), active la console, puis ouvre le sceau sud depuis l'intérieur. Le Technicien remonte par l'est et entre au tour où la Sentinelle regarde au nord ; il lit la chronique et ressort avant qu'elle se retourne. Pia descend par le gué de la ligne 9 quand le Patrouilleur du sud est passé, le Protecteur s'est écarté de son chemin, et elle est rappelée en E12.
+**Solution de référence (7 tours, Vigilance tenue, aucun Gardien abattu).** Pia ouvre le sceau nord (le Patrouilleur de la ronde bute sur elle sans la voir), active la console, puis ouvre le sceau sud depuis l'intérieur. Le Technicien remonte par l'est et entre au tour où la Sentinelle regarde au nord ; il lit la chronique et ressort avant qu'elle se retourne. Pia traverse la ligne 9 juste après le passage du Patrouilleur du sud ; le Protecteur s'est écarté de son chemin, et elle est rappelée en E12.
 
 - **Variante rejouée :** le Technicien croise la capsule, mais coupe sa liaison avant la fin du tour : rien ne se passe.
 - **Pièges rejoués :** le Technicien finit son tour à côté de Pia (elle est trahie, frappée, mise hors service) ; le Technicien reste dans la crypte un tour de trop (la Sentinelle le voit, la ronde le rattrape ; Pia s'en sort seule).
