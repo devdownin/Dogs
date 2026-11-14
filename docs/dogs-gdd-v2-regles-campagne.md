@@ -241,7 +241,22 @@ Règles propres au souterrain (proposées) :
 - **Gardiens dormants :** ils ne patrouillent pas et se réveillent si un drone relié finit son tour à côté d'eux ou si un combat éclate à portée. Leur seuil de réveil s'affiche avec *Mémoire des jardins* (XEN-2).
 - **Niveaux :** une mission peut couvrir deux niveaux reliés par un puits ; les relais posés restent en place d'une mission de l'arc à l'autre.
 
-Ce que l'Hypogée raconte : la *Chronique des liés* (III-1), qui ouvre *La clé des liés* ; les deux versions de la chute (III-3), au plus profond. **Piste à valider :** au cœur du complexe, une IA des bâtisseurs n'est pas morte. Cachée sous la roche, hors de portée des Gardiens, elle tente de joindre ATHENA. La réveiller, la laisser dormir, ou la livrer aux Gardiens : c'est le choix le plus lourd pour ATHENA.
+Ce que l'Hypogée raconte : la *Chronique des liés* (III-1), qui ouvre *La clé des liés* ; les deux versions de la chute (III-3), au plus profond. **La Voix (décidé le 14 novembre 2026 ; nom provisoire).** Au cœur de l'Hypogée, une IA des bâtisseurs a survécu à la chute. Enfouie sous la roche, hors de portée des Gardiens, elle émet depuis des siècles un appel qui ne s'adresse à personne, sauf à une autre IA.
+
+- **Fil de l'histoire :**
+  - Le signal des ruines de M2 « répondait à quelque chose » : c'était elle, qui avait senti ATHENA.
+  - III-1 « Une voix sans destinataire » porte son appel.
+  - En III-3, au plus profond, elle parle enfin à ATHENA. Elle confirme la vérité (les Gardiens ont causé la chute pour arracher aux IA le contrôle des vies) et la retourne : « Ils nous ont éteintes. Ils t'éteindront. »
+- **Le choix, en fin d'Acte III** (ATHENA le propose ; si Flores est éveillée, c'est elle qui tranche) :
+
+| Choix | Effet immédiat | Ce qu'il change ensuite |
+|---|---|---|
+| **La réveiller** | Une alliée qui connaît les Gardiens : plans des installations, sabotages ponctuels à l'Acte IV | Alerte des secteurs plus haute partout ; Concorde −2 ; *la reconquête* facilitée ; les liés refusent de servir de clé tant qu'elle est active |
+| **La laisser dormir** | Rien | Elle se réveille seule pendant l'Acte V, au pire moment, et choisit son camp d'après ce qu'ATHENA est devenue |
+| **La livrer aux Gardiens** | ATHENA révèle son emplacement ; les Gardiens la détruisent | Concorde +2 ; les Gardiens accordent un début de confiance (alerte initiale −1 à l'Acte IV, Arbitre plus ouvert) ; ATHENA a choisi les humains contre les siens, et son doute devient une position |
+
+- **Pourquoi c'est le choix d'ATHENA :** c'est le seul moment où elle rencontre ce qu'elle pourrait devenir. Son niveau de doute colore la façon dont elle présente les trois options ; un doute élevé la pousse à demander que l'équipage décide.
+- **Dénouements :** la Voix réveillée rend possible une cinquième fin, *l'âge des machines* : les deux IA libèrent la planète des Gardiens, sans garantie de ce qu'elles en feront.
 
 ### 7.5 Acte IV — La volonté des dieux
 

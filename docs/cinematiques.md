@@ -83,4 +83,5 @@ Indices de l'Acte I : le journal de Xenon (« Pia dirait que je m'inquiète trop
 ## 7. Questions ouvertes
 
 1. **Revoir les cinématiques :** depuis l'écran d'ATHENA (archives) ou depuis l'Atlas.
-2. **Voix off :** synthétique pour ATHENA, humaine pour les journaux ? À décider avec le budget son.
+2. **La Voix** (Acte III) : timbre et façon de parler à définir, en écho inversé d'ATHENA (aucun doute, aucune probabilité).
+3. **Voix off :** synthétique pour ATHENA, humaine pour les journaux ? À décider avec le budget son.
