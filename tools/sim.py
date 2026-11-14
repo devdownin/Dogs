@@ -2,21 +2,27 @@
 
 Sert uniquement à valider les données de mission et les rejeux en intégration continue.
 Le cœur de règles du jeu reste celui de Godot ; ce module en est une transcription
-volontairement réduite (pas de modules, pas de Liaison). Toute divergence doit être
+volontairement réduite (pas de modules, pas de Liaison).
+La capsule des liés (Pia, guidée par Xenon) n'est ni vue ni visée par les Gardiens,
+ouvre les accès scellés (« S ») et active les consoles des bâtisseurs ; un drone relié
+à ATHENA qui finit son tour à côté d'elle la trahit pour le reste de la mission. Toute divergence doit être
 corrigée des deux côtés.
 """
 import heapq
 from itertools import pairwise
 
 UNITS = {  # mouvement, intégrité, vision
-    "scout": (5, 2, 4), "technician": (3, 2, 2), "protector": (3, 4, 2), "interceptor": (4, 3, 3)}
+    "scout": (5, 2, 4), "technician": (3, 2, 2), "protector": (3, 4, 2), "interceptor": (4, 3, 3),
+    "capsule": (3, 2, 3)}
 GUARD_MOVE = {"sentinel": 0, "patroller": 4, "regulator": 2, "herald": 3}
-COST = {".": 1, "R": 2, "X": 2, "M": 1, "r": 1, "G": 1, "C": None, "B": None}
-BLOCKS_LOS = {"R", "X"}
+COST = {".": 1, "R": 2, "X": 2, "M": 1, "r": 1, "G": 1, "C": None, "B": None, "S": None}
+BLOCKS_LOS = {"R", "X", "S"}
 ALERTS = ["watch", "warning", "interception", "lockdown"]
 DIRS = {"N": (0, -1), "NE": (1, -1), "E": (1, 0), "SE": (1, 1), "S": (0, 1),
         "SW": (-1, 1), "W": (-1, 0), "NW": (-1, -1)}
 INTERFACE_KINDS = {"signal_source", "relay_point", "beacon", "node", "knowledge_base"}
+BOUND_KINDS = {"builder_console"}  # points que seule la capsule des liés active
+CAPSULE_ACTIONS = {"unseal", "interact", "interface", "extract", "brace"}
 PROBE_RANGE, PROBE_RADIUS = 5, 1
 GUARD_HP = {"sentinel": 3, "patroller": 3, "regulator": 5, "herald": 2}
 ATTACK = {"protector": (1, 1, 1), "interceptor": (2, 1, 2)}  # dégâts, portée min, portée max
@@ -152,7 +158,7 @@ class Game:
         self.units = {u["id"]: {"type": u["type"], "pos": parse_cell(u["cell"]),
                                 "hp": UNITS[u["type"]][1], "status": "active",
                                 "braced": False, "rampart": False, "silent": False,
-                                "elan": False, "cooldown": 0}
+                                "elan": False, "cooldown": 0, "exposed": False}
                       for u in data["deployment"]["units"]}
         self.guards = {}
         for g in data["guardians"]:
@@ -186,6 +192,11 @@ class Game:
     def occupied(self, exclude=None):
         occ = {u["pos"] for k, u in self.active().items() if k != exclude}
         return occ | {g["pos"] for g in self.guards.values()}
+
+    def unseen(self, uid):
+        """Ni vu ni visé : drone en silence radio, ou capsule des liés non trahie."""
+        u = self.units[uid]
+        return u["silent"] or (u["type"] == "capsule" and not u["exposed"])
 
     def refresh_vision(self):
         seen = set(self.probed)
@@ -265,6 +276,8 @@ class Game:
             return bool(self.neutralized) if c.get("guardian", "any") == "any" else c["guardian"] in self.neutralized
         if t == "no_guardian_neutralized":
             return not self.neutralized
+        if t == "bound_exposed":
+            return any(u["type"] == "capsule" and u["exposed"] for u in self.units.values())
         raise RuleError(f"condition inconnue {t}")
 
     # ---------- déclencheurs et fin
@@ -351,7 +364,14 @@ class Game:
             raise RuleError(f"{uid} ne peut pas agir")
         if u["silent"] and kind != "reconnect":
             raise RuleError(f"{uid} est en silence radio")
-        if kind == "silence":
+        if u["type"] == "capsule" and kind not in CAPSULE_ACTIONS:
+            raise RuleError(f"{uid} : la capsule ne peut pas {kind}")
+        if kind == "unseal":
+            t = parse_cell(target)
+            if u["type"] != "capsule" or manhattan(u["pos"], t) != 1 or self.m.terrain(t) != "S":
+                raise RuleError(f"{uid} : pas d'accès scellé en {target}")
+            self.m.grid[t[1]][t[0]] = "."
+        elif kind == "silence":
             if "radio_silence" not in self.rules:
                 raise RuleError("silence radio non débloqué")
             u["silent"] = True
@@ -415,6 +435,8 @@ class Game:
                 raise RuleError(f"{uid} : {target} n'est pas un point d'intérêt adjacent")
             if f["kind"] in INTERFACE_KINDS and u["type"] != "technician":
                 raise RuleError(f"{uid} : {f['kind']} exige le Technicien")
+            if (f["kind"] in BOUND_KINDS) != (u["type"] == "capsule"):
+                raise RuleError(f"{uid} : {f['kind']} réservé à la capsule des liés")
             self.interacted.add(f["id"])
         else:
             raise RuleError(f"action inconnue {kind}")
@@ -461,6 +483,7 @@ class Game:
         for u in self.active().values():
             if u["pos"] in self.recolored:
                 self.end_turn_on_recolored = True
+        self.betrayal()
         self.check()
         if self.result:
             return
@@ -471,6 +494,26 @@ class Game:
             self.finish("failure")
         self.check()
 
+    def pending_betrayal(self):
+        """Capsules qu'un drone relié à ATHENA touche en fin de tour : le faux pas."""
+        act = self.active()
+        return sorted(k for k, u in act.items() if u["type"] == "capsule" and not u["exposed"]
+                      and any(o["type"] != "capsule" and not o["silent"] and manhattan(o["pos"], u["pos"]) == 1
+                              for o in act.values()))
+
+    def betrayal(self):
+        """Faux pas d'ATHENA : la capsule est trahie pour le reste de la mission, l'alerte
+        monte d'un cran et les Patrouilleurs fondent sur elle."""
+        for k in self.pending_betrayal():
+            u = self.units[k]
+            u["exposed"] = True
+            self.log.append(f"tour {self.turn} : {k} trahie par la liaison d'ATHENA")
+            if self.alert_enabled:
+                self.set_alert(self.alert + 1); self.quiet_phases = 0
+            for g in self.guards.values():
+                if g["type"] == "patroller":
+                    g["chase"] = u["pos"]
+
     def hidden(self, uid, guard_cells):
         u = self.units[uid]
         near = any(manhattan(u["pos"], q) == 1 for q in guard_cells)
@@ -479,6 +522,13 @@ class Game:
     def plan(self):
         """Phase des Gardiens simulée sans modifier l'état : ce que les intentions affichent.
         Un drone en silence radio barre toujours le passage, mais n'est ni vu ni visé."""
+        # Un faux pas en attente est déjà compté : les intentions affichées annoncent la trahison.
+        pend = self.pending_betrayal()
+        alert = min(self.alert + 1, len(ALERTS) - 1) if pend and self.alert_enabled else self.alert
+
+        def unseen(k):
+            return self.unseen(k) and k not in pend
+
         unit_at = {u["pos"]: k for k, u in self.active().items()}
         protectors = [u["pos"] for u in self.active().values() if u["type"] == "protector"]
         gpos = {gid: g["pos"] for gid, g in self.guards.items()}
@@ -490,7 +540,7 @@ class Game:
                 plans[gid] = pl
                 continue
             if g["type"] == "patroller":
-                target = g["chase"]
+                target = self.units[pend[-1]]["pos"] if pend else g["chase"]
                 if target is None and g["route"]:
                     # Le point de ronde suivant n'est visé qu'une fois le précédent atteint.
                     if g["pos"] == g["route"][g["ri"]]:
@@ -505,7 +555,7 @@ class Game:
                             p = prev[p]; path.append(p)
                         for p in list(reversed(path))[1:GUARD_MOVE["patroller"] + 1]:
                             if p in unit_at:
-                                if not self.units[unit_at[p]]["silent"]:
+                                if not unseen(unit_at[p]):
                                     blockers.add(p)
                                 break
                             pl["path"].append(p)
@@ -518,17 +568,17 @@ class Game:
                 pl["facing"] = g["cycle"][(self.turn - 1) % len(g["cycle"])] if g["cycle"] else g["facing"]
                 watched |= self.m.cone(g["pos"], pl["facing"])
             plans[gid] = pl
-        hp = {k: u["hp"] for k, u in self.active().items() if not u["silent"]}
+        hp = {k: u["hp"] for k, u in self.active().items() if not unseen(k)}
         attacks = []
         cells = set(gpos.values())
         for gid, g in self.guards.items():
             pos, cand, base, ranged = gpos[gid], [], 0, False
             if g["stunned"]:
                 continue
-            if g["type"] == "patroller" and self.alert >= 1:
+            if g["type"] == "patroller" and alert >= 1:
                 cand = [k for k in hp if hp[k] > 0 and manhattan(self.units[k]["pos"], pos) == 1]
                 base = PATROLLER_DAMAGE
-            elif g["type"] == "sentinel" and self.alert >= 2:
+            elif g["type"] == "sentinel" and alert >= 2:
                 cone = self.m.cone(pos, plans[gid]["facing"])
                 cand = [k for k in hp if hp[k] > 0 and self.units[k]["pos"] in cone
                         and manhattan(self.units[k]["pos"], pos) <= SENTINEL_RANGE and not self.hidden(k, cells)]

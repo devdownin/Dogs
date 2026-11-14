@@ -285,7 +285,7 @@ Ce que l'Hypogée raconte : la *Chronique des liés* (III-1), qui ouvre *La clé
 | I | Indices : Xenon « n'a pas besoin » que Pia parle ; activité cérébrale synchrone dans leurs caissons |
 | II | Quand Pia et Xenon rêvent ensemble, les Sentinelles proches pivotent vers le ciel. ATHENA ne comprend pas pourquoi |
 | III | Une base livre la *Chronique des liés* : les seuls bâtisseurs que les Gardiens ont épargnés |
-| IV | Pia et Xenon éveillés : l'hypothèse *La clé des liés* se confirme. Mission dédiée (proposée) : Pia descend dans une capsule, Xenon la guide depuis le bord ; les Gardiens ne la visent pas, les accès scellés s'ouvrent devant elle, mais un seul faux pas d'ATHENA dans la liaison la trahit |
+| IV | Pia et Xenon éveillés : l'hypothèse *La clé des liés* se confirme. Mission dédiée *Liaison* (jouable en aperçu, voir `fiches-missions-1-4.md`) : Pia descend dans une capsule, Xenon la guide depuis le bord ; les Gardiens ne la visent pas, les accès scellés s'ouvrent devant elle, mais un drone relié qui finit son tour à côté d'elle la trahit. Elle y lit *L'ordre des liés*, qui ouvre *Ordonner* |
 | IV-V | Face à l'Arbitre, les liés peuvent **ordonner** là où ATHENA ne peut que négocier |
 
 - **Coût en jeu :** il faut avoir réveillé les deux (Pia exige des débris de Gardien, Xenon l'étape « Liaison »), et chaque réveil pèse sur l'Énergie, sauf celui de Xenon qui se compense.

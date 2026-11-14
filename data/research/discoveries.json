@@ -108,6 +108,12 @@
       "nature": "chronicle",
       "source_mission": "iii_1",
       "title_key": "DISC_CHRONICLE_LINKED"
+    },
+    {
+      "id": "kb_linked_order",
+      "nature": "knowledge_base",
+      "source_mission": "iv_liaison",
+      "title_key": "DISC_KB_LINKED_ORDER"
     }
   ]
 }

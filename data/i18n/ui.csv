@@ -86,3 +86,9 @@ ATHENA_NOTE_2,"Rapport de cycle : en silence, les drones passent. Ce que les Gar
 ATHENA_NOTE_3,Rapport de cycle : je comprends la chute. Je comprends aussi pourquoi ils m'arrêteraient. Les décisions qui suivent ne devraient plus m'appartenir.,Cycle report: I understand the fall. I also understand why they would stop me. The decisions ahead should no longer be mine.
 UI_ACT_IMPULSE,Impulsion,Impulse
 UI_STUNNED,%s figé jusqu'à la prochaine phase.,%s frozen until the next phase.
+SPEAKER_PIA,Pia,Pia
+SPEAKER_XENON,Xenon,Xenon
+UI_ACT_UNSEAL,Ouvrir le sceau,Open the seal
+UI_BETRAYED,%s est trahie : les Gardiens la voient.,%s is betrayed: the Guardians see her.
+UI_BETRAYAL_RISK,Faux pas : Pia sera trahie.,Misstep: Pia will be betrayed.
+UI_SEAL_OPENED,Sceau ouvert en %s.,Seal opened at %s.

@@ -122,6 +122,7 @@ func _run() -> void:
 	await _test_research(main)
 	await _test_silence(main)
 	await _test_m6(main)
+	await _test_liaison(main)
 	SaveStore.erase(SaveStore.MISSION)
 	SaveStore.erase(SaveStore.CAMPAIGN)
 
@@ -448,6 +449,48 @@ func _test_m6(main: Control) -> void:
 	main.selected = "int"
 	main._refresh()
 	await _shot(main, "m6_elan")
+
+
+## Aperçu de l'Acte IV : la capsule de Pia ouvre les sceaux ; un drone relié qui la touche
+## en fin de tour la trahit, et l'écran l'annonce avant que le tour ne se termine.
+func _test_liaison(main: Control) -> void:
+	main.load_mission(6)
+	_check(main.def.id == "iv_liaison", "la mission Liaison est la septième entrée")
+	var kinds: Array = []
+	main._play({"t": "move", "unit": "pia", "dest": Cells.parse("F2")})
+	for a: Dictionary in main.game.available_actions("pia"):
+		kinds.append(a["kind"])
+	_check(
+		"unseal" in kinds and not "silence" in kinds,
+		"la capsule ouvre un sceau, sans silence radio"
+	)
+	main._play({"t": "act", "unit": "pia", "kind": "unseal", "target": Cells.parse("F3")})
+	_check(main.def.terrain(Cells.parse("F3")) == ".", "le sceau ouvert devient un passage")
+	var fresh := MissionLoader.load_mission("res://data/missions/iv_liaison.json")
+	_check(fresh.terrain(Cells.parse("F3")) == "S", "la définition chargée reste intacte")
+	var rep: Dictionary = MissionLoader.load_json(
+		"res://data/replays/iv_liaison_piege_faux_pas.json"
+	)
+	main.load_mission(6)
+	var turns: Array = rep["turns"]
+	for t in 5:
+		for c: Dictionary in turns[t]:
+			if c.has("move"):
+				main._play({"t": "move", "unit": c["unit"], "dest": Cells.parse(c["move"])})
+			if c.has("act"):
+				var target := Cells.parse(c["target"]) if c.has("target") else Vector2i(-1, -1)
+				main._play({"t": "act", "unit": c["unit"], "kind": c["act"], "target": target})
+		if t < 4:
+			main._play({"t": "end"})
+	_check(main.game.pending_betrayal() == ["pia"], "le faux pas est détecté avant la fin du tour")
+	main.reveal_all = true
+	main._refresh()
+	_check(main._status.text.contains(tr("UI_BETRAYAL_RISK")), "l'écran prévient du faux pas")
+	await _shot(main, "liaison_faux_pas")
+	main.reveal_all = false
+	main._play({"t": "end"})
+	_check(main.game.units["pia"]["exposed"], "la capsule est trahie")
+	_check(main.game.result == "failure", "le Patrouilleur la met hors service")
 
 
 ## Premier lancement : le prologue passe avant la Mission 1 ;

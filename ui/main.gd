@@ -14,7 +14,8 @@ const MISSION_IDS: Array[String] = [
 	"m3_couleur_de_trop",
 	"m4_le_veilleur",
 	"m5_prix_signal",
-	"m6_premiere_chronique"
+	"m6_premiere_chronique",
+	"iv_liaison"  # aperçu de l'Acte IV, jouable hors de l'ordre du récit
 ]
 const NONE := Vector2i(-1, -1)
 
@@ -282,9 +283,10 @@ func load_mission(index: int) -> void:
 	for id in MISSION_IDS:
 		_picker.add_item(id.substr(0, 2).to_upper())
 	_picker.select(_mission_index)
-	_picker.set_item_text(
-		_mission_index, "M%d — %s" % [_mission_index + 1, tr(def.data["title_key"])]
-	)
+	var code := "M%d" % (_mission_index + 1)
+	if int(def.data["act"]) > 1:  # mission d'un autre acte, jouable en aperçu
+		code = ["I", "II", "III", "IV", "V"][int(def.data["act"]) - 1]
+	_picker.set_item_text(_mission_index, "%s — %s" % [code, tr(def.data["title_key"])])
 	_log.clear()
 	_countdown_labels.clear()
 	_rules = campaign.unlocked_rules()
@@ -302,6 +304,7 @@ func load_mission(index: int) -> void:
 
 func _new_game() -> void:
 	game = GameState.new(def, _rules)
+	def = game.def  # copie propre à la partie (les sceaux ouverts modifient la grille)
 	_events_seen = 0
 	selected = ""
 	preview = NONE
@@ -483,6 +486,10 @@ func _consume_events() -> void:
 				lines.append(tr("UI_SILENCED") % e["unit"])
 			"unit_reconnected":
 				lines.append(tr("UI_RECONNECTED") % e["unit"])
+			"seal_opened":
+				lines.append(tr("UI_SEAL_OPENED") % Cells.name_of(e["cell"]))
+			"capsule_betrayed":
+				lines.append(tr("UI_BETRAYED") % e["unit"])
 			"guardian_neutralized":
 				lines.append(tr("UI_GUARD_DOWN") % e["guardian"])
 			"alert_changed":
@@ -518,6 +525,8 @@ func _refresh() -> void:
 		status += (
 			"\n" + tr("UI_COUNTDOWN") % [_countdown_labels.get(cid, cid), game.countdowns[cid]]
 		)
+	if not game.pending_betrayal().is_empty():
+		status += "\n" + tr("UI_BETRAYAL_RISK")
 	_status.text = status
 	_objective.text = tr(def.data["objectives"]["main"]["text_key"])
 	for c in _actions.get_children():
@@ -526,7 +535,7 @@ func _refresh() -> void:
 	if selected != "" and game.units[selected]["status"] == "active":
 		for a in game.available_actions(selected):
 			var b := _button("UI_ACT_" + (a["kind"] as String).to_upper(), do_action.bind(a))
-			if a["kind"] in ["attack", "repair", "impulse"]:
+			if a["kind"] in ["attack", "repair", "impulse", "unseal"]:
 				b.text += " " + Cells.name_of(a["target"])
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			if a["kind"] == "probe":

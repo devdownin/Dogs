@@ -36,7 +36,7 @@ COND_PARAMS = {
     "territory_entered": ["territory"], "never_end_turn_on": ["territory"], "unit_end_turn_on": ["territory"],
     "guardian_observed": [], "alert_at_least": ["level"], "alert_never_above": ["level"],
     "countdown_expired": ["countdown"], "flag": ["name"], "guardian_neutralized": [],
-    "no_guardian_neutralized": []}
+    "no_guardian_neutralized": [], "bound_exposed": []}
 
 
 def walk_conditions(c):
@@ -111,7 +111,7 @@ def static_checks(d, keys):
                     errs.append(f"{where} : {t} sans paramètre {p}")
             if "feature" in c and c["feature"] not in feat_ids:
                 errs.append(f"{where} : point d'intérêt inconnu {c['feature']}")
-            if "unit" in c and c["unit"] not in unit_ids + ["any", "scout", "technician", "protector", "interceptor"]:
+            if "unit" in c and c["unit"] not in unit_ids + ["any", "scout", "technician", "protector", "interceptor", "capsule"]:
                 errs.append(f"{where} : unité inconnue {c['unit']}")
             if "countdown" in c and c["countdown"] not in countdowns:
                 errs.append(f"{where} : compte à rebours jamais lancé {c['countdown']}")
@@ -146,12 +146,26 @@ def static_checks(d, keys):
     for k in sorted(used - keys):
         errs.append(f"clé de traduction absente : {k}")
 
+    capsules = [u for u in d["deployment"]["units"] if u["type"] == "capsule"]
+    seals = any("S" in r.split(" ") for r in rows)
+    if capsules and "linked_key" not in d.get("rules", []):
+        errs.append("capsule des liés sans la règle linked_key")
+    if seals and not capsules:
+        errs.append("accès scellés sans capsule des liés pour les ouvrir")
+    if any(f["kind"] == "builder_console" for f in m.features.values()) and not capsules:
+        errs.append("console des bâtisseurs sans capsule des liés")
+
     # Accessibilité : chaque point à activer doit avoir une case adjacente atteignable par l'unité requise.
+    # Les accès scellés comptent comme ouverts : la capsule des liés peut les ouvrir.
+    m.grid = [["." if t == "S" else t for t in row] for row in m.grid]
     for f in m.features.values():
         if f["kind"] in ("boundary_marker", "point_of_interest", "fragment_cache"):
             continue
         need_tech = f["kind"] in ("signal_source", "relay_point", "beacon", "node")
-        cands = [u for u in d["deployment"]["units"] if u["type"] == "technician" or not need_tech]
+        need_tech = need_tech or f["kind"] == "knowledge_base"
+        cands = [u for u in d["deployment"]["units"]
+                 if (u["type"] == "capsule") == (f["kind"] == "builder_console")
+                 and (u["type"] == "technician" or not need_tech)]
         ok = False
         for u in cands:
             dist, _ = m.paths(parse_cell(u["cell"]))

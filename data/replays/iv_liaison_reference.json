@@ -1,0 +1,128 @@
+{
+  "mission": "iv_liaison",
+  "description": "Solution de référence (7 tours) : Pia ouvre le sceau nord et active la console, ouvre le sceau sud ; le Technicien entre quand la Sentinelle regarde au nord, lit la chronique et ressort avant qu'elle se retourne ; aucun drone relié ne finit son tour à côté de la capsule.",
+  "turns": [
+    [
+      {
+        "unit": "pia",
+        "move": "F2",
+        "act": "unseal",
+        "target": "F3"
+      },
+      {
+        "unit": "pro",
+        "move": "C12"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "F4",
+        "act": "interact",
+        "target": "E4"
+      },
+      {
+        "unit": "tec",
+        "move": "H10"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "H5",
+        "act": "unseal",
+        "target": "H6"
+      },
+      {
+        "unit": "tec",
+        "move": "H8"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "G7"
+      },
+      {
+        "unit": "tec",
+        "move": "H5",
+        "act": "interface",
+        "target": "H4"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "H8"
+      },
+      {
+        "unit": "pia",
+        "move": "F8"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "F11"
+      },
+      {
+        "unit": "tec",
+        "move": "H11"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "E12",
+        "act": "extract"
+      }
+    ]
+  ],
+  "expect": {
+    "result": "victory",
+    "turn": 7,
+    "alert_max": "warning",
+    "records": {
+      "r_quiet": true,
+      "r_spared": true
+    },
+    "state": {
+      "units": {
+        "pia": [
+          "E12",
+          2,
+          "extracted"
+        ],
+        "tec": [
+          "H11",
+          2,
+          "active"
+        ],
+        "int": [
+          "H12",
+          3,
+          "active"
+        ],
+        "pro": [
+          "C12",
+          4,
+          "active"
+        ]
+      },
+      "guardians": {
+        "warden": [
+          "E5",
+          3
+        ],
+        "pat1": [
+          "F7",
+          3
+        ],
+        "pat2": [
+          "K9",
+          3
+        ]
+      }
+    }
+  }
+}

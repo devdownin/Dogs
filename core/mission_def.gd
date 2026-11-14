@@ -1,10 +1,11 @@
 class_name MissionDef
 extends RefCounted
-## Définition immuable d'une mission : carte, points d'intérêt, et géométrie de grille
-## (trajets, ligne de vue, vision, cônes). Aucun état de partie ici.
+## Définition d'une mission : carte, points d'intérêt, et géométrie de grille
+## (trajets, ligne de vue, vision, cônes). Seule exception à l'immuabilité : un accès scellé
+## ouvert par la capsule des liés ; chaque partie travaille donc sur sa propre copie.
 
-const COST := {".": 1, "R": 2, "X": 2, "M": 1, "r": 1, "G": 1, "C": -1, "B": -1}
-const BLOCKS_LOS := ["R", "X"]
+const COST := {".": 1, "R": 2, "X": 2, "M": 1, "r": 1, "G": 1, "C": -1, "B": -1, "S": -1}
+const BLOCKS_LOS := ["R", "X", "S"]
 const DIRS := {
 	"N": Vector2i(0, -1),
 	"NE": Vector2i(1, -1),
@@ -53,6 +54,13 @@ func _init(d: Dictionary) -> void:
 
 func terrain(p: Vector2i) -> String:
 	return grid[p.y][p.x]
+
+
+## Ouvre un accès scellé : la case devient un sol ordinaire.
+func unseal(p: Vector2i) -> void:
+	var row := grid[p.y]
+	row[p.x] = "."
+	grid[p.y] = row
 
 
 func inside(p: Vector2i) -> bool:

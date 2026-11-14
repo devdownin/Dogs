@@ -32,6 +32,7 @@ Le vocabulaire fermé est la contrainte principale : si une mission a besoin d'u
 | `G` | Gué | 1 |
 | `B` | Bassin cristallin | — |
 | `X` | Ruine | 2 |
+| `S` | Accès scellé des bâtisseurs (bloque la vue ; seule la capsule des liés l'ouvre, il devient alors une plaine) | — |
 
 Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases surélevées autres que `M`, par exemple une ruine sur la mésa), `territory.recolored` (avec `territory.except` pour des trous) et `territory.linked`, `features` (points d'intérêt).
 
@@ -48,11 +49,13 @@ Ce qui n'est pas du terrain vit dans des couches séparées : `elevated` (cases 
 | `objectives` | `main` (condition, `deadline_turn` facultatif), `records` (2 au plus), `failure`, `retreat_allowed` |
 | `triggers` | `id`, `when` (condition), `do` (actions), `once` (vrai par défaut) |
 | `rewards` | Matériaux, Données, Fragments, `per_record`, `ship_stage` |
-| `rules` | Facultatif : règles accordées pour cette mission seulement (essai de terrain), ex. `["radio_silence"]` |
+| `rules` | Facultatif : règles accordées pour cette mission seulement (essai de terrain), ex. `["radio_silence"]` ; `linked_key` est exigée dès qu'une capsule des liés est déployée |
 | `campaign_effects` | `open_sector`, `chronicle`, `codex`, `gauge`, `sector_state`, `discoveries` (`ids`) ; `if_record` pour conditionner à un relevé |
 | Point `knowledge_base` | Base de connaissances d'une ruine ; `discovery` = découverte accordée à l'ouverture (voir `arbre-decouverte.md`) |
 
-Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (tout drone) ; `signal_source`, `relay_point`, `beacon`, `node`, `knowledge_base` (Technicien, *Interface* ; une base livre sa découverte `discovery` dès son ouverture, même en cas de repli) ; `boundary_marker` (à observer seulement).
+Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (tout drone) ; `signal_source`, `relay_point`, `beacon`, `node`, `knowledge_base` (Technicien, *Interface* ; une base livre sa découverte `discovery` dès son ouverture, même en cas de repli) ; `boundary_marker` (à observer seulement) ; `builder_console` (capsule des liés seulement, *Interagir*).
+
+**Capsule des liés** (unité `capsule`, mouvement 3, intégrité 2, vision 3) : ni vue ni visée par les Gardiens, elle barre pourtant le passage d'un Patrouilleur. Actions : `unseal` (`target` = accès scellé adjacent), `interact` (console des bâtisseurs), `extract`, `brace` ; ni silence radio, ni frappe, ni *Interface*. **Faux pas :** si un drone relié (pas en silence radio) finit son tour à côté d'elle, elle est trahie jusqu'à la fin de la mission : l'alerte monte d'un cran et les Patrouilleurs la prennent en chasse. La phase des Gardiens et les intentions affichées tiennent compte d'un faux pas en attente.
 
 ## 4. Conditions
 
@@ -78,8 +81,9 @@ Types de points d'intérêt : `anomaly`, `point_of_interest`, `fragment_cache` (
 | `flag` | `name` | Drapeau posé par `set_flag` |
 | `guardian_neutralized` | `guardian` (ou `any`) | Gardien neutralisé |
 | `no_guardian_neutralized` | — | Aucun Gardien neutralisé (relevés) |
+| `bound_exposed` | — | Une capsule des liés a été trahie |
 
-`unit` accepte un identifiant (`tec`), un type (`technician`) ou `any`.
+`unit` accepte un identifiant (`tec`), un type (`technician`, `capsule`) ou `any`.
 
 ## 5. Actions
 
@@ -124,7 +128,7 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 }
 ```
 
-`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` ou `impulse` (`target` = Gardien), `brace`, `rampart`, `repair` (`target` = allié), `silence` ou `reconnect`. `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
+`move` donne la destination (le trajet le moins coûteux est recalculé et vérifié) ; `act` vaut `interact`, `interface`, `probe` (avec `target` = centre de la zone), `extract`, `attack` ou `impulse` (`target` = Gardien), `brace`, `rampart`, `repair` (`target` = allié), `silence`, `reconnect` ou `unseal` (`target` = accès scellé). `"result": null` sert aux pièges : on vérifie seulement que l'alerte monte.
 
 `rules` (facultatif) liste les règles débloquées par la campagne pour ce rejeu (ex. `["radio_silence"]`, qui permet `silence` et `reconnect`).
 
@@ -148,6 +152,10 @@ Un rejeu liste, tour par tour, les commandes d'une partie et le résultat attend
 | M6 référence (silence radio, Impulsion) | Victoire au tour 11, alerte *Veille* |
 | M6 piège « sans silence sur le sol violet » | Détection en F4 à la phase 4 |
 | M6 Élan | Patrouilleur neutralisé d'un coup (3 dégâts), alerte *Avertissement* |
+| IV *Liaison* référence | Victoire au tour 7, alerte *Vigilance* tenue, aucun Gardien abattu |
+| IV *Liaison* en silence radio | Victoire au tour 7 : un drone en silence touche la capsule sans la trahir |
+| IV *Liaison* piège « faux pas » | Échec au tour 5 : capsule trahie puis frappée |
+| IV *Liaison* piège « attente dans la crypte » | Victoire au tour 7, Technicien hors service, alerte *Interception* |
 
 Test de non-régression : décaler d'un cran le regard de la Sentinelle fait échouer la référence M4. Les solutions de référence ne remportent pas tous les relevés (M2 ruines, M3 ruine, M4 carte), qui restent donc des défis.
 
@@ -162,6 +170,7 @@ Le projet Godot 4.7 (GDScript typé) de ce dépôt contient le chargeur et le c�
 | `core/mission_loader.gd` | Lit le JSON, vérifie `format_version`, la grille et les cases de départ |
 | `core/mission_def.gd` | Carte : trajets, ligne de vue, vision, cônes |
 | `core/game_state.gd` | État de partie ; commandes `move`, `action`, `end_player_turn` ; phase des Gardiens ; objectifs et déclencheurs |
+| `core/linked.gd` | Capsule des liés : actions, faux pas en attente, trahison |
 | `tests/run_replays.gd` | Rejoue `data/replays` sans affichage |
 
 - Les huit rejeux passent dans Godot 4.7 sans affichage, avec le même état final que le simulateur Python (cases révélées, relevés, alerte, position des Gardiens).

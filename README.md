@@ -1,7 +1,8 @@
 # Dogs of Gods — prototype jouable
 
 Projet Godot 4.7 (GDScript typé, moteur de rendu Compatibility). Ouvrir le projet et lancer (F5) :
-les missions 1 à 6 sont jouables, en portrait, à la souris ou au doigt. La partie est sauvegardée
+les missions 1 à 6 sont jouables, suivies d'un aperçu de l'Acte IV (*Liaison*, la capsule de Pia),
+en portrait, à la souris ou au doigt. La partie est sauvegardée
 après chaque commande et reprend à l'identique au lancement suivant.
 
 **Jouer :** toucher un drone, toucher une case (aperçu du trajet), toucher encore pour confirmer.

@@ -1,0 +1,95 @@
+{
+  "format_version": 1,
+  "id": "iv_liaison",
+  "act": 4,
+  "order": 0,
+  "title_key": "IVL_TITLE",
+  "type": "infiltration",
+  "rule_introduced": "bound_capsule",
+  "rules": ["radio_silence", "linked_key"],
+  "map": {
+    "width": 12,
+    "height": 12,
+    "rows": [
+      ". . . . . . . . . . . .",
+      ". . R . . . . . . R . .",
+      ". . . C C S C C C . . .",
+      ". . . C . . . . C . R .",
+      ". R . C . . . . C . . .",
+      ". . . C C C C S C . . .",
+      ". . . . . . . . . . . .",
+      ". R . . . . . . . . R .",
+      ". . . . R . . . . . . .",
+      ". . R . . . . . . R . .",
+      ". . . . . . . . . . . .",
+      ". . . . . . . . . . . ."
+    ],
+    "territory": { "recolored": ["C7:J7"] },
+    "features": [
+      { "id": "console", "kind": "builder_console", "cell": "E4", "label_key": "IVL_CONSOLE" },
+      { "id": "chronicle", "kind": "knowledge_base", "cell": "H4", "label_key": "IVL_CHRONICLE", "discovery": "kb_linked_order" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "pia", "type": "capsule", "cell": "F1" },
+      { "id": "tec", "type": "technician", "cell": "G12" },
+      { "id": "int", "type": "interceptor", "cell": "H12" },
+      { "id": "pro", "type": "protector", "cell": "F12" }
+    ],
+    "extraction": ["B12:E12"]
+  },
+  "guardians": [
+    { "id": "warden", "type": "sentinel", "cell": "E5", "facing_cycle": ["E", "N"] },
+    { "id": "pat1", "type": "patroller", "cell": "C2", "route": ["C2", "J2", "J7", "C7"], "route_mode": "loop" },
+    { "id": "pat2", "type": "patroller", "cell": "K9", "route": ["K9", "B9"], "route_mode": "ping_pong" }
+  ],
+  "alert": { "initial": "warning" },
+  "objectives": {
+    "main": {
+      "text_key": "IVL_OBJ_MAIN",
+      "condition": { "sequence": [
+        { "type": "interacted", "feature": "console" },
+        { "type": "interacted", "feature": "chronicle" },
+        { "type": "unit_extracted", "unit": "pia" }
+      ] },
+      "deadline_turn": 12
+    },
+    "records": [
+      { "id": "r_quiet", "text_key": "IVL_REC_QUIET", "condition": { "type": "alert_never_above", "level": "warning" } },
+      { "id": "r_spared", "text_key": "IVL_REC_SPARED", "condition": { "type": "no_guardian_neutralized" } }
+    ],
+    "failure": { "type": "unit_disabled", "unit": "pia" },
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_brief", "when": { "type": "turn_start", "turn": 1 },
+      "do": [
+        { "type": "dialogue", "lines": [
+          { "speaker": "xenon", "key": "IVL_DLG_XENON_1" },
+          { "speaker": "pia", "key": "IVL_DLG_PIA_1" },
+          { "speaker": "athena", "key": "IVL_DLG_ATHENA_1" }
+        ] },
+        { "type": "show_tip", "key": "TIP_BOUND" }
+      ] },
+    { "id": "t_console", "when": { "type": "interacted", "feature": "console" },
+      "do": [ { "type": "dialogue", "lines": [
+        { "speaker": "pia", "key": "IVL_DLG_CONSOLE" },
+        { "speaker": "xenon", "key": "IVL_DLG_XENON_2" }
+      ] } ] },
+    { "id": "t_chronicle", "when": { "type": "interacted", "feature": "chronicle" },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "IVL_DLG_CHRONICLE" } ] } ] },
+    { "id": "t_exposed", "when": { "type": "bound_exposed" },
+      "do": [ { "type": "dialogue", "lines": [
+        { "speaker": "xenon", "key": "IVL_DLG_EXPOSED" },
+        { "speaker": "athena", "key": "IVL_DLG_EXPOSED_ATHENA" }
+      ] } ] }
+  ],
+  "rewards": { "data": 5, "materials": 1, "fragments": 2, "per_record": { "data": 1 } },
+  "campaign_effects": [
+    { "type": "chronicle", "entry": "les_lies", "status": "observed" },
+    { "type": "discoveries", "ids": ["kb_linked_order"] },
+    { "type": "gauge", "gauge": "concord", "delta": 1, "if_record": "r_spared" }
+  ]
+}

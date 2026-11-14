@@ -8,14 +8,16 @@ extends RefCounted
 ## Aucun hasard : rejouer les mêmes commandes donne le même état.
 ##
 ## Périmètre : déplacement, vision, détection, alerte, territoire, combat sans hasard,
-## objectifs et déclencheurs. Modules et Liaison viendront avec les missions qui les utilisent.
+## objectifs et déclencheurs, capsule des liés (règles dans Linked). Modules et Liaison
+## viendront avec les missions qui les utilisent.
 
 const UNITS := {
 	# mouvement, intégrité, vision
 	"scout": [5, 2, 4],
 	"technician": [3, 2, 2],
 	"protector": [3, 4, 2],
-	"interceptor": [4, 3, 3]
+	"interceptor": [4, 3, 3],
+	"capsule": [3, 2, 3]
 }
 const PATROLLER_MOVE := 4
 const PATROLLER_SIGHT := 2
@@ -69,7 +71,8 @@ var _seq: Dictionary[String, int] = {}
 
 
 func _init(mission: MissionDef, unlocked: Array = []) -> void:
-	def = mission
+	# Copie propre à la partie : les sceaux ouverts modifient la grille.
+	def = MissionDef.new(mission.data)
 	for r: String in unlocked:
 		rules[r] = true
 	for r: String in mission.data.get("rules", []):
@@ -87,7 +90,8 @@ func _init(mission: MissionDef, unlocked: Array = []) -> void:
 			"rampart": false,
 			"silent": false,
 			"elan": false,
-			"cooldown": 0
+			"cooldown": 0,
+			"exposed": false
 		}
 	for g: Dictionary in d["guardians"]:
 		var route: Array[Vector2i] = []
@@ -163,6 +167,8 @@ func available_actions(uid: String) -> Array[Dictionary]:
 	if u["silent"]:
 		out.append({"kind": "reconnect", "target": NO_CELL, "feature": ""})
 		return out
+	if u["type"] == "capsule":
+		return Linked.actions(self, uid)
 	for fid in def.features:
 		var f := def.features[fid]
 		if interacted.has(fid) or Cells.manhattan(f["pos"], u["pos"]) != 1:
@@ -195,6 +201,17 @@ func available_actions(uid: String) -> Array[Dictionary]:
 	if extraction_open and def.extraction.has(u["pos"]):
 		out.append({"kind": "extract", "target": NO_CELL, "feature": ""})
 	return out
+
+
+## Capsules qu'un drone relié touche : elles seront trahies à la fin du tour.
+func pending_betrayal() -> Array[String]:
+	return Linked.pending(self)
+
+
+## Ni vu ni visé : drone en silence radio, ou capsule des liés non trahie.
+func unseen(uid: String) -> bool:
+	var u := units[uid]
+	return u["silent"] or (u["type"] == "capsule" and not u["exposed"])
 
 
 ## Centres de Sonde possibles pour un Éclaireur. Pas de ligne de vue requise.
@@ -238,7 +255,9 @@ func intents() -> Dictionary:
 	for at: Dictionary in plan["attacks"]:
 		if observed_guards.has(at["guardian"]):
 			attacks.append(at)
-	return {"watched": watched, "routes": routes, "attacks": attacks}
+	return {
+		"watched": watched, "routes": routes, "attacks": attacks, "betrayal": pending_betrayal()
+	}
 
 
 ## Impulsion de l'Intercepteur : fige le Gardien en `t` pendant la prochaine phase.
@@ -333,7 +352,7 @@ func move(uid: String, dest: Vector2i) -> bool:
 
 
 ## kind : "interact", "interface", "probe", "extract", "attack", "brace", "rampart", "repair",
-## "silence", "reconnect", "impulse".
+## "silence", "reconnect", "impulse", "unseal".
 ## `target` : case du point d'intérêt, centre de la Sonde, Gardien visé ou allié à réparer.
 func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 	if not _can_command(uid):
@@ -343,7 +362,19 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 		return _refuse("%s a déjà agi" % uid)
 	if u["silent"] and kind != "reconnect":
 		return _refuse("%s est en silence radio" % uid)
+	if u["type"] == "capsule" and kind not in Linked.ACTIONS:
+		return _refuse("%s : la capsule ne peut pas faire cela" % uid)
 	match kind:
+		"unseal":
+			if (
+				u["type"] != "capsule"
+				or Cells.manhattan(u["pos"], target) != 1
+				or not def.inside(target)
+				or def.terrain(target) != "S"
+			):
+				return _refuse("%s : pas d'accès scellé en %s" % [uid, Cells.name_of(target)])
+			def.unseal(target)
+			_emit({"type": "seal_opened", "unit": uid, "cell": target})
 		"silence":
 			if not rules.has("radio_silence"):
 				return _refuse("silence radio non débloqué")
@@ -432,6 +463,8 @@ func action(uid: String, kind: String, target := Vector2i(-1, -1)) -> bool:
 				)
 			if def.features[fid]["kind"] in INTERFACE_KINDS and u["type"] != "technician":
 				return _refuse("%s : ce point exige le Technicien" % uid)
+			if (def.features[fid]["kind"] in Linked.KINDS) != (u["type"] == "capsule"):
+				return _refuse("%s : ce point est réservé à la capsule des liés" % uid)
 			interacted[fid] = true
 			_emit({"type": "feature_activated", "unit": uid, "feature": fid})
 		_:
@@ -448,6 +481,7 @@ func end_player_turn() -> void:
 	for id in active_units():
 		if recolored.has(units[id]["pos"]):
 			end_turn_on_recolored = true
+	Linked.betray(self)
 	_check()
 	if not result.is_empty():
 		return
@@ -547,6 +581,11 @@ func _guardian_phase() -> void:
 ## Ordre : déplacements et regards (dans l'ordre de la mission), coups portés avec le cran
 ## d'alerte du début de phase, puis détection.
 func _plan() -> Dictionary:
+	# Un faux pas en attente est déjà compté : les intentions affichées annoncent la trahison.
+	var pend := pending_betrayal()
+	var level := alert
+	if not pend.is_empty() and alert_enabled:
+		level = mini(alert + 1, ALERTS.size() - 1)
 	var unit_at: Dictionary[Vector2i, String] = {}
 	var protectors: Array[Vector2i] = []
 	for id in active_units():
@@ -568,6 +607,8 @@ func _plan() -> Dictionary:
 			pass  # Impulsion : ni déplacement, ni regard, ni coup cette phase
 		elif g["type"] == "patroller":
 			var target: Vector2i = g["chase"]
+			if not pend.is_empty():
+				target = units[pend[-1]]["pos"]
 			if target == NO_CELL and not g["route"].is_empty():
 				# Le point de ronde suivant n'est visé qu'une fois le précédent atteint.
 				if g["pos"] == g["route"][g["ri"]]:
@@ -585,7 +626,7 @@ func _plan() -> Dictionary:
 					var full := MissionDef.trace(res["prev"], g["pos"], target)
 					for p in full.slice(0, PATROLLER_MOVE):
 						if unit_at.has(p):
-							if not units[unit_at[p]]["silent"]:
+							if not (unseen(unit_at[p]) and not pend.has(unit_at[p])):
 								detected[p] = true  # un drone barre la route
 							break
 						path.append(p)
@@ -603,7 +644,7 @@ func _plan() -> Dictionary:
 		out_guards[gid] = pl
 	var hp: Dictionary[String, int] = {}  # drones visibles : un drone en silence n'est ni vu ni visé
 	for id in active_units():
-		if not units[id]["silent"]:
+		if not unseen(id) or pend.has(id):
 			hp[id] = units[id]["hp"]
 	var cells: Array[Vector2i] = []
 	cells.assign(gpos.values())
@@ -616,12 +657,12 @@ func _plan() -> Dictionary:
 		var ranged := false
 		if g["stunned"]:
 			continue
-		if g["type"] == "patroller" and alert >= 1:
+		if g["type"] == "patroller" and level >= 1:
 			base = PATROLLER_DAMAGE
 			for id: String in hp:
 				if hp[id] > 0 and Cells.manhattan(units[id]["pos"], pos) == 1:
 					cand.append(id)
-		elif g["type"] == "sentinel" and alert >= 2:
+		elif g["type"] == "sentinel" and level >= 2:
 			base = SENTINEL_DAMAGE
 			ranged = true
 			var cone: Dictionary = out_guards[gid]["watched"]
@@ -896,6 +937,11 @@ func _cond(c: Dictionary, path: String) -> bool:
 			return not neutralized.is_empty() if who == "any" else neutralized.has(who)
 		"no_guardian_neutralized":
 			return neutralized.is_empty()
+		"bound_exposed":
+			for id in units:
+				if units[id]["type"] == "capsule" and units[id]["exposed"]:
+					return true
+			return false
 	push_error("Condition inconnue : %s" % c["type"])
 	return false
 
