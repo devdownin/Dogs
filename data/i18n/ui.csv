@@ -92,3 +92,5 @@ UI_ACT_UNSEAL,Ouvrir le sceau,Open the seal
 UI_BETRAYED,%s est trahie : les Gardiens la voient.,%s is betrayed: the Guardians see her.
 UI_BETRAYAL_RISK,Faux pas : Pia sera trahie.,Misstep: Pia will be betrayed.
 UI_SEAL_OPENED,Sceau ouvert en %s.,Seal opened at %s.
+UI_REDUCE_MOTION,Réduire les animations,Reduce motion
+UI_REDUCE_MOTION_HINT,Affiche les positions sans transition.,Shows positions without transitions.

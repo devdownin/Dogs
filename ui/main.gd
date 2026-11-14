@@ -27,6 +27,7 @@ var preview := NONE
 var mode := ""  # "" ou "probe" (choix de la zone à sonder)
 var show_danger := true
 var reveal_all := false
+var animations_reduced := false
 
 var _mission_index := 0
 var _log: Array[Dictionary] = []  # commandes jouées ; permet d'annuler en rejouant
@@ -54,6 +55,9 @@ var _next: Button
 
 func _ready() -> void:
 	campaign = SaveStore.load_campaign()
+	var preferences := ConfigFile.new()
+	if preferences.load("user://presentation.cfg") == OK:
+		animations_reduced = bool(preferences.get_value("motion", "reduced", false))
 	_build_ui()
 	if not _resume():
 		load_mission(0)
@@ -148,6 +152,12 @@ func _build_ui() -> void:
 	_actions.add_theme_constant_override("h_separation", 10)
 	_actions.add_theme_constant_override("v_separation", 10)
 	box.add_child(_actions)
+	var motion_toggle := _toggle("UI_REDUCE_MOTION", animations_reduced, _set_reduced_motion)
+	motion_toggle.custom_minimum_size.y = 0
+	motion_toggle.add_theme_font_size_override("font_size", 20)
+	motion_toggle.tooltip_text = tr("UI_REDUCE_MOTION_HINT")
+	motion_toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
+	box.add_child(motion_toggle)
 
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 10)
@@ -277,6 +287,14 @@ func _set_reveal_all(on: bool) -> void:
 	_refresh()
 
 
+func _set_reduced_motion(enabled: bool) -> void:
+	animations_reduced = enabled
+	_board.reduce_motion(enabled)
+	var preferences := ConfigFile.new()
+	preferences.set_value("motion", "reduced", enabled)
+	preferences.save("user://presentation.cfg")
+
+
 func load_mission(index: int) -> void:
 	_mission_index = clampi(index, 0, MISSION_IDS.size() - 1)
 	def = MissionLoader.load_mission(MISSION_DIR + MISSION_IDS[_mission_index] + ".json")
@@ -304,6 +322,7 @@ func load_mission(index: int) -> void:
 
 
 func _new_game() -> void:
+	_board.reset_motion()
 	game = GameState.new(def, _rules)
 	def = game.def  # copie propre à la partie (les sceaux ouverts modifient la grille)
 	_events_seen = 0
@@ -403,6 +422,13 @@ func _play(cmd: Dictionary) -> void:
 	var revealed := game.revealed.size()
 	var observed := game.observed_guards.size()
 	var events := game.events.size()
+	var positions := {}
+	for id: String in game.units:
+		positions[id] = game.units[id]["pos"]
+	for id: String in game.guards:
+		var cell: Vector2i = game.guards[id]["pos"]
+		if game.current_vision.has(cell):
+			positions[id] = cell
 	if not _apply(cmd):
 		_message.text = game.last_error
 		return
@@ -417,6 +443,8 @@ func _play(cmd: Dictionary) -> void:
 		and game.observed_guards.size() == observed
 	)
 	_log.append(cmd)
+	for i in range(events, game.events.size()):
+		_board.present_event(game.events[i], positions)
 	_consume_events()
 	if game.result.is_empty():
 		_save_mission()

@@ -18,3 +18,10 @@ Installer `Dogs-of-Gods-Surface.apk` sur un appareil ARM64 (Android 7.0 ou supé
 ## Vérifications
 
 Le projet a été importé avec Godot 4.7 stable. Le validateur des données, les rejeux GDScript, les vérifications campagne et la suite d'interface en rendu 720 × 1280 ont réussi. La suite tactile couvre la victoire sans alerte en M4, les commandes de caméra, la sonde et l'affichage des intentions. L'APK ARM64 a été exporté et sa signature vérifiée. La revue sur matériel Android et les mesures de performance restent à effectuer.
+
+## Animations de présentation (revue 0.3.0)
+
+- L'Éclaireur, le Technicien, la Sentinelle et le Patrouilleur utilisent des feuilles de 35 images, à 12 images par seconde. Le mouvement suit le trajet du moteur de jeu et l'état logique de la mission est appliqué immédiatement.
+- Le bas de chaque sprite est ancré à 78 % du cadre. Les silhouettes peintes sont déformées localement pour faire bouger pattes, mât et bras. La vue est unique, miroir horizontal pour les déplacements latéraux. La Sentinelle reste fixe, et son orientation est indiquée au sol.
+- Le bouton « Réduire les animations » enregistre un réglage persistant. Quand il est actif, les unités sont affichées directement dans leur case de destination.
+- Pour reproduire les feuilles, lancer `python art-src/animations_m4/export.py` après l'export des sprites M4. Les orientations nord et sud, le rig 3D et les mesures sur téléphone restent à faire.
