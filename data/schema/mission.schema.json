@@ -82,7 +82,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^[.RMrCGBX]( [.RMrCGBX])*$"
+            "pattern": "^[.RMrCGBXS]( [.RMrCGBXS])*$"
           }
         },
         "elevated": {
@@ -96,6 +96,9 @@
               "$ref": "#/$defs/cellList"
             },
             "linked": {
+              "$ref": "#/$defs/cellList"
+            },
+            "except": {
               "$ref": "#/$defs/cellList"
             }
           }
@@ -124,7 +127,8 @@
                   "boundary_marker",
                   "point_of_interest",
                   "fragment_cache",
-                  "knowledge_base"
+                  "knowledge_base",
+                  "builder_console"
                 ]
               },
               "cell": {
@@ -177,7 +181,8 @@
                   "scout",
                   "technician",
                   "protector",
-                  "interceptor"
+                  "interceptor",
+                  "capsule"
                 ]
               },
               "cell": {
@@ -426,6 +431,15 @@
           }
         }
       }
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "radio_silence",
+          "linked_key"
+        ]
+      }
     }
   },
   "$defs": {
@@ -567,7 +581,8 @@
                 "no_unit_disabled",
                 "unit_end_turn_on",
                 "guardian_neutralized",
-                "no_guardian_neutralized"
+                "no_guardian_neutralized",
+                "bound_exposed"
               ]
             }
           }

@@ -78,7 +78,8 @@
       "title_key": "HYP_OBS_5",
       "requires": {
         "discoveries": [
-          "obs_signal_hunt"
+          "obs_signal_hunt",
+          "obs_silence_trial"
         ]
       },
       "cycles": 1,
@@ -86,6 +87,23 @@
       "effect": {
         "type": "unlock_rule",
         "rule": "radio_silence"
+      }
+    },
+    {
+      "id": "obs_6",
+      "branch": "observation",
+      "title_key": "HYP_OBS_6",
+      "requires": {
+        "discoveries": [
+          "obs_cavity"
+        ],
+        "ship_stage": "research"
+      },
+      "cycles": 2,
+      "data_cost": 5,
+      "effect": {
+        "type": "campaign",
+        "open_sector": "hypogee"
       }
     },
     {
@@ -309,6 +327,45 @@
       "effect": {
         "type": "unlock_rule",
         "rule": "arbiter_negotiation"
+      }
+    },
+    {
+      "id": "xen_linked",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_LINKED",
+      "requires": {
+        "discoveries": [
+          "chronicle_linked"
+        ],
+        "hypotheses": [
+          "crew_operator",
+          "crew_systems"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "linked_key"
+      }
+    },
+    {
+      "id": "xen_order",
+      "branch": "xenology",
+      "title_key": "HYP_XEN_ORDER",
+      "requires": {
+        "discoveries": [
+          "kb_linked_order"
+        ],
+        "hypotheses": [
+          "xen_linked"
+        ]
+      },
+      "cycles": 2,
+      "data_cost": 8,
+      "effect": {
+        "type": "unlock_rule",
+        "rule": "linked_command"
       }
     },
     {

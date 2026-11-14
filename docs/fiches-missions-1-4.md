@@ -1,7 +1,7 @@
-# Dogs of Gods — Fiches des missions 1 à 5 (prototype)
+# Dogs of Gods — Fiches des missions 1 à 6 et aperçu de l'Acte IV (prototype)
 
-> **Version :** 1.1 — 13 novembre 2026 (ajout de la Mission 5, premier combat)
-> **Rôle :** contenu jouable du prototype : cinq missions, sans graphisme définitif.
+> **Version :** 1.3 — 14 novembre 2026 (aperçu de l'Acte IV : *Liaison*, la capsule des liés)
+> **Rôle :** contenu jouable du prototype : six missions, sans graphisme définitif.
 > **Documents liés :** `dogs-gdd-v2-regles-campagne.md` (règles), `dogs-spec-technique-v2.md` (architecture), `brief-planche-style-3.md` (la carte de la Mission 4 reprend celle de la planche).
 > **Vérification :** les coûts de trajet cités ont été calculés par script sur les grilles ci-dessous. Les durées et l'intérêt de jeu restent à confirmer manette en main.
 
@@ -16,7 +16,7 @@ Ces points complètent le GDD (§3.5) ; ils y sont reportés.
 5. **Interagir et Interface** s'exercent sur une case adjacente.
 6. **Extraction.** Sur une case d'extraction, l'action *Rappel* fait quitter la carte au drone. Elle consomme l'action du tour.
 
-> **Données :** ces cinq missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
+> **Données :** ces six missions existent au format de fichier du jeu ([format-missions.md](format-missions.md), fichiers dans `data/missions/`), avec une solution de référence rejouée automatiquement pour chacune.
 
 ### Légende commune
 
@@ -271,6 +271,95 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 
 ---
 
+## Mission 6 — « La première chronique »
+
+| | |
+|---|---|
+| Acte, type, carte | I, récupération, 12 × 12 |
+| Situation | Une base de connaissances intacte, au cœur d'un champ recolorié. |
+| Question posée | Peut-on entrer sans être vu ? |
+| **Règle introduite** | Intercepteur (*Impulsion*, *Élan*) ; essai de *Silence radio*, accordé par la mission |
+| Déploiement | Éclaireur, Technicien, Intercepteur, Protecteur, en B11, C11, D11, E11 |
+| Durée visée | 10 à 12 tours, 15 minutes |
+
+```
+      A  B  C  D  E  F  G  H  I  J  K  L
+  1   R  R  v  v  X  o  X  v  v  c  R  R
+  2   R  .  v  v  X  p  X  v  v  v  R  R
+  3   .  .  R  v  v  v  v  v  R  v  .  .
+  4   .  .  v  v  v  v  v  v  v  v  R  .
+  5   .  R  v  v  v  v  v  v  v  v  .  .
+  6   .  .  .  R  .  .  .  .  R  .  .  .
+  7   C  C  C  C  G  C  C  C  C  C  .  .
+  8   .  .  .  .  .  .  .  .  .  .  .  .
+  9   .  R  .  .  .  .  .  .  .  R  .  .
+ 10   .  .  .  .  R  .  .  .  .  .  B  B
+ 11   .  b  b  b  b  .  .  .  .  .  B  B
+ 12   .  .  .  .  .  .  .  .  R  .  .  .
+```
+
+`v` sol recolorié (C1:J5) · `o` base de connaissances F1 · `p` poche F2, seule case du champ qui n'est pas recoloriée · `c` cache de fragments J1 · Patrouilleurs : ligne 8 (A8 ↔ L8) et ligne 3 (C3 ↔ I3)
+
+- **Objectif principal :** ouvrir la base (*Interface* du Technicien), puis rappeler le Technicien.
+- **Relevé 1 :** rester en *Veille*. **Relevé 2 :** pousser jusqu'au cache J1.
+- **Échec :** Technicien hors service, ou mission non terminée au tour 16.
+- **La contrainte :** depuis le sud du champ, la poche est à 4 cases ; le Technicien doit finir au moins un tour sur le sol violet, où tout drone relié est vu. En silence radio, il traverse sans être vu, mais il doit se reconnecter pour agir, et la poche n'est hors de vue qu'une phase sur deux.
+
+**Solution de référence (11 tours, Veille tenue).** Le Technicien franchit le gué quand le Patrouilleur du sud est loin, coupe sa liaison en entrant dans le champ, attend un tour, se reconnecte dans la poche à une phase sûre. L'Intercepteur, passé par l'est (K7, L7), fige le Patrouilleur du nord par une *Impulsion* depuis K3 pendant l'ouverture de la base. Retour en silence, reconnexion en D9, rappel en D11.
+
+- **Pièges rejoués :** finir un tour sur le sol violet sans couper la liaison (détection immédiate) ; à l'inverse, la force paie aussi : l'Intercepteur lancé en ligne droite (D11 → D8) frappe à 3 dégâts et neutralise un Patrouilleur d'un coup, au prix d'un cran d'alerte.
+- **Découverte vérifiable :** un registre de décisions dont aucune n'est signée par une personne (découverte « La première chronique », qui ouvre *Grammaire des ruines*).
+- **Effets :** essai de silence radio consigné ; « Un souffle sous la base », premier indice de l'Hypogée (Acte III) (il faut ensuite étudier *Silence radio* pour en disposer dans les missions suivantes) ; Concorde +1 si *Veille* tenue.
+- **Récompenses :** 4 Données, 1 Matériau, 1 Fragment ; +1 Donnée par relevé.
+
+---
+
+## Aperçu de l'Acte IV — « Liaison »
+
+| | |
+|---|---|
+| Acte, type, carte | IV (aperçu jouable après la Mission 6), infiltration, 12 × 12 |
+| Situation | Une crypte des bâtisseurs, scellée. Pia y descend dans une capsule ; Xenon la guide depuis le bord, par leur puce intriquée. |
+| Question posée | Peut-on aider sans toucher ? |
+| **Règle introduite** | Capsule des liés : ni vue ni visée, elle ouvre les sceaux ; un drone relié qui finit son tour à côté d'elle la trahit (*faux pas*) |
+| Déploiement | Capsule de Pia en F1 ; Technicien, Intercepteur, Protecteur en G12, H12, F12 |
+| Durée visée | 7 à 10 tours, 12 minutes |
+
+```
+      A  B  C  D  E  F  G  H  I  J  K  L
+  1   .  .  .  .  .  P  .  .  .  .  .  .
+  2   .  .  R  .  .  .  .  .  .  R  .  .
+  3   .  .  .  C  C  S  C  C  C  .  .  .
+  4   .  .  .  C  k  .  .  o  C  .  R  .
+  5   .  R  .  C  s  .  .  .  C  .  .  .
+  6   .  .  .  C  C  C  C  S  C  .  .  .
+  7   .  .  v  v  v  v  v  v  v  v  .  .
+  8   .  R  .  .  .  .  .  .  .  .  R  .
+  9   .  .  .  .  R  .  .  .  .  .  .  .
+ 10   .  .  R  .  .  .  .  .  .  R  .  .
+ 11   .  .  .  .  .  .  .  .  .  .  .  .
+ 12   .  b  b  b  b  .  .  .  .  .  .  .
+```
+
+`P` capsule de Pia · `S` accès scellés F3 et H6 · `k` console des bâtisseurs E4 · `o` chronique H4 · `s` Sentinelle E5, regard est puis nord · `v` sol recolorié (C7:J7) · `b` rappel (B12:E12) · Patrouilleurs : ronde autour de la crypte (C2, J2, J7, C7) et ligne 9 (K9 ↔ B9)
+
+- **Objectif principal :** Pia active la console, le Technicien lit la chronique, puis la capsule est rappelée.
+- **Relevé 1 :** ne jamais dépasser *Vigilance*. **Relevé 2 :** n'abattre aucun Gardien.
+- **Échec :** capsule hors service, ou mission non terminée au tour 12.
+- **La contrainte :** la mission commence en *Vigilance* : un Patrouilleur frappe tout drone relié qu'il touche. Pia ne craint rien tant qu'elle n'est pas trahie ; ses alliés, eux, doivent entrer dans la crypte qu'elle ouvre, sans jamais finir un tour à côté d'elle. La Sentinelle de la crypte ne regarde la chronique qu'une phase sur deux.
+- **Le faux pas :** si un drone relié finit son tour à côté de la capsule, elle est trahie pour le reste de la mission : l'alerte monte d'un cran et les Patrouilleurs fondent sur elle. Les intentions l'annoncent avant la fin du tour (trait violet en pointillé entre les deux, coup annoncé sur la capsule). Un drone en silence radio ne la trahit pas.
+
+**Solution de référence (7 tours, Vigilance tenue, aucun Gardien abattu).** Pia ouvre le sceau nord (le Patrouilleur de la ronde bute sur elle sans la voir), active la console, puis ouvre le sceau sud depuis l'intérieur. Le Technicien remonte par l'est et entre au tour où la Sentinelle regarde au nord ; il lit la chronique et ressort avant qu'elle se retourne. Pia traverse la ligne 9 juste après le passage du Patrouilleur du sud ; le Protecteur s'est écarté de son chemin, et elle est rappelée en E12.
+
+- **Variante rejouée :** le Technicien croise la capsule, mais coupe sa liaison avant la fin du tour : rien ne se passe.
+- **Pièges rejoués :** le Technicien finit son tour à côté de Pia (elle est trahie, frappée, mise hors service) ; le Technicien reste dans la crypte un tour de trop (la Sentinelle le voit, la ronde le rattrape ; Pia s'en sort seule).
+- **Découverte vérifiable :** les liés ne négociaient pas avec les Gardiens, ils leur donnaient des ordres (découverte « L'ordre des liés », qui ouvre *Ordonner*).
+- **Effets :** chronique « Les liés » ; Concorde +1 si aucun Gardien n'est abattu.
+- **Récompenses :** 5 Données, 1 Matériau, 2 Fragments ; +1 Donnée par relevé.
+- **Hors récit :** dans le prototype, cette mission suit la Mission 6 pour être jouable. Dans la campagne, elle exige *La clé des liés* (Pia et Xenon éveillés, *Chronique des liés* lue).
+
+---
+
 ## Ce que le prototype doit apprendre
 
 | Question | Mission | Signe de réussite |
@@ -280,6 +369,8 @@ Nord en haut ; colonnes en lettres, lignes en chiffres. Déplacements : Éclaire
 | Le compte à rebours est-il tendu sans être injuste ? | 3 | Échec au premier essai rare, relevé 1 raté fréquent |
 | Les intentions visibles suffisent-elles à créer la réflexion ? | 4 | Le joueur attend volontairement un tour |
 | Le combat annoncé se lit-il comme une énigme plutôt qu'un échange de coups ? | 5 | Le joueur se tapit et répare au lieu de frapper |
+| Le silence radio est-il un vrai choix (voir ou être vu) ? | 6 | Le joueur se reconnecte au bon moment sans aide |
+| Le faux pas se lit-il avant d'être commis ? | IV, *Liaison* | Aucune trahison subie sans l'avoir vue annoncée |
 | La règle « vu seulement en fin de tour » est-elle comprise ? | 4 | Aucune détection jugée arbitraire |
 
 Si la Mission 4 n'est pas intéressante en aplats, aucun graphisme ne la sauvera : c'est le test décisif du jalon 1.

@@ -49,3 +49,28 @@ M5_DLG_SIGNAL,Émission en cours. Trois cycles. Ils vont converger vers le relai
 M5_DLG_SENT,Signal reçu. Ils n'ont jamais visé le relais : ils visaient ce qui me parlait.,Signal received. They never targeted the relay: they targeted whatever was talking to me.
 TIP_COMBAT,Les Gardiens annoncent leurs coups. Se tapir : −1 dégât. Un coup porte toujours au moins 1.,Guardians announce their strikes. Brace: −1 damage. A hit always deals at least 1.
 M1_DLG_TRACKED,La balise d'atterrissage émet en continu. Rien ne s'en approche. Ce sont les drones que quelque chose observe.,The landing beacon broadcasts constantly. Nothing approaches it. Something is watching the drones.
+M6_TITLE,La première chronique,The First Chronicle
+M6_ARCHIVE,Base de connaissances,Knowledge base
+M6_CACHE,Cache de fragments,Fragment cache
+M6_OBJ_MAIN,"Ouvrir la base de connaissances avec le Technicien, puis le rappeler.","Open the knowledge base with the Technician, then recall it."
+M6_REC_QUIET,Ne jamais dépasser le cran Veille.,Never rise above Watch.
+M6_REC_DEEP,Pousser jusqu'au cache de fragments.,Push on to the fragment cache.
+M6_DLG_TRIAL,"Hypothèse non vérifiée : coupez la liaison avec moi, et ils ne vous verront plus. Vous serez aveugles. Moi aussi.","Unverified hypothesis: cut your link to me, and they will no longer see you. You will be blind. So will I."
+M6_DLG_ARCHIVE,Base ouverte. Premier texte lisible : un registre de décisions. Aucune n'est signée par une personne.,Base opened. First readable text: a register of decisions. None is signed by a person.
+TIP_SILENCE,"Silence radio : invisible aux Gardiens, même sur le sol violet. Aveugle, sans action jusqu'à la reconnexion.","Radio silence: invisible to Guardians, even on violet ground. Blind, no action until you reconnect."
+TIP_INTERCEPTOR,"Intercepteur : frappe à 2 cases (2 dégâts, +1 après 3 cases en ligne droite). Impulsion : fige un Gardien pour une phase.","Interceptor: strikes at 2 cells (2 damage, +1 after 3 cells in a straight line). Impulse: freezes a Guardian for one phase."
+IVL_TITLE,Liaison,Linked
+IVL_CONSOLE,Console des bâtisseurs,Builders' console
+IVL_CHRONICLE,L'ordre des liés,The order of the Linked
+IVL_OBJ_MAIN,"Pia active la console, le Technicien lit la chronique, puis la capsule est rappelée.","Pia activates the console, the Technician reads the chronicle, then the capsule is recalled."
+IVL_REC_QUIET,Ne jamais dépasser le cran Vigilance.,Never rise above Warning.
+IVL_REC_SPARED,N'abattre aucun Gardien.,Bring down no Guardian.
+IVL_DLG_XENON_1,"Je suis là, Pia. Pas besoin de parler. Avance.","I'm here, Pia. No need to speak. Go on."
+IVL_DLG_PIA_1,Ils me regardent passer comme on regarde rentrer quelqu'un de chez soi.,They watch me pass the way you watch someone come home.
+IVL_DLG_ATHENA_1,Je garde mes drones à distance. Probabilité qu'un contact avec moi la trahisse : élevée. Je ne sais pas la calculer mieux.,I am keeping my drones at a distance. Probability that contact with me betrays her: high. I cannot compute it better.
+IVL_DLG_CONSOLE,Elle ne m'a rien demandé. Elle a juste… reconnu.,It asked me nothing. It just… recognized.
+IVL_DLG_XENON_2,Le sceau du sud a bougé avant que tu le touches. Je l'ai senti avec toi.,The southern seal moved before you touched it. I felt it with you.
+IVL_DLG_CHRONICLE,Chronique lue. Les liés ne négociaient pas avec les Gardiens : ils leur donnaient des ordres. Je n'ai pas de mot pour ce que cela me fait.,Chronicle read. The Linked did not negotiate with the Guardians: they gave them orders. I have no word for what this does to me.
+IVL_DLG_EXPOSED,"Pia, ils se retournent. Ils ont senti la machine sur toi. Cours.","Pia, they're turning. They felt the machine on you. Run."
+IVL_DLG_EXPOSED_ATHENA,C'est moi qu'ils ont vue. Pas elle. Je recule.,It's me they saw. Not her. I'm pulling back.
+TIP_BOUND,"Capsule des liés : ni vue ni visée, elle ouvre les accès scellés. Un drone relié qui finit son tour à côté d'elle la trahit.","Linked capsule: unseen and untargeted, it opens sealed accesses. A linked drone ending its turn next to it betrays it."

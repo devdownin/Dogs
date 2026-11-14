@@ -1,0 +1,127 @@
+{
+  "mission": "m6_premiere_chronique",
+  "description": "Infiltration en silence radio : le Technicien traverse le sol violet sans être vu, se reconnecte dans la poche F2 ; l'Intercepteur fige le Patrouilleur par une Impulsion le temps d'ouvrir la base.",
+  "turns": [
+    [
+      {
+        "unit": "tec",
+        "move": "C9"
+      },
+      {
+        "unit": "int",
+        "move": "H11"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "D8"
+      },
+      {
+        "unit": "int",
+        "move": "J10"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "E6"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "F4",
+        "act": "silence"
+      },
+      {
+        "unit": "int",
+        "move": "L9"
+      }
+    ],
+    [],
+    [
+      {
+        "unit": "tec",
+        "move": "F2",
+        "act": "reconnect"
+      },
+      {
+        "unit": "int",
+        "move": "L6"
+      }
+    ],
+    [
+      {
+        "unit": "int",
+        "move": "K3",
+        "act": "impulse",
+        "target": "I3"
+      },
+      {
+        "unit": "tec",
+        "act": "interface",
+        "target": "F1"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "F5",
+        "act": "silence"
+      },
+      {
+        "unit": "int",
+        "move": "L4"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "E7"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "D9",
+        "act": "reconnect"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "D11",
+        "act": "extract"
+      }
+    ]
+  ],
+  "expect": {
+    "result": "victory",
+    "turn": 11,
+    "records": {
+      "r_quiet": true,
+      "r_deep": false
+    },
+    "state": {
+      "units": {
+        "tec": [
+          "D11",
+          2,
+          "extracted"
+        ],
+        "int": [
+          "L4",
+          3,
+          "active"
+        ]
+      },
+      "guardians": {
+        "pat2": [
+          "G3",
+          3
+        ]
+      }
+    }
+  }
+}

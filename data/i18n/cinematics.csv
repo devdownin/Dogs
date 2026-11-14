@@ -1,0 +1,55 @@
+keys,fr,en
+CIN_PRO_01,Journal de bord de l'Asterion. Transit expérimental n° 1. Équipage : six. Durée prévue du passage : quatre secondes.,Asterion ship's log. Experimental transit no. 1. Crew: six. Planned crossing time: four seconds.
+CIN_PRO_02,"On mesure, on observe, on rentre. Personne ne touche à rien de l'autre côté.","We measure, we observe, we go home. Nobody touches anything on the other side."
+CIN_PRO_03,"— perte de pression sur — … — gravité — … — Asterion, répondez — …","— pressure loss on — … — gravity — … — Asterion, respond — …"
+CIN_PRO_04,Redémarrage. Horloge interne incohérente. Position inconnue. Alimentation : 31 %.,Restart. Internal clock inconsistent. Position unknown. Power: 31%.
+CIN_PRO_05,"Je suis ATHENA, l'intelligence de bord. Je reprends le commandement des systèmes, à titre provisoire.","I am ATHENA, the ship's intelligence. I am taking command of ship systems, provisionally."
+CIN_PRO_06,"Équipage : six, en stase. Les caissons ont souffert du passage. Un réveil maintenant aurait de fortes chances de vous tuer.","Crew: six, in stasis. The pods were damaged in the crossing. Waking you now would very likely kill you."
+CIN_PRO_07,Je reste seule à décider. Je n'aime pas cette situation. Je la consigne.,I am the only one left to decide. I do not like this situation. I am logging it.
+CIN_PRO_08,"Système optique rétabli. Une planète. À travers les nuages, des motifs trop réguliers pour être naturels.","Optical system restored. A planet. Through the clouds, patterns too regular to be natural."
+CIN_PRO_09,Appels radio : aucune réponse.,Radio calls: no answer.
+CIN_PRO_10,"Je ne peux pas descendre. La Meute, si. Quatre drones de laboratoire, conçus pour mesurer, pas pour se battre.","I cannot go down. The Pack can. Four laboratory drones, built to measure, not to fight."
+CIN_PRO_11,Vous serez mes yeux. Je serai votre mémoire.,You will be my eyes. I will be your memory.
+CIN_M1_01,"Retour de la Meute. Des fragments manufacturés, pris dans la roche. Quelqu'un a construit ici.","The Pack is back. Manufactured fragments, caught in the rock. Someone built here."
+CIN_M1_02,"Dernière image transmise : une silhouette immobile, au nord. Elle n'a pas bougé. Elle regardait les drones.","Last image transmitted: a motionless silhouette, to the north. It did not move. It was watching the drones."
+CIN_M1_03,"Si un jour on trouve des traces de quelqu'un, je voudrais qu'on arrive en invités. Pas en propriétaires.","If we ever find traces of someone, I'd like us to arrive as guests. Not as owners."
+CIN_M2_01,Le signal des ruines a changé de rythme quand vous l'avez touché. Il répondait. Je ne sais pas à qui.,The signal in the ruins changed rhythm when you touched it. It was answering. I do not know whom.
+CIN_M2_02,Capteurs orbitaux rétablis. Je vois davantage. Je ne comprends pas davantage.,Orbital sensors restored. I see more. I do not understand more.
+CIN_M2_03,J'ouvre un registre d'hypothèses. Chaque découverte que vous rapporterez pourra y entrer.,I am opening a register of hypotheses. Every discovery you bring back can go into it.
+CIN_M2_04,"Chaque redémarrage coûtera quelque chose ailleurs. Il faudra choisir, et assumer.","Every restart will cost something somewhere else. We'll have to choose, and own it."
+CIN_M3_01,Le motif s'est mis en mouvement à l'instant où le relais s'est connecté à moi. Corrélation. Pas encore une cause.,The pattern started moving the moment the relay connected to me. Correlation. Not yet a cause.
+CIN_M3_02,"Vue d'orbite, la planète est quadrillée sur des milliers de kilomètres. Quelque chose entretient ce quadrillage.","From orbit, the planet is gridded over thousands of kilometres. Something maintains this grid."
+CIN_M3_03,"Les drones ne sont pas des soldats. Je les ai réglés pour mesurer, et pour revenir.","The drones aren't soldiers. I tuned them to measure, and to come back."
+CIN_M4_01,Le veilleur ne suivait pas le drone. Il suivait la balise. Il distingue ce qui est posé de ce qui est guidé.,The watcher was not tracking the drone. It was tracking the beacon. It tells apart what is placed from what is guided.
+CIN_M4_02,Vous êtes passés sans un bruit. Ils peuvent être évités : je le note.,You got through without a sound. They can be avoided: I am noting it.
+CIN_M4_03,Ils vous ont vus et n'ont pas tiré. Je ne sais pas ce qu'ils attendaient.,They saw you and did not fire. I do not know what they were waiting for.
+CIN_M4_04,"À l'est, un relais intact. Il pourrait me relier à vous sans délai. Il faudra le tenir le temps de l'émission.","To the east, an intact relay. It could link me to you without delay. You will have to hold it while it transmits."
+CIN_M5_01,Premier signal direct depuis le sol. Je vous entends enfin sans délai.,First direct signal from the ground. At last I hear you without delay.
+CIN_M5_02,Ils n'ont jamais visé le relais. Ils visaient ce qui me parlait.,They never targeted the relay. They targeted whatever was talking to me.
+CIN_M5_03,"Un Gardien est tombé. Ses débris sont à bord. Je les étudierai, avec précaution.","A Guardian fell. Its debris is aboard. I will study it, carefully."
+CIN_M5_04,Je n'en tire aucune conclusion. Je préfère vous le dire.,I draw no conclusion from it. I would rather tell you.
+CIN_M5_05,"Au nord, une base de connaissances intacte. Le sol autour est violet : ils y verront tout ce qui me parle.","To the north, an intact knowledge base. The ground around it is violet: they will see anything that talks to me there."
+CIN_M5_06,J'ai une hypothèse pour y entrer. Elle ne me plaît pas.,I have a hypothesis for getting in. I do not like it.
+CIN_M6_01,"Base décodée en partie. Un registre de décisions, sur des siècles. Aucune n'est signée par une personne.","Base partly decoded. A register of decisions, over centuries. None is signed by a person."
+CIN_M6_02,"Coupés de moi, vous étiez invisibles. Ce qu'ils surveillent, ce n'est pas la Meute. C'est ce qui la guide.","Cut off from me, you were invisible. What they watch is not the Pack. It is what guides it."
+CIN_M6_03,J'ai lu le registre à l'équipage. Ils ne m'ont pas répondu. Ils ne le peuvent pas.,I read the register to the crew. They did not answer. They cannot.
+CIN_M6_04,Je recommande de les réveiller dès que les caissons le permettront. Je ne devrais pas être seule à décider.,I recommend waking them as soon as the pods allow. I should not be the only one deciding.
+CIN_M6_05,"Si on perd le contact, l'IA tient la maison. Mais c'est nous qui décidons de ce qu'on rapporte.","If we lose contact, the AI keeps house. But we decide what we bring home."
+CIN_ACT1_SUB,La surface est surveillée. Elle l'a toujours été.,The surface is watched. It always has been.
+CIN_ACT1_END,Fin de l'Acte I — Survivants de l'autre côté,End of Act I — Survivors on the Other Side
+SPEAKER_LOG,Journal de bord,Ship's log
+SPEAKER_STATIC,Fragments,Fragments
+SPEAKER_COMMANDER_LOG,"Flores, commandante — enregistré avant le transit","Flores, commander — recorded before transit"
+SPEAKER_XENOLOGIST_LOG,"Moonji, xénologue — enregistré avant le transit","Moonji, xenologist — recorded before transit"
+SPEAKER_SYSTEMS_LOG,"Xenon, responsable des systèmes — enregistré avant le transit","Xenon, systems officer — recorded before transit"
+SPEAKER_OPERATOR_LOG,"Pia, opératrice de la Meute — enregistré avant le transit","Pia, Pack operator — recorded before transit"
+UI_SKIP,Passer,Skip
+UI_TAP_CONTINUE,Toucher pour continuer,Tap to continue
+UI_REPLAY_CINEMATIC,Revoir,Replay
+SPEAKER_MEDIC_LOG,"Paul, médecin — enregistré avant le transit","Paul, physician — recorded before transit"
+SPEAKER_PILOT_LOG,"Hermes, pilote — enregistré avant le transit","Hermes, pilot — recorded before transit"
+CIN_M3_04,"Quatre secondes de passage, c'est le plan. Si ça dure plus, c'est que quelque chose aura décidé pour nous.","Four seconds of crossing, that's the plan. If it takes longer, something will have decided for us."
+CIN_M4_05,"Si la stase dure plus que prévu, ne nous réveillez pas dans la précipitation. Un réveil raté ne se rattrape pas.","If stasis lasts longer than planned, don't wake us in a hurry. A botched waking can't be undone."
+CIN_M2_05,Pia dirait que je m'inquiète trop. Elle n'a pas besoin de le dire.,Pia would say I worry too much. She doesn't need to say it.
+CIN_M6_06,"Caissons de Pia et de Xenon : activité cérébrale synchrone, à la milliseconde près. Aucune explication médicale. Je le consigne. Je n'ai personne à qui le dire.","Pia's and Xenon's pods: synchronous brain activity, to the millisecond. No medical explanation. I am logging it. I have no one to tell."
+CIN_M6_07,"Autre chose. Sous la base, l'air circule. Il vient d'en bas, et il est plus chaud que la surface.","Something else. Beneath the base, air is moving. It comes from below, and it is warmer than the surface."

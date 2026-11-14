@@ -13,7 +13,8 @@ const TILE_NAME := {
 	"C": "canyon",
 	"G": "ford",
 	"B": "basin",
-	"X": "ruin"
+	"X": "ruin",
+	"S": "seal"
 }
 const TILE_VARIANTS := {
 	"plain": 4,
@@ -24,10 +25,18 @@ const TILE_VARIANTS := {
 	"ford": 1,
 	"basin": 3,
 	"ruin": 1,
+	"seal": 1,
 	"fog": 3
 }
 const SPRITES := [
-	"scout", "technician", "protector", "interceptor", "sentinel", "patroller", "regulator"
+	"scout",
+	"technician",
+	"protector",
+	"interceptor",
+	"capsule",
+	"sentinel",
+	"patroller",
+	"regulator"
 ]
 const ART_MISSION := "m4_le_veilleur"
 const ART_CELL := 192
@@ -37,6 +46,7 @@ const CLIFF := Color("3a3038")
 const PACK := Color("2fe0c8")
 const GUARD := Color("a85af0")
 const IVORY := Color("eadfc8")
+const LINKED := Color("e4b668")  # les liés : ni Meute ni Gardiens
 const FOG := Color("1e2329")
 
 ## Taille de case visée au zoom initial, en unités d'affichage (2 unités ≈ 1 dp sur un
@@ -435,6 +445,11 @@ func _draw() -> void:
 			draw_line(gc, gc + dir * s * 0.7, GUARD, 5.0)
 		_sprite(g["type"], g["pos"], GUARD, Color.WHITE, refined_ground)
 		_pips(g["pos"], g["hp"], GameState.GUARD_HP[g["type"]], GUARD)
+		if g["stunned"]:  # figé par une Impulsion : croix ivoire sur la case
+			var gr := cell_rect(g["pos"]).grow(-s * 0.18)
+			var w := maxf(3.0, s * 0.05)
+			draw_line(gr.position, gr.end, IVORY, w)
+			draw_line(Vector2(gr.end.x, gr.position.y), Vector2(gr.position.x, gr.end.y), IVORY, w)
 
 	for uid: String in game.units:
 		var u: Dictionary = game.units[uid]
@@ -453,8 +468,12 @@ func _draw() -> void:
 			draw_set_transform(Vector2.ZERO)
 		if u["silent"]:
 			tint.a = 0.45  # en silence radio : invisible pour les Gardiens, aveugle pour ATHENA
+		var faction := LINKED if u["type"] == "capsule" else PACK
+		_sprite(u["type"], u["pos"], faction.darkened(0.35) if spent else faction, tint)
 		_sprite(u["type"], u["pos"], PACK.darkened(0.35) if spent else PACK, tint, refined_ground)
 		var r := cell_rect(u["pos"])
+		if u.get("exposed", false):  # trahie : les Gardiens la voient
+			draw_rect(r.grow(-s * 0.04), GUARD, false, maxf(3.0, s * 0.05))
 		if u["silent"]:
 			_dashed_rect(r.grow(-s * 0.06), IVORY, s)
 		if u["rampart"]:
@@ -466,7 +485,26 @@ func _draw() -> void:
 				IVORY,
 				3.0
 			)
-		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], PACK)
+		_pips(u["pos"], maxi(0, u["hp"]), GameState.UNITS[u["type"]][1], faction)
+		if u["elan"] and not u["acted"]:  # Élan prêt : chevrons turquoise
+			var e := r.position + Vector2(r.size.x * 0.72, r.size.x * 0.12)
+			for i in 2:
+				var o := e + Vector2(0, i * s * 0.08)
+				var pts := PackedVector2Array(
+					[o, o + Vector2(s * 0.08, -s * 0.06), o + Vector2(s * 0.16, 0)]
+				)
+				draw_polyline(pts, PACK, 3.0)
+
+	# Faux pas en attente : un drone relié touche la capsule. Toujours affiché, même sans
+	# les zones de danger : c'est la seule erreur que la mission ne pardonne pas.
+	for cid: String in game.pending_betrayal():
+		var cpos: Vector2i = game.units[cid]["pos"]
+		for oid: String in game.active_units():
+			var o: Dictionary = game.units[oid]
+			if o["type"] != "capsule" and not o["silent"] and Cells.manhattan(o["pos"], cpos) == 1:
+				var a := cell_rect(cpos).get_center()
+				var b := cell_rect(o["pos"]).get_center()
+				draw_dashed_line(a, b, GUARD, maxf(4.0, s * 0.06), s * 0.1)
 
 	# Coups annoncés : trait violet du Gardien vers sa cible, dégâts inscrits sur la cible.
 	var font := ThemeDB.fallback_font

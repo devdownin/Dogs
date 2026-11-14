@@ -25,6 +25,7 @@ RUST, RUST_D = (112, 44, 38), (44, 22, 30)
 ICE, ICE_L, ICE_D = (164, 190, 200), (224, 234, 236), (104, 134, 152)
 HULL, HULL_D = (224, 218, 204), (132, 140, 152)
 STONE, STONE_D = (112, 118, 132), (58, 62, 78)
+LINKED = (228, 182, 104)  # or pâle : les liés (Pia et Xenon), ni Meute ni Gardiens
 
 
 def fbm(rng, n, octaves=(4, 8, 16, 32, 64)):
@@ -187,6 +188,24 @@ def tile_ruin(rng):
     d.line([(18 * u, 22 * u), (30 * u, 12 * u), (50 * u, 9 * u), (58 * u, 14 * u)], fill=SLATE_L, width=SS * 2)
     for bx, by in ((70, 70), (84, 62), (48, 86)):  # blocs tombés
         d.polygon(jag(rng, [(bx * u, by * u), ((bx + 8) * u, (by - 2) * u), ((bx + 9) * u, (by + 5) * u), ((bx + 1) * u, (by + 6) * u)], u), fill=SLATE, outline=INK)
+    return img
+
+
+def tile_seal(rng):
+    """Accès scellé des bâtisseurs : une dalle d'ardoise gravée d'un glyphe or pâle."""
+    img = tile_plain(rng, True)
+    n = T * SS
+    d = ImageDraw.Draw(img)
+    u = n / 100
+    d.polygon([(14 * u, 92 * u), (96 * u, 96 * u), (96 * u, 86 * u), (84 * u, 80 * u)], fill=(92, 78, 78))  # ombre
+    slab = [(16 * u, 88 * u), (14 * u, 14 * u), (50 * u, 6 * u), (86 * u, 14 * u), (84 * u, 88 * u)]
+    d.polygon(jag(rng, slab, u * 0.8), fill=SLATE, outline=INK)
+    d.polygon([(50 * u, 6 * u), (86 * u, 14 * u), (84 * u, 88 * u), (54 * u, 88 * u)], fill=SLATE_D)
+    glyph = [(34 * u, 70 * u), (34 * u, 34 * u), (50 * u, 24 * u), (66 * u, 34 * u), (66 * u, 70 * u)]
+    d.line(glyph, fill=INK, width=SS * 5, joint="curve")
+    d.line(glyph, fill=LINKED, width=SS * 2, joint="curve")
+    for y in (44, 56):  # deux traits : deux esprits reliés
+        d.line([(42 * u, y * u), (58 * u, y * u)], fill=LINKED, width=SS * 2)
     return img
 
 
@@ -354,6 +373,19 @@ def regulator():
     return s.render()
 
 
+def capsule():
+    """Capsule des liés : un œuf de coque claire, une veine or pâle, aucun œil turquoise."""
+    s = Sprite(15)
+    s.poly([(30, 90), (70, 90), (62, 80), (38, 80)], HULL_D)  # berceau
+    s.poly([(50, 10), (70, 22), (78, 48), (70, 74), (50, 82), (30, 74), (22, 48), (30, 22)], HULL)
+    s.poly([(50, 10), (70, 22), (78, 48), (70, 74), (50, 82)], HULL_D)
+    s.poly([(40, 32), (60, 32), (62, 50), (38, 50)], (60, 66, 82))  # hublot
+    s.seam([(44, 40), (56, 40)], LINKED, 1.0)
+    s.seam([(30, 60), (50, 66), (70, 60)], LINKED, 1.4)
+    s.dot(50, 66, 2.6, LINKED)
+    return s.render()
+
+
 def node():
     s = Sprite(31)
     s.poly([(30, 90), (70, 90), (64, 76), (36, 76)], STONE_D)
@@ -379,7 +411,7 @@ def beacon():
 def main():
     tiles = {"plain": (tile_plain, 4), "rock": (tile_rock, 3), "mesa": (lambda r: tile_plain(r, True), 3),
              "ramp": (tile_ramp, 1), "canyon": (tile_canyon, 3), "ford": (lambda r: tile_canyon(r, True), 1),
-             "basin": (tile_basin, 3), "ruin": (tile_ruin, 1), "fog": (tile_fog, 3)}
+             "basin": (tile_basin, 3), "ruin": (tile_ruin, 1), "fog": (tile_fog, 3), "seal": (tile_seal, 1)}
     made = {}
     for i, (name, (fn, count)) in enumerate(tiles.items()):
         for v in range(count):
@@ -388,7 +420,7 @@ def main():
             img.save(OUT / "terrain" / f"{name}_{v}.png", optimize=True)
             made[f"{name}_{v}"] = img
     sprites = {"units": {"scout": scout, "technician": technician, "protector": protector, "interceptor": interceptor,
-                         "sentinel": sentinel, "patroller": patroller, "regulator": regulator},
+                         "sentinel": sentinel, "patroller": patroller, "regulator": regulator, "capsule": capsule},
                "features": {"node": node, "beacon": beacon}}
     for folder, items in sprites.items():
         for name, fn in items.items():

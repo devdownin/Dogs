@@ -80,12 +80,24 @@ func _test_athena() -> void:
 	var s5 := _apply(c, "m5_reference")
 	_check(c.discoveries.has("obs_signal_hunt"), "M5 : ils traquent ce qui parle à ATHENA")
 	_check(int(s5["doubt"]) == 1, "le bilan de M5 rapporte le premier doute")
-	_check(c.state("obs_5") == "available", "« Silence radio » devient étudiable")
+	_check(c.state("obs_5") == "lead", "« Silence radio » n'est qu'une piste avant l'essai")
+	var s6 := _apply(c, "m6_reference")
+	_check(c.discoveries.has("chronicle_first"), "M6 : la base ouverte livre la première chronique")
+	_check(c.discoveries.has("obs_silence_trial"), "M6 : l'essai de silence radio est consigné")
+	_check(c.state("obs_5") == "available", "« Silence radio » devient étudiable après l'essai")
+	_check(c.state("xen_1") == "available", "la chronique ouvre « Grammaire des ruines »")
+	_check(s6["data"] > 0, "M6 rapporte des Données")
 	_check(c.start_study("obs_5"), "étudier « Silence radio »")
 	var s4 := _apply(c, "m4_reference")
 	_check(c.unlocked_rules() == ["radio_silence"], "silence radio débloqué pour les missions")
 	_check(c.athena_doubt() == 2 and int(s4["doubt"]) == 2, "second doute : ATHENA se sait visée")
 	_check(c.athena_recommends_waking(), "ATHENA recommande de réveiller l'équipage")
+	_check(c.check({"record": "m4_le_veilleur.r_quiet"}), "condition : relevé obtenu")
+	_check(not c.check({"record": "m5_prix_signal.r_intact"}) == false, "condition : relevé de M5")
+	_check(
+		c.check({"doubt_at_least": 2}) and not c.check({"doubt_at_least": 3}), "condition : doute"
+	)
+	_check(c.check({"not": {"discovery": "kb_master_relay"}}), "condition : négation")
 	c.confirmed["crew_commander"] = true
 	_check(
 		not c.athena_recommends_waking(), "plus de recommandation une fois la commandante éveillée"

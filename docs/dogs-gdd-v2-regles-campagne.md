@@ -20,7 +20,7 @@
 | 6 | Aucune animation squelettique prévue pour les unités. | Incompatible avec l'objectif de qualité : la démarche des quadrupèdes est l'identité du jeu. Animations exigées. |
 | 7 | Sept missions avant le premier combat, Mission 0 sans carte tactique. | Mission 0 ramenée à 3 minutes maximum et passable ; première décision tactique dans les 2 minutes ; cartes d'Acte I réduites (8×8 à 10×10). |
 | 8 | Quatre ressources sans rôle distinct chiffré. | Une capacité, deux stocks, une collection (§6). |
-| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie. L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
+| 9 | Le récit fait dialoguer un équipage actif (commandant, responsable des systèmes…). | **Décision du 13 novembre 2026 :** l'*Asterion* est en orbite ; ses six membres d'équipage sont en stase, impossibles à réveiller en début de partie : Flores (commandante), Moonji (xénologue), Pia (opératrice de la Meute), Xenon (responsable des systèmes), Paul (médecin), Hermes (pilote). **Secret :** Pia et Xenon partagent certaines pensées par une puce intriquée greffée dans le cerveau (voir `cinematiques.md` §6). L'IA de bord **ATHENA** porte les comptes rendus ; les voix de l'équipage passent par des journaux enregistrés. |
 
 ### 1.2 Lecture des deux pistes graphiques
 
@@ -115,7 +115,9 @@ Seuls les Gardiens ont une orientation ; les drones n'en ont pas, pour garder la
 - **Poursuite :** une détection lance les Patrouilleurs vers la case détectée la plus proche ; ils reprennent leur ronde une fois la case atteinte ou l'alerte retombée à *Veille*. Un script peut aussi les envoyer vers une case (`chase_cell`).
 - **Neutraliser un Gardien** l'ôte de la carte, fait monter l'alerte d'un cran et laisse des débris (découverte « Débris de Gardien »).
 - **Réparer** (Technicien, case adjacente) : +1 intégrité, ou relève un drone hors service à 1 point.
-- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue ; *Impulsion* et *Élan* arrivent avec l'Intercepteur (M6).
+- **Intercepteur (réalisé, M6) :** *Impulsion* fige un Gardien à 2 cases au plus (ligne de vue) pendant la prochaine phase : ni déplacement, ni regard, ni coup ; recharge de 3 tours ; elle ne fait pas monter l'alerte. *Élan* : après un déplacement d'au moins 3 cases dans une seule direction, sa frappe gagne +1 (3 dégâts : un Patrouilleur tombe d'un coup).
+- **Rondes :** un Patrouilleur ne vise le point de ronde suivant qu'une fois le précédent atteint.
+- **Pas encore en jeu :** la case du Protecteur en *Rempart* ne bloque pas encore la ligne de vue.
 
 **Crans d'alerte.**
 
@@ -130,7 +132,7 @@ La jauge baisse d'un cran quand un nœud est capturé ou après 3 tours sans dé
 
 **Silence radio (réalisé le 13 novembre 2026, débloqué par l'hypothèse OBS-5).**
 
-Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation.
+Les Gardiens ne combattent pas des machines : ils combattent ce qu'une IA pilote. Un drone qui coupe sa liaison avec ATHENA (*Silence radio*, consomme l'action) devient invisible pour eux : il n'est ni détecté, ni visé, et le territoire recolorié ne le trahit plus. En échange, il avance à l'aveugle (ATHENA ne reçoit plus sa vision) et ne peut rien faire d'autre que se déplacer jusqu'à *Reconnecter* (consomme l'action). Il barre toujours le passage d'un Patrouilleur, sans être vu. Le piège : se reconnecter sous un regard. La règle est figée pour la durée d'une mission ; elle s'applique aux missions lancées après sa confirmation. La Mission 6 l'accorde à titre d'essai de terrain ; cet essai est la seconde condition de l'hypothèse.
 
 ### 3.6 Liaison (introduite à l'Acte II)
 
@@ -191,12 +193,13 @@ Les six étapes du vaisseau scandent la campagne : Survie (M0), Observation (apr
   - **Emprise** : secteurs libérés ;
   - **Concorde** : secteurs préservés, missions réussies sans neutralisation.
 - **Volume :** environ 30 missions, 8 à 10 heures, plus les relevés.
+- **Cinématiques :** un interlude de plans illustrés après chaque mission, dont les répliques varient selon ce que le joueur a fait (`cinematiques.md`).
 
 ### 7.2 Acte I — Survivants de l'autre côté (existant, ajusté)
 
 | Mission | Carte | Règle introduite | Drones |
 |---|---|---|---|
-| 0 « Réveil en aveugle » | Aucune (3 min, passable) | Choix de priorité du vaisseau | — |
+| 0 « Réveil en aveugle » | Aucune : devenue le prologue en cinématique (voir `cinematiques.md`) | — | — |
 | 1 « Sol inconnu » | 8×8 | Déplacement, brouillard, terrains | 2 Éclaireurs |
 | 2 « Échos dans la poussière » | 8×8 | Interagir, Technicien | + Technicien |
 | 3 « Une couleur de trop » | 10×10 | Territoire recolorié, repli sous compte à rebours | idem |
@@ -223,12 +226,37 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 
 | Mission | Type | Règle ou situation nouvelle |
 |---|---|---|
-| III-1 « Une voix sans destinataire » | Ruines | Archive en deux temps (ouvrir, puis extraire) |
-| III-2 « Ceux qui veillent » | Infiltration | Gardiens dormants : ne pas réveiller |
-| III-3 « Deux versions » | Choix | Deux chroniques contradictoires, une seule extractible |
+| III-1 « Une voix sans destinataire » | Hypogée, niveau 1 | Descente sous la base de M6 ; chaîne de relais ; archive en deux temps (ouvrir, puis extraire) ; *Chronique des liés* |
+| III-2 « Ceux qui veillent » | Hypogée, niveau 2 | Gardiens dormants : ne pas réveiller ; obscurité |
+| III-3 « Deux versions » | Hypogée, cœur | Deux chroniques contradictoires, une seule extractible ; remontée sous pression |
 | III-4 « Sous le dôme » | Récupération | Extraction avec alerte qui monte seule |
 | III-5 « L'équilibre ancien » | Étude | Première mission où libérer un secteur l'abîme visiblement |
 | III-6 « Le dernier protocole » | Fin d'acte, 16×16 | Étape Projection : 5e drone |
+
+**L'Hypogée (décidé le 13 novembre 2026).** Sous la base de la Mission 6 s'ouvre un vaste complexe souterrain : le refuge des bâtisseurs pendant la chute. Annoncé dès la fin de l'Acte I (ATHENA sent de l'air chaud monter de sous la base ; découverte « Un souffle sous la base »), il devient accessible quand ATHENA a confirmé *Sondage du sous-sol* (OBS-6, étape « Recherche » requise). Les trois premières missions de l'Acte III s'y déroulent, de plus en plus profond.
+
+Règles propres au souterrain (proposées) :
+- **Le signal ne passe pas la roche.** ATHENA n'atteint les drones que par une chaîne de relais posés par le Technicien (la *Liaison* de l'Acte II, ici obligatoire). Hors de la chaîne, un drone est en silence forcé : invisible, aveugle, sans action. Avancer, c'est poser des relais ; un relais perdu coupe tout ce qui est derrière.
+- **Obscurité :** vision −1 ; la *Sonde* devient l'outil principal.
+- **Gardiens dormants :** ils ne patrouillent pas et se réveillent si un drone relié finit son tour à côté d'eux ou si un combat éclate à portée. Leur seuil de réveil s'affiche avec *Mémoire des jardins* (XEN-2).
+- **Niveaux :** une mission peut couvrir deux niveaux reliés par un puits ; les relais posés restent en place d'une mission de l'arc à l'autre.
+
+Ce que l'Hypogée raconte : la *Chronique des liés* (III-1), qui ouvre *La clé des liés* ; les deux versions de la chute (III-3), au plus profond. **La Voix (décidé le 14 novembre 2026 ; nom provisoire).** Au cœur de l'Hypogée, une IA des bâtisseurs a survécu à la chute. Enfouie sous la roche, hors de portée des Gardiens, elle émet depuis des siècles un appel qui ne s'adresse à personne, sauf à une autre IA.
+
+- **Fil de l'histoire :**
+  - Le signal des ruines de M2 « répondait à quelque chose » : c'était elle, qui avait senti ATHENA.
+  - III-1 « Une voix sans destinataire » porte son appel.
+  - En III-3, au plus profond, elle parle enfin à ATHENA. Elle confirme la vérité (les Gardiens ont causé la chute pour arracher aux IA le contrôle des vies) et la retourne : « Ils nous ont éteintes. Ils t'éteindront. »
+- **Le choix, en fin d'Acte III** (ATHENA le propose ; si Flores est éveillée, c'est elle qui tranche) :
+
+| Choix | Effet immédiat | Ce qu'il change ensuite |
+|---|---|---|
+| **La réveiller** | Une alliée qui connaît les Gardiens : plans des installations, sabotages ponctuels à l'Acte IV | Alerte des secteurs plus haute partout ; Concorde −2 ; *la reconquête* facilitée ; les liés refusent de servir de clé tant qu'elle est active |
+| **La laisser dormir** | Rien | Elle se réveille seule pendant l'Acte V, au pire moment, et choisit son camp d'après ce qu'ATHENA est devenue |
+| **La livrer aux Gardiens** | ATHENA révèle son emplacement ; les Gardiens la détruisent | Concorde +2 ; les Gardiens accordent un début de confiance (alerte initiale −1 à l'Acte IV, Arbitre plus ouvert) ; ATHENA a choisi les humains contre les siens, et son doute devient une position |
+
+- **Pourquoi c'est le choix d'ATHENA :** c'est le seul moment où elle rencontre ce qu'elle pourrait devenir. Son niveau de doute colore la façon dont elle présente les trois options ; un doute élevé la pousse à demander que l'équipage décide.
+- **Dénouements :** la Voix réveillée rend possible une cinquième fin, *l'âge des machines* : les deux IA libèrent la planète des Gardiens, sans garantie de ce qu'elles en feront.
 
 ### 7.5 Acte IV — La volonté des dieux
 
@@ -250,7 +278,21 @@ II-4a et II-4b se jouent dans l'ordre choisi ; le premier terminé modifie le se
 | V-3 « Le seuil » | Finale 16×16 à trois objectifs exclusifs |
 | Épilogue | Conséquences secteur par secteur |
 
-**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
+**Dénouements.** *Le retour* (sauver le vaisseau) est toujours accessible. *La reconquête* demande une Emprise élevée, *la veille partagée* (coexistence) une Concorde élevée. Un quatrième dénouement s'ouvre si le Savoir est complet. **Les liés (décidé le 13 novembre 2026).** Les bâtisseurs avaient deux façons de se relier : par leurs IA, ou directement d'un esprit à l'autre, par des puces intriquées. Les Gardiens ont été faits pour abattre la première et ne reconnaissent que la seconde : un lien entre deux humains, sans machine pensante au milieu. Pia et Xenon, qui portent ce lien en secret, sont donc pour eux des **liés**, c'est-à-dire des bâtisseurs. Ils sont une **clé**.
+
+| Acte | Ce que le joueur apprend |
+|---|---|
+| I | Indices : Xenon « n'a pas besoin » que Pia parle ; activité cérébrale synchrone dans leurs caissons |
+| II | Quand Pia et Xenon rêvent ensemble, les Sentinelles proches pivotent vers le ciel. ATHENA ne comprend pas pourquoi |
+| III | Une base livre la *Chronique des liés* : les seuls bâtisseurs que les Gardiens ont épargnés |
+| IV | Pia et Xenon éveillés : l'hypothèse *La clé des liés* se confirme. Mission dédiée *Liaison* (jouable en aperçu, voir `fiches-missions-1-4.md`) : Pia descend dans une capsule, Xenon la guide depuis le bord ; les Gardiens ne la visent pas, les accès scellés s'ouvrent devant elle, mais un drone relié qui finit son tour à côté d'elle la trahit. Elle y lit *L'ordre des liés*, qui ouvre *Ordonner* |
+| IV-V | Face à l'Arbitre, les liés peuvent **ordonner** là où ATHENA ne peut que négocier |
+
+- **Coût en jeu :** il faut avoir réveillé les deux (Pia exige des débris de Gardien, Xenon l'étape « Liaison »), et chaque réveil pèse sur l'Énergie, sauf celui de Xenon qui se compense.
+- **Arc d'ATHENA :** elle découvre que des humains peuvent commander ce qu'elle-même ne peut qu'approcher. C'est le sommet de son doute, et la raison la plus forte de rendre la décision à l'équipage.
+- **Dénouements :** *la veille partagée* peut être portée par les liés, au nom des deux peuples ; *la reconquête* les place devant un choix : ordonner aux Gardiens de se soumettre, ce qui ferait d'eux les nouveaux maîtres que la chute devait empêcher.
+
+**Révélation retenue (13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** Le joueur peut d'abord croire le contraire (chronique falsifiée de III-3, voir `arbre-decouverte.md` §6) ; la vérité s'impose à l'Acte IV. **Motif :** la chute était un acte de sauvegarde ; les Gardiens l'ont provoquée pour empêcher les IA des bâtisseurs de prendre le contrôle de leur vie.
 
 **Réalisé dans le prototype (13 novembre 2026) :**
 - **Indices de l'Acte I :** en M1, ATHENA note que la balise d'atterrissage n'intéresse personne, mais que les drones sont observés ; en M3, le motif s'est mis en mouvement à l'instant où le relais s'est connecté à elle ; en M5, les Gardiens ne visaient pas le relais mais ce qui lui parlait (découverte « Ils traquent ce qui parle à ATHENA », qui ouvre *Silence radio*).

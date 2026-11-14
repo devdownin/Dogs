@@ -1,0 +1,81 @@
+{
+  "format_version": 1,
+  "id": "m6_premiere_chronique",
+  "act": 1,
+  "order": 6,
+  "title_key": "M6_TITLE",
+  "type": "recovery",
+  "rule_introduced": "interceptor_radio_silence",
+  "rules": ["radio_silence"],
+  "map": {
+    "width": 12,
+    "height": 12,
+    "rows": [
+      "R R . . X . X . . . R R",
+      "R . . . X . X . . . R R",
+      ". . R . . . . . R . . .",
+      ". . . . . . . . . . R .",
+      ". R . . . . . . . . . .",
+      ". . . R . . . . R . . .",
+      "C C C C G C C C C C . .",
+      ". . . . . . . . . . . .",
+      ". R . . . . . . . R . .",
+      ". . . . R . . . . . B B",
+      ". . . . . . . . . . B B",
+      ". . . . . . . . R . . ."
+    ],
+    "territory": { "recolored": ["C1:J5"], "except": ["F2"] },
+    "features": [
+      { "id": "archive", "kind": "knowledge_base", "cell": "F1", "label_key": "M6_ARCHIVE", "discovery": "chronicle_first" },
+      { "id": "cache", "kind": "fragment_cache", "cell": "J1", "label_key": "M6_CACHE" }
+    ]
+  },
+  "deployment": {
+    "energy": null,
+    "units": [
+      { "id": "sc1", "type": "scout", "cell": "B11" },
+      { "id": "tec", "type": "technician", "cell": "C11" },
+      { "id": "int", "type": "interceptor", "cell": "D11" },
+      { "id": "pro", "type": "protector", "cell": "E11" }
+    ],
+    "extraction": ["B11:E11"]
+  },
+  "guardians": [
+    { "id": "pat1", "type": "patroller", "cell": "A8", "route": ["A8", "L8"], "route_mode": "ping_pong" },
+    { "id": "pat2", "type": "patroller", "cell": "C3", "route": ["C3", "I3"], "route_mode": "ping_pong" }
+  ],
+  "alert": { "initial": "watch" },
+  "objectives": {
+    "main": {
+      "text_key": "M6_OBJ_MAIN",
+      "condition": { "sequence": [
+        { "type": "interacted", "feature": "archive" },
+        { "type": "unit_extracted", "unit": "tec" }
+      ] },
+      "deadline_turn": 16
+    },
+    "records": [
+      { "id": "r_quiet", "text_key": "M6_REC_QUIET", "condition": { "type": "alert_never_above", "level": "watch" } },
+      { "id": "r_deep", "text_key": "M6_REC_DEEP", "condition": { "type": "interacted", "feature": "cache" } }
+    ],
+    "failure": { "type": "unit_disabled", "unit": "tec" },
+    "retreat_allowed": true
+  },
+  "triggers": [
+    { "id": "t_brief", "when": { "type": "turn_start", "turn": 1 },
+      "do": [
+        { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M6_DLG_TRIAL" } ] },
+        { "type": "show_tip", "key": "TIP_SILENCE" }
+      ] },
+    { "id": "t_interceptor", "when": { "type": "turn_start", "turn": 2 },
+      "do": [ { "type": "show_tip", "key": "TIP_INTERCEPTOR" } ] },
+    { "id": "t_archive", "when": { "type": "interacted", "feature": "archive" },
+      "do": [ { "type": "dialogue", "lines": [ { "speaker": "athena", "key": "M6_DLG_ARCHIVE" } ] } ] }
+  ],
+  "rewards": { "data": 4, "materials": 1, "fragments": 1, "per_record": { "data": 1 } },
+  "campaign_effects": [
+    { "type": "chronicle", "entry": "premiere_chronique", "status": "observed" },
+    { "type": "discoveries", "ids": ["obs_silence_trial", "obs_cavity"] },
+    { "type": "gauge", "gauge": "concord", "delta": 1, "if_record": "r_quiet" }
+  ]
+}

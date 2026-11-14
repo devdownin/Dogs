@@ -1,0 +1,59 @@
+{
+  "format_version": 1,
+  "id": "after_m6",
+  "after_mission": "m6_premiere_chronique",
+  "shots": [
+    {
+      "image": "ruins_archive",
+      "motion": "pull_out",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_01"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_02"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_07"
+        }
+      ]
+    },
+    {
+      "image": "pods",
+      "motion": "push_in",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_03"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_06"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M6_04",
+          "if": {
+            "doubt_at_least": 2
+          }
+        },
+        {
+          "speaker": "commander_log",
+          "key": "CIN_M6_05"
+        }
+      ]
+    },
+    {
+      "card": "CIN_ACT1_END",
+      "lines": [
+        {
+          "speaker": "card",
+          "key": "CIN_ACT1_SUB"
+        }
+      ]
+    }
+  ]
+}
