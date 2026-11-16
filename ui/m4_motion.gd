@@ -71,19 +71,17 @@ func consume(event: Dictionary, game: GameState, before: Dictionary) -> void:
 			var id: String = event["guardian"] if guard else event["unit"]
 			var actors := game.guards if guard else game.units
 			var path: Array = event["path"]
-			if path.is_empty() or not before.has(id) or not actors.has(id):
+			if path.is_empty():
+				return
+			_moves.erase(id)
+			if not before.has(id) or not actors.has(id):
 				return
 			if not TYPES.has(actors[id]["type"]):
 				return
-			if guard:
-				# Ne jamais révéler via l'animation un itinéraire sous le brouillard.
-				if not game.current_vision.has(before[id]):
-					return
-				for cell: Vector2i in path:
-					if not game.current_vision.has(cell):
-						_moves.erase(id)
-						return
-			_moves[id] = {"cells": [before[id]] + path, "start": _clock}
+			var cells: Array = [before[id]] + path
+			if guard and not _route_visible(cells, game.current_vision):
+				return
+			_moves[id] = {"cells": cells, "start": _clock}
 			_face(id, path[0] - before[id])
 		"probe_launched", "feature_activated", "unit_braced":
 			_act(event["unit"], "action")
@@ -96,6 +94,20 @@ func consume(event: Dictionary, game: GameState, before: Dictionary) -> void:
 			_act(event["unit"], "disabled")
 		"unit_repaired":
 			_actions.erase(event["unit"])
+
+
+## Une commande peut modifier le brouillard pendant un trajet déjà commencé.
+func refresh_guard_visibility(game: GameState) -> void:
+	for id: String in _moves.keys():
+		if game.guards.has(id) and not _route_visible(_moves[id]["cells"], game.current_vision):
+			_moves.erase(id)
+
+
+func _route_visible(cells: Array, vision: Dictionary[Vector2i, bool]) -> bool:
+	for cell: Vector2i in cells:
+		if not vision.has(cell):
+			return false
+	return true
 
 
 func _act(id: String, clip: String) -> void:
