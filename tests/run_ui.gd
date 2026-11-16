@@ -65,6 +65,7 @@ func _run() -> void:
 	_check(main._end_panel.visible, "le bilan de mission s'affiche")
 	await _shot(main, "m4_bilan")
 	await _test_interlude(main)
+	_test_m4_directions(main)
 
 	# Mission 3 : le compte à rebours et l'avancée du territoire s'affichent.
 	main.load_mission(2)
@@ -201,6 +202,73 @@ func _test_zoom(main: Control) -> void:
 		"après zoom centré sur F2, F2 reste sous le doigt"
 	)
 	await _shot(main, "m4_zoom")
+
+
+func _test_m4_directions(main: Control) -> void:
+	main.load_mission(3)
+	var board: BoardView = main._board
+	var motion: M4Motion = board._motion
+	board.reduce_motion(false)
+	_tap(main, "D10")
+	_tap(main, "E9")
+	_tap(main, "E9")
+	_check(
+		(
+			_technician_sheet(motion) == "technician_n.png"
+			and not motion.mirrored("tec", "technician")
+		),
+		"M4 : le Technicien montre son dos sur la première étape vers le nord"
+	)
+	var first_pose := motion.frame_for("tec", "technician", false)
+	_check(
+		(
+			motion.advance(0.06)
+			and motion.position("tec", Cells.parse("E9")).y < 9.0
+			and motion.frame_for("tec", "technician", false) != first_pose
+		),
+		"M4 : le châssis et la pose de marche progressent entre deux images d'attente"
+	)
+	motion.advance(M4Motion.DRONE_STEP_SECONDS["technician"] - 0.06)
+	board._actor_rect("tec", Cells.parse("E9"))
+	_check(
+		_technician_sheet(motion) == "technician.png" and motion.mirrored("tec", "technician"),
+		"M4 : le Technicien reprend le profil miroir au virage vers l'est"
+	)
+	main.end_turn()
+	_tap(main, "E9")
+	_tap(main, "E10")
+	_tap(main, "E10")
+	_check(
+		(
+			_technician_sheet(motion) == "technician_s.png"
+			and not motion.mirrored("tec", "technician")
+		),
+		"M4 : le Technicien montre sa face quand il repart vers le sud"
+	)
+	motion.advance(M4Motion.DRONE_STEP_SECONDS["technician"])
+	board._actor_rect("tec", Cells.parse("E10"))
+	_check(
+		_technician_sheet(motion) == "technician_s.png",
+		"M4 : le Technicien conserve la vue sud une fois arrivé"
+	)
+	main.load_mission(0)
+	board.reduce_motion(false)
+	_tap(main, "A7")
+	_tap(main, "B7")
+	_tap(main, "B7")
+	var destination := Cells.parse("B7")
+	_check(
+		(
+			main.game.units["sc1"]["pos"] == destination
+			and board._actor_rect("sc1", destination) == board.cell_rect(Cells.parse("A7"))
+		),
+		"M1 : l’Éclaireur utilise la marche animée dès la première mission Surface"
+	)
+
+
+func _technician_sheet(motion: M4Motion) -> String:
+	var frame := motion.frame_for("tec", "technician", false) as AtlasTexture
+	return frame.atlas.resource_path.get_file() if frame != null else ""
 
 
 func _test_probe(main: Control) -> void:
