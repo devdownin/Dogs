@@ -8,23 +8,36 @@ from scipy.ndimage import map_coordinates
 
 PROJECT = Path(__file__).resolve().parents[2]
 PAINTED = PROJECT / "assets/maps/m4_le_veilleur"
+DIRECTIONS = Path(__file__).resolve().parent / "directions"
 TARGET = PROJECT / "assets/units/m4_motion"
 CELL = 288
 GROUND = round(CELL * 0.78)
 COLUMNS = 6
 Y, X = np.mgrid[:CELL, :CELL].astype(float)
 
-# Points d'appui vus sur le rendu peint, d'avant en arrière.
+# Points d'appui dans le cadre de jeu de 288 px. Les pattes alternent par paire.
 FEET = {
     "scout": ((95, 199), (120, 217), (158, 187), (184, 172)),
     "technician": ((69, 181), (132, 216), (210, 180)),
     "patroller": ((90, 218), (132, 162), (200, 205)),
+    "scout_n": ((116, 223), (168, 224), (111, 161), (175, 161)),
+    "scout_s": ((118, 223), (169, 224), (114, 140), (174, 139)),
+    "technician_n": ((99, 222), (188, 222), (88, 165), (204, 165)),
+    "technician_s": ((97, 222), (190, 222), (89, 166), (200, 165)),
+    "patroller_n": ((92, 189), (146, 223), (195, 189)),
+    "patroller_s": ((91, 223), (132, 171), (198, 210)),
 }
 ACTION = {
     "scout": (133, 25, -6, -10),
     "technician": (122, 56, -16, 4),
     "sentinel": (144, 75, 0, 0),
     "patroller": (146, 74, -7, 3),
+    "scout_n": (144, 61, -3, -9),
+    "scout_s": (144, 92, 3, -9),
+    "technician_n": (152, 45, 9, -5),
+    "technician_s": (119, 100, -10, 6),
+    "patroller_n": (145, 65, -4, 6),
+    "patroller_s": (144, 61, 4, 6),
 }
 CLIPS = (("idle", 8), ("walk", 8), ("action", 8), ("hit", 4), ("disabled", 7))
 
@@ -85,7 +98,10 @@ def pose(source, unit, clip, frame, count):
 def main():
     TARGET.mkdir(parents=True, exist_ok=True)
     for unit in ACTION:
-        source = np.array(Image.open(PAINTED / f"{unit}.png").convert("RGBA"))
+        directory = DIRECTIONS if "_" in unit else PAINTED
+        with Image.open(directory / f"{unit}.png") as image:
+            rgba = image.convert("RGBA").resize((CELL, CELL), Image.Resampling.LANCZOS)
+        source = np.asarray(rgba)
         frames = [
             pose(source, unit, clip, i, count)
             for clip, count in CLIPS

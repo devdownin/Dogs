@@ -22,6 +22,6 @@ Le projet a été importé avec Godot 4.7 stable. Le validateur des données, le
 ## Animations de présentation (revue 0.3.0)
 
 - L'Éclaireur, le Technicien, la Sentinelle et le Patrouilleur utilisent des feuilles de 35 images, à 12 images par seconde. Le mouvement suit le trajet du moteur de jeu et l'état logique de la mission est appliqué immédiatement.
-- Le bas de chaque sprite est ancré à 78 % du cadre. Les silhouettes peintes sont déformées localement pour faire bouger pattes, mât et bras. La vue est unique, miroir horizontal pour les déplacements latéraux. La Sentinelle reste fixe, et son orientation est indiquée au sol.
+- Le bas de chaque sprite est ancré à 78 % du cadre. Les silhouettes peintes sont déformées localement pour faire bouger pattes, mât et bras. L’Éclaireur, le Technicien et le Patrouilleur changent de vue à chaque étape du trajet : de dos vers le nord, de face vers le sud, de profil vers l’ouest et en profil miroir vers l’est. Ils gardent la dernière vue à l’arrivée. La Sentinelle reste fixe et son orientation est indiquée au sol.
 - Le bouton « Réduire les animations » enregistre un réglage persistant. Quand il est actif, les unités sont affichées directement dans leur case de destination.
-- Pour reproduire les feuilles, lancer `python art-src/animations_m4/export.py` après l'export des sprites M4. Les orientations nord et sud, le rig 3D et les mesures sur téléphone restent à faire.
+- Pour reproduire les feuilles, lancer `python art-src/animations_m4/export.py` après l'export des sprites M4. Les poses maîtresses nord et sud sont dans `art-src/animations_m4/directions/` (PNG RGBA, 576 × 576 px). Le rig 3D et les mesures sur téléphone restent à faire.

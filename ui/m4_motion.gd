@@ -20,32 +20,39 @@ var reduced := false
 var _frames: Dictionary[String, Array] = {}
 var _moves: Dictionary[String, Dictionary] = {}
 var _actions: Dictionary[String, Dictionary] = {}
-var _mirrors: Dictionary[String, bool] = {}
+var _directions: Dictionary[String, Vector2i] = {}
 var _clock := 0.0
 
 
 func load_sheets() -> void:
 	for kind: String in TYPES:
-		var sheet: Texture2D = load("res://assets/units/m4_motion/" + kind + ".png")
-		if sheet == null:
-			continue
-		var frames: Array[Texture2D] = []
-		var end: Vector2i = CLIPS["disabled"]
-		for index in end.x + end.y:
-			var atlas := AtlasTexture.new()
-			atlas.atlas = sheet
-			var col := posmod(index, SHEET_COLUMNS)
-			var row := floori(float(index) / SHEET_COLUMNS)
-			atlas.region = Rect2(col * FRAME_SIZE, row * FRAME_SIZE, FRAME_SIZE, FRAME_SIZE)
-			atlas.filter_clip = true
-			frames.append(atlas)
-		_frames[kind] = frames
+		_load_sheet(kind)
+		if kind != "sentinel":
+			_load_sheet(kind + "_n")
+			_load_sheet(kind + "_s")
+
+
+func _load_sheet(name: String) -> void:
+	var sheet: Texture2D = load("res://assets/units/m4_motion/" + name + ".png")
+	if sheet == null:
+		return
+	var frames: Array[Texture2D] = []
+	var end: Vector2i = CLIPS["disabled"]
+	for index in end.x + end.y:
+		var atlas := AtlasTexture.new()
+		atlas.atlas = sheet
+		var col := posmod(index, SHEET_COLUMNS)
+		var row := floori(float(index) / SHEET_COLUMNS)
+		atlas.region = Rect2(col * FRAME_SIZE, row * FRAME_SIZE, FRAME_SIZE, FRAME_SIZE)
+		atlas.filter_clip = true
+		frames.append(atlas)
+	_frames[name] = frames
 
 
 func reset() -> void:
 	_moves.clear()
 	_actions.clear()
-	_mirrors.clear()
+	_directions.clear()
 	_clock = 0.0
 
 
@@ -103,8 +110,7 @@ func _act(id: String, clip: String) -> void:
 
 
 func _face(id: String, direction: Vector2i) -> void:
-	if direction.x != 0:
-		_mirrors[id] = direction.x > 0
+	_directions[id] = direction
 
 
 func position(id: String, final_cell: Vector2i) -> Vector2:
@@ -149,8 +155,16 @@ func frame_for(id: String, kind: String, disabled: bool) -> Texture2D:
 		index = posmod(index, clip_range.y)
 	else:
 		index = mini(index, clip_range.y - 1)
-	return _frames[kind][clip_range.x + index]
+	var sheet := kind
+	match _directions.get(id, Vector2i.ZERO):
+		Vector2i.UP:
+			sheet += "_n"
+		Vector2i.DOWN:
+			sheet += "_s"
+	var frames: Array = _frames.get(sheet, _frames[kind])
+	return frames[clip_range.x + index]
 
 
 func mirrored(id: String, kind: String) -> bool:
-	return kind != "sentinel" and _mirrors.get(id, false)
+	var direction: Vector2i = _directions.get(id, Vector2i.ZERO)
+	return kind != "sentinel" and direction.x > 0
