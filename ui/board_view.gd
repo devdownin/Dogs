@@ -186,14 +186,15 @@ func _sprite(
 
 ## Recadre au zoom initial, centré sur `focus` (en cases). Différé si la taille est encore nulle.
 func reset_view(focus: Vector2) -> void:
-	if main.def.id == ART_MISSION:
+	var surface_mission: bool = main.def.data.get("tileset", "") == "surface"
+	if surface_mission or main.def.id == ART_MISSION:
 		_motion = M4Motion.new()
 		_motion.load_sheets()
 		_motion.set_reduced(main.animations_reduced)
 	else:
 		_motion = null
 	_load_painted_art(main.def)
-	if main.def.data.get("tileset", "") == "surface":
+	if surface_mission:
 		if _surface == null:
 			var surface := SurfaceTiles.new()
 			if surface.load_manifest():
