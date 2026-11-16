@@ -108,16 +108,6 @@ func consume(event: Dictionary, game: GameState, before: Dictionary) -> void:
 			var cells: Array = [before[id]] + path
 			if guard and not _route_visible(cells, game.current_vision):
 				return
-			_moves[id] = {"cells": cells, "start": _clock}
-			if guard:
-				# Ne jamais révéler via l'animation un itinéraire sous le brouillard.
-				if not game.current_vision.has(before[id]):
-					return
-				for cell: Vector2i in path:
-					if not game.current_vision.has(cell):
-						_moves.erase(id)
-						return
-			var cells: Array = [before[id]] + path
 			var seconds: float = DRONE_STEP_SECONDS.get(kind, STEP_SECONDS)
 			_moves[id] = {
 				"cells": cells,
@@ -159,8 +149,6 @@ func _route_visible(cells: Array, vision: Dictionary[Vector2i, bool]) -> bool:
 	return true
 
 
-func _act(id: String, clip: String) -> void:
-	_actions[id] = {"clip": clip, "start": _clock}
 func _act(id: String, clip: String, start := -1.0) -> void:
 	_actions[id] = {"clip": clip, "start": maxf(_clock, start)}
 
