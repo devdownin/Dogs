@@ -118,6 +118,7 @@ func _run() -> void:
 
 	await _test_zoom(main)
 	await _test_probe(main)
+	_test_m4_motion(main)
 	await _test_combat(main)
 	main = await _test_resume(main)
 	await _test_research(main)
@@ -129,6 +130,56 @@ func _run() -> void:
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
+
+
+func _test_m4_motion(main: Control) -> void:
+	main.load_mission(3)
+	var board: BoardView = main._board
+	var motion: M4Motion = board._motion
+	board.reduce_motion(false)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	var destination := Cells.parse("D7")
+	_check(
+		(
+			main.game.units["tec"]["pos"] == destination
+			and motion.position("tec", destination) == Vector2(Cells.parse("D10"))
+		),
+		"M4 : le déplacement logique est immédiat, le sprite part de la case de départ"
+	)
+	board.reduce_motion(true)
+	_check(
+		motion.position("tec", destination) == Vector2(destination) and not motion.advance(1.0),
+		"M4 : réduire les animations termine le déplacement visuel et fige les cycles"
+	)
+	board.reduce_motion(false)
+	var start := Cells.parse("C4")
+	var middle := Cells.parse("D4")
+	var end := Cells.parse("E4")
+	var path: Array[Vector2i] = [middle, end]
+	main.game.guards["pat1"]["pos"] = end
+	for cell in [start, middle, end]:
+		main.game.current_vision[cell] = true
+	var events: Array[Dictionary] = [{"type": "guardian_moved", "guardian": "pat1", "path": path}]
+	board.present_events(events, 0, {"pat1": start})
+	motion.advance(M4Motion.STEP_SECONDS / 2.0)
+	_check(
+		motion.position("pat1", end).is_equal_approx(Vector2(start).lerp(Vector2(middle), 0.5)),
+		"M4 : un trajet de Gardien visible est interpolé"
+	)
+	main.game.current_vision.erase(middle)
+	board.present_events(events, events.size(), {})
+	_check(
+		board._actor_rect("pat1", end) == board.cell_rect(end),
+		"M4 : un Gardien visible reste à destination si son trajet passe sous le brouillard"
+	)
+	main.game.current_vision[middle] = true
+	board.present_events(events, events.size(), {})
+	_check(
+		board._actor_rect("pat1", end) == board.cell_rect(end),
+		"M4 : un trajet abandonné ne reprend pas lorsque la visibilité revient"
+	)
 
 
 func _test_zoom(main: Control) -> void:

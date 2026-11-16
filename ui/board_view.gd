@@ -115,9 +115,11 @@ func reduce_motion(enabled: bool) -> void:
 		queue_redraw()
 
 
-func present_event(event: Dictionary, before: Dictionary) -> void:
+func present_events(events: Array[Dictionary], first: int, before: Dictionary) -> void:
 	if _motion != null:
-		_motion.consume(event, main.game, before)
+		for i in range(first, events.size()):
+			_motion.consume(events[i], main.game, before)
+		_motion.refresh_guard_visibility(main.game)
 
 
 func _process(delta: float) -> void:
