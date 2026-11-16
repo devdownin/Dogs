@@ -63,6 +63,7 @@ var _sprites: Dictionary[String, Texture2D] = {}
 var _painted_ground: Texture2D
 var _surface: SurfaceTiles
 var _motion: M4Motion
+var _combat_feedback: CombatFeedback
 var _painted_sprites: Dictionary[String, Texture2D] = {}
 var _cs := 0.0  # taille d'une case
 var _cam := Vector2.ZERO  # point de la carte (en cases) au centre de la vue
@@ -80,6 +81,9 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	resized.connect(_on_resized)
+	_combat_feedback = CombatFeedback.new()
+	_combat_feedback.board = self
+	add_child(_combat_feedback)
 	for tile_name: String in TILE_VARIANTS:
 		var list: Array[Texture2D] = []
 		for v: int in TILE_VARIANTS[tile_name]:
@@ -105,21 +109,31 @@ func _load_painted_art(def: MissionDef) -> void:
 
 
 func reset_motion() -> void:
+	_combat_feedback.clear()
 	if _motion != null:
 		_motion.reset()
 
 
 func reduce_motion(enabled: bool) -> void:
+	_combat_feedback.reduced = enabled
+	_combat_feedback.queue_redraw()
 	if _motion != null:
 		_motion.set_reduced(enabled)
 		queue_redraw()
 
 
-func present_events(events: Array[Dictionary], first: int, before: Dictionary) -> void:
+func present_events(
+	events: Array[Dictionary], first: int, before: Dictionary, command := {}
+) -> void:
+	_combat_feedback.present(events, first, main.game, command)
 	if _motion != null:
 		for i in range(first, events.size()):
 			_motion.consume(events[i], main.game, before)
 		_motion.refresh_guard_visibility(main.game)
+
+
+func mute_combat(enabled: bool) -> void:
+	_combat_feedback.muted = enabled
 
 
 func _process(delta: float) -> void:
@@ -186,6 +200,7 @@ func _sprite(
 
 ## Recadre au zoom initial, centré sur `focus` (en cases). Différé si la taille est encore nulle.
 func reset_view(focus: Vector2) -> void:
+	_combat_feedback.reduced = main.animations_reduced
 	var surface_mission: bool = main.def.data.get("tileset", "") == "surface"
 	if surface_mission or main.def.id == ART_MISSION:
 		_motion = M4Motion.new()

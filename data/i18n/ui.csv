@@ -35,6 +35,9 @@ UI_ACT_BRACE,Se tapir,Brace
 UI_ACT_RAMPART,Rempart,Rampart
 UI_ACT_REPAIR,Réparer,Repair
 UI_HIT,%s touché : −%d (%s).,%s hit: −%d (%s).
+UI_GUARD_HIT,%s touché : −%d.,%s hit: −%d.
+UI_REPAIRED,%s réparé · intégrité %d.,%s repaired · integrity %d.
+UI_RAMPART_RAISED,%s déploie un rempart.,%s raises a shield.
 UI_UNIT_DOWN,%s hors service.,%s disabled.
 UI_GUARD_DOWN,%s neutralisé.,%s neutralized.
 SPEAKER_ATHENA,ATHENA,ATHENA
@@ -93,4 +96,5 @@ UI_BETRAYED,%s est trahie : les Gardiens la voient.,%s is betrayed: the Guardian
 UI_BETRAYAL_RISK,Faux pas : Pia sera trahie.,Misstep: Pia will be betrayed.
 UI_SEAL_OPENED,Sceau ouvert en %s.,Seal opened at %s.
 UI_REDUCE_MOTION,Réduire les animations,Reduce motion
-UI_REDUCE_MOTION_HINT,Affiche les positions sans transition.,Shows positions without transitions.
+UI_REDUCE_MOTION_HINT,Affiche les positions sans transition et désactive les effets de combat.,Shows positions without transitions and disables combat visuals.
+UI_COMBAT_MUTE,Couper les sons de combat,Mute combat sounds
