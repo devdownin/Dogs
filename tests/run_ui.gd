@@ -127,6 +127,9 @@ func _run() -> void:
 	await _test_liaison(main)
 	SaveStore.erase(SaveStore.MISSION)
 	SaveStore.erase(SaveStore.CAMPAIGN)
+	main._board.reset_motion()
+	main.queue_free()
+	await process_frame
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
@@ -445,15 +448,39 @@ func _test_combat(main: Control) -> void:
 	var announced: Array = main.game.intents()["attacks"]
 	_check(announced.size() == 2, "deux coups annoncés contre le relais")
 	await _shot(main, "m5_coups_annonces")
+	var feedback: CombatFeedback = main._board._combat_feedback
+	feedback.clear()
 	var before: int = main.game.units["pro"]["hp"]
 	main.do_action(acts[kinds.find("repair")])
 	_check(main.game.units["pro"]["hp"] == before + 1, "réparer rend 1 point d'intégrité")
+	_check(
+		(
+			feedback._effects.size() == 1
+			and feedback._effects[0]["source"] == main.game.units["tec"]["pos"]
+			and feedback._effects[0]["cell"] == main.game.units["pro"]["pos"]
+		),
+		"Combat : la réparation affiche le lien entre les deux drones"
+	)
+	await _shot(main, "m5_reparation")
 	var expected: int = before + 1
 	for at: Dictionary in main.game.intents()["attacks"]:
 		if at["unit"] == "pro":
 			expected -= int(at["damage"])
 	main.end_turn()
 	_check(main.game.units["pro"]["hp"] == expected, "les coups portés sont ceux annoncés")
+	await _shot(main, "m5_impact")
+
+	feedback.clear()
+	var guard: Dictionary = main.game.guards["pat1"]
+	main.game.current_vision.erase(guard["pos"])
+	var events: Array[Dictionary] = [
+		{"type": "unit_attacked", "guardian": "pat1", "unit": "pro", "damage": 1}
+	]
+	main._board.present_events(events, 0, {})
+	_check(
+		feedback._effects.size() == 1 and feedback._effects[0]["kind"] == "impact",
+		"Combat : un ennemi sous le brouillard produit uniquement un impact sur sa cible"
+	)
 
 
 ## Quitter l'application en pleine mission puis la relancer restitue la partie exacte.

@@ -28,6 +28,7 @@ var mode := ""  # "" ou "probe" (choix de la zone à sonder)
 var show_danger := true
 var reveal_all := false
 var animations_reduced := false
+var combat_muted := false
 
 var _mission_index := 0
 var _log: Array[Dictionary] = []  # commandes jouées ; permet d'annuler en rejouant
@@ -58,6 +59,7 @@ func _ready() -> void:
 	var preferences := ConfigFile.new()
 	if preferences.load("user://presentation.cfg") == OK:
 		animations_reduced = bool(preferences.get_value("motion", "reduced", false))
+		combat_muted = bool(preferences.get_value("audio", "combat_muted", false))
 	_build_ui()
 	if not _resume():
 		load_mission(0)
@@ -140,6 +142,7 @@ func _build_ui() -> void:
 	_board.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_board.cell_tapped.connect(tap_cell)
 	box.add_child(_board)
+	_board.mute_combat(combat_muted)
 
 	_message = _label(24)
 	_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -152,12 +155,17 @@ func _build_ui() -> void:
 	_actions.add_theme_constant_override("h_separation", 10)
 	_actions.add_theme_constant_override("v_separation", 10)
 	box.add_child(_actions)
-	var motion_toggle := _toggle("UI_REDUCE_MOTION", animations_reduced, _set_reduced_motion)
-	motion_toggle.custom_minimum_size.y = 0
-	motion_toggle.add_theme_font_size_override("font_size", 20)
-	motion_toggle.tooltip_text = tr("UI_REDUCE_MOTION_HINT")
-	motion_toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
-	box.add_child(motion_toggle)
+	var presentation := HBoxContainer.new()
+	presentation.alignment = BoxContainer.ALIGNMENT_END
+	presentation.add_theme_constant_override("separation", 10)
+	box.add_child(presentation)
+	var motion := _toggle("UI_REDUCE_MOTION", animations_reduced, _set_reduced_motion)
+	var sound := _toggle("UI_COMBAT_MUTE", combat_muted, _set_combat_muted)
+	motion.tooltip_text = tr("UI_REDUCE_MOTION_HINT")
+	for toggle: Button in [motion, sound]:
+		toggle.custom_minimum_size.y = 52
+		toggle.add_theme_font_size_override("font_size", 20)
+		presentation.add_child(toggle)
 
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 10)
@@ -290,8 +298,19 @@ func _set_reveal_all(on: bool) -> void:
 func _set_reduced_motion(enabled: bool) -> void:
 	animations_reduced = enabled
 	_board.reduce_motion(enabled)
+	_save_presentation()
+
+
+func _set_combat_muted(enabled: bool) -> void:
+	combat_muted = enabled
+	_board.mute_combat(enabled)
+	_save_presentation()
+
+
+func _save_presentation() -> void:
 	var preferences := ConfigFile.new()
-	preferences.set_value("motion", "reduced", enabled)
+	preferences.set_value("motion", "reduced", animations_reduced)
+	preferences.set_value("audio", "combat_muted", combat_muted)
 	preferences.save("user://presentation.cfg")
 
 
@@ -443,7 +462,7 @@ func _play(cmd: Dictionary) -> void:
 		and game.observed_guards.size() == observed
 	)
 	_log.append(cmd)
-	_board.present_events(game.events, events, positions)
+	_board.present_events(game.events, events, positions, cmd)
 	_consume_events()
 	if game.result.is_empty():
 		_save_mission()
@@ -506,6 +525,12 @@ func _consume_events() -> void:
 				lines.append(tr("UI_DETECTED") % ", ".join(names))
 			"unit_attacked":
 				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
+			"guardian_damaged":
+				lines.append(tr("UI_GUARD_HIT") % [e["guardian"], e["damage"]])
+			"unit_repaired":
+				lines.append(tr("UI_REPAIRED") % [e["unit"], e["hp"]])
+			"rampart_raised":
+				lines.append(tr("UI_RAMPART_RAISED") % e["unit"])
 			"unit_disabled":
 				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
 			"guardian_stunned":
