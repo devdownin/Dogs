@@ -443,8 +443,7 @@ func _play(cmd: Dictionary) -> void:
 		and game.observed_guards.size() == observed
 	)
 	_log.append(cmd)
-	for i in range(events, game.events.size()):
-		_board.present_event(game.events[i], positions)
+	_board.present_events(game.events, events, positions)
 	_consume_events()
 	if game.result.is_empty():
 		_save_mission()
