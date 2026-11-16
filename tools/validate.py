@@ -36,7 +36,7 @@ COND_PARAMS = {
     "territory_entered": ["territory"], "never_end_turn_on": ["territory"], "unit_end_turn_on": ["territory"],
     "guardian_observed": [], "alert_at_least": ["level"], "alert_never_above": ["level"],
     "countdown_expired": ["countdown"], "flag": ["name"], "guardian_neutralized": [],
-    "no_guardian_neutralized": []}
+    "no_guardian_neutralized": [], "bound_exposed": []}
 
 
 def walk_conditions(c):
@@ -111,7 +111,7 @@ def static_checks(d, keys):
                     errs.append(f"{where} : {t} sans paramètre {p}")
             if "feature" in c and c["feature"] not in feat_ids:
                 errs.append(f"{where} : point d'intérêt inconnu {c['feature']}")
-            if "unit" in c and c["unit"] not in unit_ids + ["any", "scout", "technician", "protector", "interceptor"]:
+            if "unit" in c and c["unit"] not in unit_ids + ["any", "scout", "technician", "protector", "interceptor", "capsule"]:
                 errs.append(f"{where} : unité inconnue {c['unit']}")
             if "countdown" in c and c["countdown"] not in countdowns:
                 errs.append(f"{where} : compte à rebours jamais lancé {c['countdown']}")
@@ -146,12 +146,26 @@ def static_checks(d, keys):
     for k in sorted(used - keys):
         errs.append(f"clé de traduction absente : {k}")
 
+    capsules = [u for u in d["deployment"]["units"] if u["type"] == "capsule"]
+    seals = any("S" in r.split(" ") for r in rows)
+    if capsules and "linked_key" not in d.get("rules", []):
+        errs.append("capsule des liés sans la règle linked_key")
+    if seals and not capsules:
+        errs.append("accès scellés sans capsule des liés pour les ouvrir")
+    if any(f["kind"] == "builder_console" for f in m.features.values()) and not capsules:
+        errs.append("console des bâtisseurs sans capsule des liés")
+
     # Accessibilité : chaque point à activer doit avoir une case adjacente atteignable par l'unité requise.
+    # Les accès scellés comptent comme ouverts : la capsule des liés peut les ouvrir.
+    m.grid = [["." if t == "S" else t for t in row] for row in m.grid]
     for f in m.features.values():
         if f["kind"] in ("boundary_marker", "point_of_interest", "fragment_cache"):
             continue
         need_tech = f["kind"] in ("signal_source", "relay_point", "beacon", "node")
-        cands = [u for u in d["deployment"]["units"] if u["type"] == "technician" or not need_tech]
+        need_tech = need_tech or f["kind"] == "knowledge_base"
+        cands = [u for u in d["deployment"]["units"]
+                 if (u["type"] == "capsule") == (f["kind"] == "builder_console")
+                 and (u["type"] == "technician" or not need_tech)]
         ok = False
         for u in cands:
             dist, _ = m.paths(parse_cell(u["cell"]))
@@ -181,6 +195,71 @@ def state_problems(g, state):
         if got != want:
             out.append(f"Gardien {gid} = {got}, attendu {want}")
     return out
+
+
+MOTIONS = {"still", "push_in", "pull_out", "pan_left", "pan_right"}
+
+
+def cinematic_checks(root):
+    """Cinématiques : mission d'ancrage, images, textes, interlocuteurs et conditions."""
+    errs, keys = [], set()
+    for f in (root / "i18n").glob("*.csv"):
+        with open(f, encoding="utf-8") as fh:
+            keys |= {r["keys"] for r in csv.DictReader(fh) if r.get("fr") and r.get("en")}
+    missions = {}
+    for mf in (root / "missions").glob("*.json"):
+        md = json.loads(mf.read_text(encoding="utf-8"))
+        missions[md["id"]] = {r["id"] for r in md["objectives"]["records"]}
+    dids = {d["id"] for d in json.loads((root / "research/discoveries.json").read_text(encoding="utf-8"))["discoveries"]}
+    images = root.parent / "assets" / "cinematics"
+    seen_after = set()
+    files = sorted((root / "cinematics").glob("*.json"))
+    for f in files:
+        c, w = json.loads(f.read_text(encoding="utf-8")), f"cinématique {f.name}"
+        if c.get("format_version") != 1 or c.get("id") != f.stem:
+            errs.append(f"{w} : format_version ou id incohérent")
+        after = c.get("after_mission")
+        if after is not None:
+            if after not in missions:
+                errs.append(f"{w} : mission {after} inconnue")
+            if after in seen_after:
+                errs.append(f"{w} : deux cinématiques après {after}")
+            seen_after.add(after)
+
+        def cond_ok(cd, w=w):
+            if "not" in cd:
+                return cond_ok(cd["not"])
+            if "discovery" in cd:
+                return cd["discovery"] in dids or errs.append(f"{w} : découverte {cd['discovery']} inconnue")
+            if "doubt_at_least" in cd:
+                return True
+            if "record" in cd:
+                m, _, r = cd["record"].partition(".")
+                return r in missions.get(m, set()) or errs.append(f"{w} : relevé {cd['record']} inconnu")
+            errs.append(f"{w} : condition inconnue {cd}")
+            return False
+
+        for shot in c["shots"]:
+            if "card" in shot:
+                if shot["card"] not in keys:
+                    errs.append(f"{w} : clé {shot['card']} non traduite")
+            elif not (images / f"{shot['image']}.webp").exists():
+                errs.append(f"{w} : image {shot['image']} absente de assets/cinematics")
+            if shot.get("motion", "still") not in MOTIONS:
+                errs.append(f"{w} : mouvement {shot['motion']} inconnu")
+            for ln in shot.get("lines", []):
+                if ln["key"] not in keys:
+                    errs.append(f"{w} : clé {ln['key']} non traduite")
+                if ln["speaker"] != "card" and f"SPEAKER_{ln['speaker'].upper()}" not in keys:
+                    errs.append(f"{w} : interlocuteur {ln['speaker']} sans nom traduit")
+                if "if" in ln:
+                    cond_ok(ln["if"])
+    if not any(json.loads(f.read_text(encoding="utf-8")).get("id") == "prologue" for f in files):
+        errs.append("cinématique prologue absente")
+    print(f"{'OK ' if not errs else 'KO '} cinématiques ({len(files)} fichiers)")
+    for e in errs:
+        print(f"     - {e}")
+    return bool(errs)
 
 
 def research_checks(root):
@@ -305,6 +384,8 @@ def main(root):
         failed |= bool(problems)
     if (root / "research").exists():
         failed |= research_checks(root)
+    if (root / "cinematics").exists():
+        failed |= cinematic_checks(root)
     if missing_en:
         print(f"Note : {len(missing_en)} clés sans traduction anglaise.")
     return 1 if failed else 0

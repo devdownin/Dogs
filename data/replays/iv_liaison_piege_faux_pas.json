@@ -1,0 +1,128 @@
+{
+  "mission": "iv_liaison",
+  "description": "Piège : le Technicien finit son tour à côté de la capsule sans couper sa liaison. Pia est trahie, l'alerte monte, le Patrouilleur fond sur elle et la met hors service.",
+  "turns": [
+    [
+      {
+        "unit": "pia",
+        "move": "F2",
+        "act": "unseal",
+        "target": "F3"
+      },
+      {
+        "unit": "pro",
+        "move": "C12"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "F4",
+        "act": "interact",
+        "target": "E4"
+      },
+      {
+        "unit": "tec",
+        "move": "H10"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "H5",
+        "act": "unseal",
+        "target": "H6"
+      },
+      {
+        "unit": "tec",
+        "move": "H8"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "G7"
+      },
+      {
+        "unit": "tec",
+        "move": "H5",
+        "act": "interface",
+        "target": "H4"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "H8"
+      },
+      {
+        "unit": "pia",
+        "move": "G8"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "F10"
+      },
+      {
+        "unit": "tec",
+        "move": "H11"
+      }
+    ],
+    [
+      {
+        "unit": "pia",
+        "move": "E12",
+        "act": "extract"
+      }
+    ]
+  ],
+  "expect": {
+    "result": "failure",
+    "turn": 5,
+    "alert_max": "interception",
+    "records": {
+      "r_quiet": false,
+      "r_spared": true
+    },
+    "state": {
+      "units": {
+        "pia": [
+          "G8",
+          0,
+          "disabled"
+        ],
+        "tec": [
+          "H8",
+          2,
+          "active"
+        ],
+        "int": [
+          "H12",
+          3,
+          "active"
+        ],
+        "pro": [
+          "C12",
+          4,
+          "active"
+        ]
+      },
+      "guardians": {
+        "warden": [
+          "E5",
+          3
+        ],
+        "pat1": [
+          "G7",
+          3
+        ],
+        "pat2": [
+          "F8",
+          3
+        ]
+      }
+    }
+  }
+}

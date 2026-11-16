@@ -1,0 +1,46 @@
+{
+  "mission": "m6_premiere_chronique",
+  "description": "Piège : finir un tour sur le sol violet sans couper la liaison ; détection immédiate.",
+  "turns": [
+    [
+      {
+        "unit": "tec",
+        "move": "C9"
+      },
+      {
+        "unit": "int",
+        "move": "H11"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "D8"
+      },
+      {
+        "unit": "int",
+        "move": "J10"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "E6"
+      }
+    ],
+    [
+      {
+        "unit": "tec",
+        "move": "F4"
+      },
+      {
+        "unit": "int",
+        "move": "L9"
+      }
+    ]
+  ],
+  "expect": {
+    "result": null,
+    "alert_max": "warning"
+  }
+}

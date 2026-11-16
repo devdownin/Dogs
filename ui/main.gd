@@ -9,7 +9,13 @@ extends Control
 
 const MISSION_DIR := "res://data/missions/"
 const MISSION_IDS: Array[String] = [
-	"m1_sol_inconnu", "m2_echos_poussiere", "m3_couleur_de_trop", "m4_le_veilleur", "m5_prix_signal"
+	"m1_sol_inconnu",
+	"m2_echos_poussiere",
+	"m3_couleur_de_trop",
+	"m4_le_veilleur",
+	"m5_prix_signal",
+	"m6_premiere_chronique",
+	"iv_liaison"  # aperçu de l'Acte IV, jouable hors de l'ordre du récit
 ]
 const NONE := Vector2i(-1, -1)
 
@@ -21,6 +27,7 @@ var preview := NONE
 var mode := ""  # "" ou "probe" (choix de la zone à sonder)
 var show_danger := true
 var reveal_all := false
+var animations_reduced := false
 
 var _mission_index := 0
 var _log: Array[Dictionary] = []  # commandes jouées ; permet d'annuler en rejouant
@@ -29,6 +36,7 @@ var _countdown_labels: Dictionary[String, String] = {}
 var _applied := false  # issue de mission déjà reportée sur la campagne
 var _summary: Dictionary = {}
 var _research: ResearchView
+var _cinema: CinematicView
 var _rules: Array[String] = []  # règles débloquées, figées pour la durée de la mission
 
 var _box: VBoxContainer
@@ -47,8 +55,14 @@ var _next: Button
 
 func _ready() -> void:
 	campaign = SaveStore.load_campaign()
+	var preferences := ConfigFile.new()
+	if preferences.load("user://presentation.cfg") == OK:
+		animations_reduced = bool(preferences.get_value("motion", "reduced", false))
 	_build_ui()
 	if not _resume():
+		load_mission(0)
+		if campaign.completed.is_empty():
+			play_cinematic(CinematicView.by_id("prologue"))
 		load_mission(MISSION_IDS.find("m4_le_veilleur") if OS.has_feature("m4_preview") else 0)
 
 
@@ -138,6 +152,12 @@ func _build_ui() -> void:
 	_actions.add_theme_constant_override("h_separation", 10)
 	_actions.add_theme_constant_override("v_separation", 10)
 	box.add_child(_actions)
+	var motion_toggle := _toggle("UI_REDUCE_MOTION", animations_reduced, _set_reduced_motion)
+	motion_toggle.custom_minimum_size.y = 0
+	motion_toggle.add_theme_font_size_override("font_size", 20)
+	motion_toggle.tooltip_text = tr("UI_REDUCE_MOTION_HINT")
+	motion_toggle.size_flags_horizontal = Control.SIZE_SHRINK_END
+	box.add_child(motion_toggle)
 
 	var bottom := HBoxContainer.new()
 	bottom.add_theme_constant_override("separation", 10)
@@ -176,7 +196,7 @@ func _build_ui() -> void:
 	var retry := _button("UI_RETRY", func() -> void: load_mission(_mission_index))
 	retry.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	end_buttons.add_child(retry)
-	_next = _button("UI_NEXT", func() -> void: load_mission(_mission_index + 1))
+	_next = _button("UI_NEXT", next_mission)
 	_next.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	end_buttons.add_child(_next)
 	var end_athena := _button("UI_ATHENA", open_research)
@@ -188,6 +208,22 @@ func _build_ui() -> void:
 	_research.closed.connect(func() -> void: _research.visible = false)
 	_research.study_started.connect(func(_id: String) -> void: SaveStore.save_campaign(campaign))
 	add_child(_research)
+
+	_cinema = CinematicView.new()
+	_cinema.visible = false
+	add_child(_cinema)
+
+
+## Mission suivante, précédée de la cinématique qui clôt celle qu'on vient de finir.
+func next_mission() -> void:
+	var done := MISSION_IDS[_mission_index]
+	load_mission(_mission_index + 1)
+	play_cinematic(CinematicView.for_mission(done))
+
+
+func play_cinematic(cinematic: Dictionary) -> void:
+	if not cinematic.is_empty():
+		_cinema.play(cinematic, campaign)
 
 
 func open_research() -> void:
@@ -251,6 +287,14 @@ func _set_reveal_all(on: bool) -> void:
 	_refresh()
 
 
+func _set_reduced_motion(enabled: bool) -> void:
+	animations_reduced = enabled
+	_board.reduce_motion(enabled)
+	var preferences := ConfigFile.new()
+	preferences.set_value("motion", "reduced", enabled)
+	preferences.save("user://presentation.cfg")
+
+
 func load_mission(index: int) -> void:
 	_mission_index = clampi(index, 0, MISSION_IDS.size() - 1)
 	def = MissionLoader.load_mission(MISSION_DIR + MISSION_IDS[_mission_index] + ".json")
@@ -258,9 +302,10 @@ func load_mission(index: int) -> void:
 	for id in MISSION_IDS:
 		_picker.add_item(id.substr(0, 2).to_upper())
 	_picker.select(_mission_index)
-	_picker.set_item_text(
-		_mission_index, "M%d — %s" % [_mission_index + 1, tr(def.data["title_key"])]
-	)
+	var code := "M%d" % (_mission_index + 1)
+	if int(def.data["act"]) > 1:  # mission d'un autre acte, jouable en aperçu
+		code = ["I", "II", "III", "IV", "V"][int(def.data["act"]) - 1]
+	_picker.set_item_text(_mission_index, "%s — %s" % [code, tr(def.data["title_key"])])
 	_log.clear()
 	_countdown_labels.clear()
 	_rules = campaign.unlocked_rules()
@@ -277,7 +322,9 @@ func load_mission(index: int) -> void:
 
 
 func _new_game() -> void:
+	_board.reset_motion()
 	game = GameState.new(def, _rules)
+	def = game.def  # copie propre à la partie (les sceaux ouverts modifient la grille)
 	_events_seen = 0
 	selected = ""
 	preview = NONE
@@ -375,6 +422,13 @@ func _play(cmd: Dictionary) -> void:
 	var revealed := game.revealed.size()
 	var observed := game.observed_guards.size()
 	var events := game.events.size()
+	var positions := {}
+	for id: String in game.units:
+		positions[id] = game.units[id]["pos"]
+	for id: String in game.guards:
+		var cell: Vector2i = game.guards[id]["pos"]
+		if game.current_vision.has(cell):
+			positions[id] = cell
 	if not _apply(cmd):
 		_message.text = game.last_error
 		return
@@ -389,6 +443,7 @@ func _play(cmd: Dictionary) -> void:
 		and game.observed_guards.size() == observed
 	)
 	_log.append(cmd)
+	_board.present_events(game.events, events, positions)
 	_consume_events()
 	if game.result.is_empty():
 		_save_mission()
@@ -453,10 +508,16 @@ func _consume_events() -> void:
 				lines.append(tr("UI_HIT") % [e["unit"], e["damage"], e["guardian"]])
 			"unit_disabled":
 				lines.append(tr("UI_UNIT_DOWN") % e["unit"])
+			"guardian_stunned":
+				lines.append(tr("UI_STUNNED") % e["guardian"])
 			"unit_silenced":
 				lines.append(tr("UI_SILENCED") % e["unit"])
 			"unit_reconnected":
 				lines.append(tr("UI_RECONNECTED") % e["unit"])
+			"seal_opened":
+				lines.append(tr("UI_SEAL_OPENED") % Cells.name_of(e["cell"]))
+			"capsule_betrayed":
+				lines.append(tr("UI_BETRAYED") % e["unit"])
 			"guardian_neutralized":
 				lines.append(tr("UI_GUARD_DOWN") % e["guardian"])
 			"alert_changed":
@@ -492,6 +553,8 @@ func _refresh() -> void:
 		status += (
 			"\n" + tr("UI_COUNTDOWN") % [_countdown_labels.get(cid, cid), game.countdowns[cid]]
 		)
+	if not game.pending_betrayal().is_empty():
+		status += "\n" + tr("UI_BETRAYAL_RISK")
 	_status.text = status
 	_objective.text = tr(def.data["objectives"]["main"]["text_key"])
 	for c in _actions.get_children():
@@ -500,7 +563,7 @@ func _refresh() -> void:
 	if selected != "" and game.units[selected]["status"] == "active":
 		for a in game.available_actions(selected):
 			var b := _button("UI_ACT_" + (a["kind"] as String).to_upper(), do_action.bind(a))
-			if a["kind"] in ["attack", "repair"]:
+			if a["kind"] in ["attack", "repair", "impulse", "unseal"]:
 				b.text += " " + Cells.name_of(a["target"])
 			b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			if a["kind"] == "probe":

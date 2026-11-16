@@ -71,7 +71,8 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer (ramen�
 | OBS-2 | Rythme des veilleurs | Observation : cycle complet d'une Sentinelle (M4) | 1 | 4 | Le prochain pivot de chaque Sentinelle observée est affiché |
 | OBS-3 | Signature violette | Échantillon de sol recolorié (M3) | 2 | 5 | Le territoire recolorié est visible même dans le brouillard inconnu |
 | OBS-4 | Sonde profonde | OBS-2 ; base « Ceux qui veillent » (III-2) | 2 | 8 | La Sonde révèle une croix de 5 cases de rayon 2 au lieu de 3 × 3 |
-| OBS-5 | Silence radio | Observation : ils traquent ce qui parle à ATHENA (M5) | 1 | 4 | Un drone peut couper sa liaison : invisible aux Gardiens, mais aveugle et sans action jusqu'à la reconnexion (GDD §3.5) |
+| OBS-6 | Sondage du sous-sol | Un souffle sous la base (M6) ; étape « Recherche » du vaisseau | 2 | 5 | Ouvre l'Hypogée, le complexe souterrain de l'Acte III (GDD §7.4) |
+| OBS-5 | Silence radio | Ils traquent ce qui parle à ATHENA (M5) ; essai de silence radio (M6) | 1 | 4 | Un drone peut couper sa liaison : invisible aux Gardiens, mais aveugle et sans action jusqu'à la reconnexion (GDD §3.5) |
 | LIA-1 | Relais embarqué | Observation : nœud capturé (II-2) | 1 | 4 | Module *Relais embarqué* : portée de Liaison 6 |
 | LIA-2 | Résonance cristalline | Échantillon de cristal de bassin (II-4a) | 2 | 5 | En bordure de bassin, Liaison +2 (règle du GDD §3.2, désormais à débloquer) |
 | LIA-3 | Protocole des nœuds | LIA-1 ; base « Une voix sans destinataire » (III-1) | 2 | 8 | Un nœud capturé résiste 2 tours à la recoloration même coupé de la balise |
@@ -83,6 +84,8 @@ Durée en cycles ; coût en Données. Valeurs de départ, à équilibrer (ramen�
 | XEN-3a | Les Gardiens protègent | XEN-2 ; chronique A de « Deux versions » (III-3) | 3 | 8 | Ouvre une branche de dialogue dans IV-2 ; jauge Concorde +1 |
 | XEN-3b | Les Gardiens ont causé la chute | XEN-2 ; chronique B de « Deux versions » (III-3) | 3 | 8 | Ouvre une faiblesse de l'Arbitre (IV-5) ; jauge Emprise +1 |
 | XEN-3r | Révision : la chronique A était falsifiée | XEN-3a ; base du relais maître (IV-2) | 3 | 8 | ATHENA corrige sa conclusion ; ouvre la faiblesse de l'Arbitre ; Savoir +1 |
+| XEN-L | La clé des liés | *Chronique des liés* (III) ; Pia (CRW-2) et Xenon (CRW-3) éveillés | 2 | 8 | Les liés sont reconnus comme bâtisseurs : accès scellés ouverts, ordres donnés aux Gardiens (GDD §7.6) |
+| XEN-O | Ordonner | XEN-L ; *L'ordre des liés* (aperçu IV, *Liaison*) | 2 | 8 | Face à l'Arbitre, les liés peuvent donner un ordre là où ATHENA ne peut que négocier (GDD §7.6) |
 | XEN-4 | La langue de l'Arbitre | XEN-3b ou XEN-3r ; base du relais maître (IV-2) | 3 | 10 | Une phase de l'Arbitre peut être négociée au lieu d'être combattue |
 
 **Vérité du récit (décidée le 13 novembre 2026) : les Gardiens ont causé la chute des bâtisseurs.** La chronique B dit vrai ; la chronique A est une version réécrite par les Gardiens eux-mêmes.
@@ -98,12 +101,12 @@ Les caissons ont souffert du transit : impossible de réveiller qui que ce soit 
 | Id | Réveil | Requiert | Cycles | Données | Avantage |
 |---|---|---|---:|---:|---|
 | CRW-0 | Diagnostic des caissons | Étape « Recherche » du vaisseau (fin d'Acte I) | 2 | 5 | Rend les réveils possibles |
-| CRW-1 | Médecin | CRW-0 | 2 | 4 | Les réveils suivants prennent 1 cycle de moins |
-| CRW-2 | Opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 5 | Un vétéran choisit entre trois traits au lieu de deux |
-| CRW-3 | Responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 5 | +1 Énergie par mission (annule son propre coût) |
-| CRW-4 | Xénologue | CRW-1 ; base des Jardins géométriques | 2 | 5 | Les hypothèses de Xénologie prennent 1 cycle de moins |
-| CRW-5 | Commandante | CRW-2, CRW-3 et CRW-4 | 3 | 8 | Ouvre des options de décision dans IV-2 et IV-4 |
-| CRW-6 | Pilote | CRW-1 ; étape « Navigation » | 2 | 8 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
+| CRW-1 | Paul, médecin | CRW-0 | 2 | 4 | Les réveils suivants prennent 1 cycle de moins |
+| CRW-2 | Pia, opératrice de la Meute | CRW-1 ; débris de Gardien | 2 | 5 | Un vétéran choisit entre trois traits au lieu de deux |
+| CRW-3 | Xenon, responsable des systèmes | CRW-1 ; étape « Liaison » | 2 | 5 | +1 Énergie par mission (annule son propre coût) |
+| CRW-4 | Moonji, xénologue | CRW-1 ; base des Jardins géométriques | 2 | 5 | Les hypothèses de Xénologie prennent 1 cycle de moins |
+| CRW-5 | Flores, commandante | CRW-2, CRW-3 et CRW-4 | 3 | 8 | Ouvre des options de décision dans IV-2 et IV-4 |
+| CRW-6 | Hermes, pilote | CRW-1 ; étape « Navigation » | 2 | 8 | « Fenêtre de transit » (V-1) dure 2 tours de plus |
 
 Les rôles reprennent les personnages du récit (commandante, responsable des systèmes, xénologue, opératrice de la Meute) ; médecin et pilote complètent les six. La « voix du bord » du récit est ATHENA.
 

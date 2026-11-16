@@ -1,0 +1,39 @@
+{
+  "format_version": 1,
+  "id": "after_m2",
+  "after_mission": "m2_echos_poussiere",
+  "shots": [
+    {
+      "image": "orbit",
+      "motion": "pan_right",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_M2_01"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M2_02"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_M2_03"
+        }
+      ]
+    },
+    {
+      "image": "bridge",
+      "motion": "still",
+      "lines": [
+        {
+          "speaker": "systems_log",
+          "key": "CIN_M2_04"
+        },
+        {
+          "speaker": "systems_log",
+          "key": "CIN_M2_05"
+        }
+      ]
+    }
+  ]
+}

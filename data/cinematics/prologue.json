@@ -1,0 +1,87 @@
+{
+  "format_version": 1,
+  "id": "prologue",
+  "after_mission": null,
+  "shots": [
+    {
+      "image": "transit",
+      "motion": "push_in",
+      "lines": [
+        {
+          "speaker": "log",
+          "key": "CIN_PRO_01"
+        },
+        {
+          "speaker": "commander_log",
+          "key": "CIN_PRO_02"
+        }
+      ]
+    },
+    {
+      "image": "rupture",
+      "motion": "still",
+      "lines": [
+        {
+          "speaker": "static",
+          "key": "CIN_PRO_03"
+        }
+      ]
+    },
+    {
+      "image": "bridge",
+      "motion": "pull_out",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_04"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_05"
+        }
+      ]
+    },
+    {
+      "image": "pods",
+      "motion": "pan_right",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_06"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_07"
+        }
+      ]
+    },
+    {
+      "image": "orbit",
+      "motion": "push_in",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_08"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_09"
+        }
+      ]
+    },
+    {
+      "image": "descent",
+      "motion": "pan_left",
+      "lines": [
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_10"
+        },
+        {
+          "speaker": "athena",
+          "key": "CIN_PRO_11"
+        }
+      ]
+    }
+  ]
+}

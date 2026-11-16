@@ -22,6 +22,7 @@ func _run() -> void:
 	root.add_child(main)
 	await process_frame
 	await process_frame
+	await _test_prologue(main)
 
 	# Mission 4, solution de référence, entièrement par touchers.
 	main.load_mission(3)
@@ -63,6 +64,8 @@ func _run() -> void:
 	)
 	_check(main._end_panel.visible, "le bilan de mission s'affiche")
 	await _shot(main, "m4_bilan")
+	await _test_interlude(main)
+	_test_m4_directions(main)
 
 	# Mission 3 : le compte à rebours et l'avancée du territoire s'affichent.
 	main.load_mission(2)
@@ -115,15 +118,68 @@ func _run() -> void:
 
 	await _test_zoom(main)
 	await _test_probe(main)
+	_test_m4_motion(main)
 	await _test_combat(main)
 	main = await _test_resume(main)
 	await _test_research(main)
 	await _test_silence(main)
+	await _test_m6(main)
+	await _test_liaison(main)
 	SaveStore.erase(SaveStore.MISSION)
 	SaveStore.erase(SaveStore.CAMPAIGN)
 
 	print("%d échec(s)" % _failed)
 	quit(1 if _failed > 0 else 0)
+
+
+func _test_m4_motion(main: Control) -> void:
+	main.load_mission(3)
+	var board: BoardView = main._board
+	var motion: M4Motion = board._motion
+	board.reduce_motion(false)
+	_tap(main, "D10")
+	_tap(main, "D7")
+	_tap(main, "D7")
+	var destination := Cells.parse("D7")
+	_check(
+		(
+			main.game.units["tec"]["pos"] == destination
+			and motion.position("tec", destination) == Vector2(Cells.parse("D10"))
+		),
+		"M4 : le déplacement logique est immédiat, le sprite part de la case de départ"
+	)
+	board.reduce_motion(true)
+	_check(
+		motion.position("tec", destination) == Vector2(destination) and not motion.advance(1.0),
+		"M4 : réduire les animations termine le déplacement visuel et fige les cycles"
+	)
+	board.reduce_motion(false)
+	var start := Cells.parse("C4")
+	var middle := Cells.parse("D4")
+	var end := Cells.parse("E4")
+	var path: Array[Vector2i] = [middle, end]
+	main.game.guards["pat1"]["pos"] = end
+	for cell in [start, middle, end]:
+		main.game.current_vision[cell] = true
+	var events: Array[Dictionary] = [{"type": "guardian_moved", "guardian": "pat1", "path": path}]
+	board.present_events(events, 0, {"pat1": start})
+	motion.advance(M4Motion.STEP_SECONDS / 2.0)
+	_check(
+		motion.position("pat1", end).is_equal_approx(Vector2(start).lerp(Vector2(middle), 0.5)),
+		"M4 : un trajet de Gardien visible est interpolé"
+	)
+	main.game.current_vision.erase(middle)
+	board.present_events(events, events.size(), {})
+	_check(
+		board._actor_rect("pat1", end) == board.cell_rect(end),
+		"M4 : un Gardien visible reste à destination si son trajet passe sous le brouillard"
+	)
+	main.game.current_vision[middle] = true
+	board.present_events(events, events.size(), {})
+	_check(
+		board._actor_rect("pat1", end) == board.cell_rect(end),
+		"M4 : un trajet abandonné ne reprend pas lorsque la visibilité revient"
+	)
 
 
 func _test_zoom(main: Control) -> void:
@@ -197,6 +253,73 @@ func _test_zoom(main: Control) -> void:
 		"après zoom centré sur F2, F2 reste sous le doigt"
 	)
 	await _shot(main, "m4_zoom")
+
+
+func _test_m4_directions(main: Control) -> void:
+	main.load_mission(3)
+	var board: BoardView = main._board
+	var motion: M4Motion = board._motion
+	board.reduce_motion(false)
+	_tap(main, "D10")
+	_tap(main, "E9")
+	_tap(main, "E9")
+	_check(
+		(
+			_technician_sheet(motion) == "technician_n.png"
+			and not motion.mirrored("tec", "technician")
+		),
+		"M4 : le Technicien montre son dos sur la première étape vers le nord"
+	)
+	var first_pose := motion.frame_for("tec", "technician", false)
+	_check(
+		(
+			motion.advance(0.06)
+			and motion.position("tec", Cells.parse("E9")).y < 9.0
+			and motion.frame_for("tec", "technician", false) != first_pose
+		),
+		"M4 : le châssis et la pose de marche progressent entre deux images d'attente"
+	)
+	motion.advance(M4Motion.DRONE_STEP_SECONDS["technician"] - 0.06)
+	board._actor_rect("tec", Cells.parse("E9"))
+	_check(
+		_technician_sheet(motion) == "technician.png" and motion.mirrored("tec", "technician"),
+		"M4 : le Technicien reprend le profil miroir au virage vers l'est"
+	)
+	main.end_turn()
+	_tap(main, "E9")
+	_tap(main, "E10")
+	_tap(main, "E10")
+	_check(
+		(
+			_technician_sheet(motion) == "technician_s.png"
+			and not motion.mirrored("tec", "technician")
+		),
+		"M4 : le Technicien montre sa face quand il repart vers le sud"
+	)
+	motion.advance(M4Motion.DRONE_STEP_SECONDS["technician"])
+	board._actor_rect("tec", Cells.parse("E10"))
+	_check(
+		_technician_sheet(motion) == "technician_s.png",
+		"M4 : le Technicien conserve la vue sud une fois arrivé"
+	)
+	main.load_mission(0)
+	board.reduce_motion(false)
+	_tap(main, "A7")
+	_tap(main, "B7")
+	_tap(main, "B7")
+	var destination := Cells.parse("B7")
+	_check(
+		(
+			main.game.units["sc1"]["pos"] == destination
+			and board._actor_rect("sc1", destination) == board.cell_rect(Cells.parse("A7"))
+		),
+		"M1 : l’Éclaireur utilise la marche animée dès la première mission Surface"
+	)
+
+
+func _technician_sheet(motion: M4Motion) -> String:
+	var frame := motion.frame_for("tec", "technician", false) as AtlasTexture
+	return frame.atlas.resource_path.get_file() if frame != null else ""
 
 
 func _test_probe(main: Control) -> void:
@@ -414,6 +537,111 @@ func _test_silence(main: Control) -> void:
 	_check(
 		main.game.alert == 0, "en silence, attendre sous le regard de la Sentinelle ne trahit pas"
 	)
+
+
+## Mission 6 : essai de silence radio accordé par la mission, Impulsion de l'Intercepteur.
+func _test_m6(main: Control) -> void:
+	main.campaign.confirmed.erase("obs_5")
+	main.load_mission(5)
+	_check(main.game.rules.has("radio_silence"), "M6 accorde le silence radio pour la mission")
+	var rep: Dictionary = MissionLoader.load_json("res://data/replays/m6_reference.json")
+	var turns: Array = rep["turns"]
+	for t in 7:
+		for c: Dictionary in turns[t]:
+			if c.has("move"):
+				main._play({"t": "move", "unit": c["unit"], "dest": Cells.parse(c["move"])})
+			if c.has("act"):
+				var target := Cells.parse(c["target"]) if c.has("target") else Vector2i(-1, -1)
+				main._play({"t": "act", "unit": c["unit"], "kind": c["act"], "target": target})
+		if t < 6:
+			main._play({"t": "end"})
+	_check(main.game.guards["pat2"]["stunned"], "l'Impulsion fige le Patrouilleur")
+	_check(main.game.interacted.has("archive"), "la base est ouverte sous couvert de l'Impulsion")
+	main.reveal_all = true
+	main._refresh()
+	await _shot(main, "m6_impulsion")
+	main.reveal_all = false
+	main.load_mission(5)
+	main._play({"t": "end"})
+	main._play({"t": "move", "unit": "int", "dest": Cells.parse("D8")})
+	_check(main.game.units["int"]["elan"], "trois cases en ligne droite donnent l'Élan")
+	main.selected = "int"
+	main._refresh()
+	await _shot(main, "m6_elan")
+
+
+## Aperçu de l'Acte IV : la capsule de Pia ouvre les sceaux ; un drone relié qui la touche
+## en fin de tour la trahit, et l'écran l'annonce avant que le tour ne se termine.
+func _test_liaison(main: Control) -> void:
+	main.load_mission(6)
+	_check(main.def.id == "iv_liaison", "la mission Liaison est la septième entrée")
+	var kinds: Array = []
+	main._play({"t": "move", "unit": "pia", "dest": Cells.parse("F2")})
+	for a: Dictionary in main.game.available_actions("pia"):
+		kinds.append(a["kind"])
+	_check(
+		"unseal" in kinds and not "silence" in kinds,
+		"la capsule ouvre un sceau, sans silence radio"
+	)
+	main._play({"t": "act", "unit": "pia", "kind": "unseal", "target": Cells.parse("F3")})
+	_check(main.def.terrain(Cells.parse("F3")) == ".", "le sceau ouvert devient un passage")
+	var fresh := MissionLoader.load_mission("res://data/missions/iv_liaison.json")
+	_check(fresh.terrain(Cells.parse("F3")) == "S", "la définition chargée reste intacte")
+	var rep: Dictionary = MissionLoader.load_json(
+		"res://data/replays/iv_liaison_piege_faux_pas.json"
+	)
+	main.load_mission(6)
+	var turns: Array = rep["turns"]
+	for t in 5:
+		for c: Dictionary in turns[t]:
+			if c.has("move"):
+				main._play({"t": "move", "unit": c["unit"], "dest": Cells.parse(c["move"])})
+			if c.has("act"):
+				var target := Cells.parse(c["target"]) if c.has("target") else Vector2i(-1, -1)
+				main._play({"t": "act", "unit": c["unit"], "kind": c["act"], "target": target})
+		if t < 4:
+			main._play({"t": "end"})
+	_check(main.game.pending_betrayal() == ["pia"], "le faux pas est détecté avant la fin du tour")
+	main.reveal_all = true
+	main._refresh()
+	_check(main._status.text.contains(tr("UI_BETRAYAL_RISK")), "l'écran prévient du faux pas")
+	await _shot(main, "liaison_faux_pas")
+	main.reveal_all = false
+	main._play({"t": "end"})
+	_check(main.game.units["pia"]["exposed"], "la capsule est trahie")
+	_check(main.game.result == "failure", "le Patrouilleur la met hors service")
+
+
+## Premier lancement : le prologue passe avant la Mission 1 ;
+## toucher fait avancer, puis rend la main.
+func _test_prologue(main: Control) -> void:
+	var cinema: CinematicView = main._cinema
+	_check(cinema.visible, "premier lancement : le prologue est joué")
+	await _shot(main, "cine_prologue_1")
+	cinema.advance()  # termine la réplique en cours
+	cinema.advance()  # réplique suivante
+	_check(cinema._line == 1, "toucher : réplique suivante")
+	var guard := 0
+	while cinema.visible and guard < 100:
+		cinema.advance()
+		guard += 1
+		if cinema._shot == 3 and cinema._line == 0:
+			await _shot(main, "cine_prologue_caissons")
+	_check(not cinema.visible, "le prologue se termine et rend la main à la Mission 1")
+
+
+## Après la Mission 4, la cinématique dit ce que le joueur a fait (Veille tenue ou non).
+func _test_interlude(main: Control) -> void:
+	main.next_mission()
+	var cinema: CinematicView = main._cinema
+	_check(cinema.visible and main._mission_index == 4, "« Mission suivante » : interlude, puis M5")
+	var keys: Array = cinema._shots[0]["lines"].map(func(l: Dictionary) -> String: return l["key"])
+	_check(
+		keys.has("CIN_M4_02") and not keys.has("CIN_M4_03"),
+		"l'interlude retient la variante « passés sans un bruit »"
+	)
+	await _shot(main, "cine_apres_m4")
+	cinema._end()
 
 
 func _tap(main: Control, cell: String) -> void:

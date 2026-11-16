@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bq74y4pjnm44o"
+
+[deps]
+
+files=["res://data/i18n/cinematics.fr.translation", "res://data/i18n/cinematics.en.translation"]
+
+source_file="res://data/i18n/cinematics.csv"
+dest_files=["res://data/i18n/cinematics.fr.translation", "res://data/i18n/cinematics.en.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

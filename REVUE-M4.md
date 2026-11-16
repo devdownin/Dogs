@@ -18,3 +18,10 @@ Installer `Dogs-of-Gods-Surface.apk` sur un appareil ARM64 (Android 7.0 ou supé
 ## Vérifications
 
 Le projet a été importé avec Godot 4.7 stable. Le validateur des données, les rejeux GDScript, les vérifications campagne et la suite d'interface en rendu 720 × 1280 ont réussi. La suite tactile couvre la victoire sans alerte en M4, les commandes de caméra, la sonde et l'affichage des intentions. L'APK ARM64 a été exporté et sa signature vérifiée. La revue sur matériel Android et les mesures de performance restent à effectuer.
+
+## Animations de présentation
+
+- L'Éclaireur (M1 et M4) et le Technicien (M4) utilisent des cycles de marche de 12 poses, avec deux cycles par case. L'Éclaireur alterne ses appuis en diagonale, le Technicien garde trois pattes en appui pendant la reprise. Le châssis accélère au départ, ralentit à l'arrivée et le cycle suit la distance parcourue. Leur feuille contient 39 images par orientation. Les Gardiens gardent leurs feuilles de 35 images et leurs cycles à 12 images par seconde. L'état logique de la mission est appliqué immédiatement.
+- Le bas de chaque sprite est ancré à 78 % du cadre. Les silhouettes peintes sont déformées localement pour faire bouger pattes, mât et bras. L’Éclaireur, le Technicien et le Patrouilleur changent de vue à chaque étape du trajet : de dos vers le nord, de face vers le sud, de profil vers l’ouest et en profil miroir vers l’est. Ils gardent la dernière vue à l’arrivée. La Sentinelle reste fixe et son orientation est indiquée au sol.
+- Le bouton « Réduire les animations » enregistre un réglage persistant. Quand il est actif, les unités sont affichées directement dans leur case de destination.
+- Pour reproduire les feuilles, lancer `python art-src/animations_m4/export.py` après l'export des sprites M4. Les poses maîtresses nord et sud sont dans `art-src/animations_m4/directions/` (PNG RGBA, 576 × 576 px). Le rig 3D et les mesures sur téléphone restent à faire.
